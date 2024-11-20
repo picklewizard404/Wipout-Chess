@@ -3,4 +3,6 @@ I am trying to make a command-line Chess program. There's still a ton of stuff t
 - Make pawns which can upgrade
 - Make bishops and queens.
 
-The top folder contains code I use often in many programs.
+The code is written in the Chess_code folder and files to help me edit the program with Visual Studio are in the Visual Studio folder.
+
+In order to make it easier to debug, the main function is written outside the Chess_code folder. I deebug it locally with the [Catch2](https://github.com/catchorg/Catch2) library.
