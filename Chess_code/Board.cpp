@@ -53,21 +53,21 @@ Game_Status Board::is_in_check(Team* my_team, Team* enemy_team, Board* mainboard
             switch (enemy_team->pieces[i]->piecetype) {
             case KING:
                 if ((King*)enemy_team->pieces[i]->can_classmove(row, column, mainboard)) {
-                    if (check_for_checkmate) {
+                    if (false && check_for_checkmate) {
                         return try_to_escape(my_team, enemy_team, mainboard);
                     }
                     else return CHECK;
                 }
             case KNIGHT:
                 if ((Knight*)enemy_team->pieces[i]->can_classmove(row, column, this)) {
-                    if (check_for_checkmate) {
+                    if (false && check_for_checkmate) {
                         return try_to_escape(my_team, enemy_team, mainboard);
                     }
                     else return CHECK;
                 }
             case ROOK:
                 if ((Rook*)enemy_team->pieces[i]->can_classmove(row, column, this)) {
-                    if (check_for_checkmate) {
+                    if (false && check_for_checkmate) {
                         return try_to_escape(my_team, enemy_team, mainboard);
                     }
                     else return CHECK;
@@ -81,65 +81,6 @@ Game_Status Board::is_in_check(Team* my_team, Team* enemy_team, Board* mainboard
     return NEUTRAL;
 }
 
-
-Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboard) {
-    Piece* one_of_my_pieces;
-    Move tried_move;
-    Game_Status current_status = CHECK;
-    //I don't really care about hugging so I will assume I didn't land on a king;
-    bool landed_on_a_king = false;
-    for (int i = 0; i < 16; i++) {
-        one_of_my_pieces = my_team->pieces[i];
-        if (my_team->pieces[i] == NULL) {
-            continue;
-        }
-        if (one_of_my_pieces->alive == false) {
-            continue;
-        }
-        tried_move.start_row = one_of_my_pieces->row;
-        tried_move.start_column = one_of_my_pieces->column;
-        tried_move.piece_that_moved = one_of_my_pieces;
-        for (int row = 1; row <= 8; row++) {
-            for (int column = 1; column <= 8; column++) {
-                if (one_of_my_pieces->can_classmove(row, column, mainboard)) {
-                    tried_move.end_row = row;
-                    tried_move.end_column = column;
-                    tried_move.piece_landed_on = mainboard->spaces[row - 1][column - 1];
-                    mainboard->move_piece(&tried_move);
-                    //TODO: Check if you are still in check. If you are, the loop continues.
-                    //If not, return CHECK because we know we can be safe again.
-                    //Either way the move must be un_done.
-                    if (mainboard->is_in_check(my_team, enemy_team, mainboard, false) == NEUTRAL) {
-                        //TODO: Undo the move.
-                        Move undomove = Move(
-                            tried_move.end_row,
-                            tried_move.end_column,
-                            tried_move.start_row,
-                            tried_move.start_column,
-                            tried_move.piece_that_moved,
-                            NULL
-                        );
-                        mainboard->move_piece(&undomove);
-                        one_of_my_pieces->row = tried_move.start_row;
-                        one_of_my_pieces->column = tried_move.start_column;
-                        if (tried_move.piece_landed_on != NULL) {
-                            tried_move.piece_landed_on->alive = true;
-                            mainboard->place(tried_move.piece_landed_on, row, column);
-                        }
-                        return CHECK;
-                    }
-                    else {
-                        //TODO Undo the move
-                    }
-                }
-            }
-        }
-    }
-    //If this loop ends, you can't escape Check.
-    return CHECKMATE;
-
-};
-
 bool Board::is_on_board(int b_row, int b_column) {
     if (b_row < 1 || b_column < 1 || b_row > 8 || b_column > 8) {
         return false;
@@ -151,7 +92,7 @@ b_column and b_row range from 1 to 8. We subtract 1 whenever we need to hit a sp
 That's because a person starts counting spaces with 1 but the computer starts counting with 0.
 Do this whenever you touch a space on the board.
 */
-bool Board::move_piece(Move* move_to_make) {
+bool Board::human_move_piece(Move* move_to_make) {
     space piece = move_to_make->piece_that_moved;
     int b_row = move_to_make->end_row;
     int b_column = move_to_make->end_column;
@@ -182,7 +123,7 @@ bool Board::move_piece(Move* move_to_make) {
 
 
             //Either way move the piece.
-
+            spaces[move_to_make->start_row - 1][move_to_make->start_column - 1] = NULL;
             place(piece, b_row, b_column);
             piece->know_i_change_position(b_row, b_column);
             return true;
@@ -240,4 +181,34 @@ void Board::print_board() {
    // printf_s("|[]\n");
 }
 
+void undo_board_move(Move* tried_move, Board* mainboard, Team* team_undoing_move, Game_Status* game_status) {
+    mainboard->place(tried_move->piece_that_moved, tried_move->start_row, tried_move->start_column);
+    tried_move->piece_that_moved->row = tried_move->start_row;
+    tried_move->piece_that_moved->column = tried_move->start_column;
+    if (tried_move->piece_landed_on != NULL) {
+        tried_move->piece_landed_on->alive = true;
+        mainboard->place(tried_move->piece_landed_on, tried_move->end_row, tried_move->end_column);
+        *game_status = mainboard->is_in_check(team_undoing_move->enemy_team, team_undoing_move, mainboard, false);
+    }
+}
 
+//TODO I UNDO MOVES WRONGLY
+//By the time I undo the move, I have already forgotten the piece I landed on.
+Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboard) {
+    Piece* one_of_my_pieces;
+    Move tried_move;
+    Game_Status current_status = CHECK;
+    //I don't really care about hugging so I will assume I didn't land on a king;
+    //TODO Plan:
+    // Each piece must list its possible moves.
+    // That means I need to create a stack of Nodes.
+    // Each Node should store a MOVE.
+    //If this loop ends, you can't escape Check.
+    //TEMP I am pretending I found a move that saved me.
+    current_status = NEUTRAL;
+    //TEMP Here I know the move that saved me and I haven't actually made it on purpose yet,
+    // so I need to undo the move before exiting the loop/
+    // END OF IMAGINARY LOOP
+    if (current_status != NEUTRAL) return CHECKMATE;
+    else return CHECK;
+};

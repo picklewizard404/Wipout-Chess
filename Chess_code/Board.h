@@ -2,14 +2,14 @@
 #include "Piece.h"
 #include "Team.h"
 #include <stdio.h>
+#include "Check_vs_Checkmate.h"
+#include "Move.h"
 
 typedef Piece * space;
-
 class Board
 {
 	//variables
 public:
-	// Piece **spaces[8][8];
 	Piece* spaces[8][8];
 	Piece* threatens_white;
 	Piece* threatens_black;
@@ -19,12 +19,13 @@ public:
 	bool whiteturn;
 
 	//functions move
-	bool move(space piece, int b_row, int b_column, bool* landed_on_king = NULL);
+	bool human_move_piece(Move* move_to_make);
 	void place(Piece* piece, int row, int column);
 	void print_board();
 	bool is_on_board(int b_row, int b_column);
 	Board();
-	bool is_in_check(King* king_of_team_1, Team* team_2, Board* mainboard);
+	Game_Status is_in_check(Team* my_team, Team* enemy_team, Board* mainboardbool, bool check_for_checkmate = true);
+	Game_Status try_to_escape(Team* my_team, Team* enemy_team, Board* mainboard);
 	bool does_have_any_piece(int row, int column);
 	bool can_fight(COLOR my_team, int row, int column);
 };

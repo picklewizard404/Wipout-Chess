@@ -22,8 +22,10 @@ bool move_diagnolly(Piece* valid_piece, DIAGONAL direction, int count, Board* bo
 		vertical = -1 * vertical;
 		break;
 	}
-	if (!(1 <= valid_piece->column + horizontal) <= 8) return false;
-	if (!(1 <= valid_piece->row + vertical) <= 8) return false;
+	if (!(1 <= (valid_piece->column + horizontal) || 
+		(valid_piece->column + horizontal) <= 8)) return false;
+	if (!(1 <= (valid_piece->row + vertical) ||
+		(valid_piece->row + vertical) <= 8)) return false;
 
 	//Check that  we aren't blocked
 	int sp_horiz = valid_piece->row;

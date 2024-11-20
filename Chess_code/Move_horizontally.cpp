@@ -1,12 +1,9 @@
 #include "Piece.h"
 #include "Board.h"
+#include "Move_safety.h"
 bool move_horizontally(Piece* valid_piece, int b_row, int b_column, Board* board_to_move_on) {
-    if (!valid_piece->alive) {
-        return false;
-    }
-    if (b_row != valid_piece->row && b_column != valid_piece->column) {
-        return false;
-    }
+    if (!is_safe(valid_piece, board_to_move_on, b_row, b_column)) return false;
+    if (valid_piece->row != b_row && valid_piece->column != b_column) return false;
     //Row up
     bool up = false;
     bool right = false;

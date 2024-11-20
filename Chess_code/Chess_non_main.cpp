@@ -6,8 +6,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Team.h"
-#include "Safety.h"
+#include "..\Safety.h"
+#include "Check_vs_Checkmate.h"
 #include "Node.h"
+#include "Move.h"
+//#include "Undo_move.h"
+#include <windows.h>
+#include <ctime>
 void tellmeaspace(Piece* piecetomove) {
     if (piecetomove->alive) {
         (*piecetomove).sayspace();
@@ -64,22 +69,24 @@ COLOR enemy_team(COLOR my_team) {
 }
 
 //Returns TRUE if you made a winning move
-bool do_move(Team** current_team, Board* mainboard, Piece* piecetomove, int m_row, int m_column, Team* public_white_team, Team *public_black_team, bool switch_teams = true) {
+void do_move(Team** current_team, Board* mainboard, Move* move, Team* public_white_team, Team *public_black_team, int *move_count, Game_Status *new_status) {
     //We check that we are on the right team before we move
-    if ((*current_team)->color == piecetomove->team) {
-        Piece* piecelandedon = mainboard->spaces[m_row - 1][m_column - 1];
-        int old_row = piecetomove->row;
-        int old_column = piecetomove->column;
-        printf("Used to be on row %d, column %d.\n", piecetomove->row, piecetomove->column);
+    if ((*current_team)->color == move->piece_that_moved->team) {
+        Piece* piecelandedon = mainboard->spaces[move->end_row - 1][move->end_column - 1];
+        int old_row = move->piece_that_moved->row;
+        int old_column = move->piece_that_moved->column;
+        printf("Used to be on row %d, column %d.\n", move->piece_that_moved->row, move->piece_that_moved->column);
         //This function basically always returns true. At least it should.
-        if (mainboard->move(piecetomove, m_row, m_column)) {
+        if (mainboard->human_move_piece(move)) {
             printf("Valid move.\n");
             //Check for check;
-            if (mainboard->is_in_check(&((*current_team)->the_king), ((*current_team)->enemy_team), mainboard)) {
-                printf("You are still in check.\nIt might be a good idea to surrender.\n");
+            Game_Status still_in_check = mainboard->is_in_check(*current_team, ((*current_team)->enemy_team), mainboard);
+            if (still_in_check != NEUTRAL) {
+                printf("Invalid move. You are entering Check.\nI guess you're A.OK letting your opponet win.\n");
+                //TODO: Re-write undoing this move and return.
+                //UNDO_MOVE8
             }
-        }
-        if (switch_teams) {
+          
             if (*current_team == public_white_team) {
                 *current_team = public_black_team;
             }
@@ -88,7 +95,6 @@ bool do_move(Team** current_team, Board* mainboard, Piece* piecetomove, int m_ro
             }
         }
     }
-    return false;
 }
 bool check_piece(Board* mainboard, Piece** piecetomove, int row, int column, char nameofpiecetomove[]) {
     piecetomove = &(mainboard->spaces[row][column]);

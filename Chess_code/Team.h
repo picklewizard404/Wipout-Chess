@@ -7,6 +7,7 @@
 #include "Piece.h"
 #include "Rook.h"
 #include "Pawn.h"
+#include "Check_vs_Checkmate.h"
 
 class Board;
 
@@ -24,6 +25,7 @@ public:
 	Rook rook2;
 	King the_king;
 	Team* enemy_team;
+	Game_Status current_status;
 
 	//functions
 	//Team(COLOR team_color);

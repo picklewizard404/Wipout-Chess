@@ -10,6 +10,7 @@ public: // public variables
     char chess_class[8];
     //Important. Length of name.
     char name[10];
+    //Important. This decides whether or not the piece should stay on the board.
     bool alive;
     int count;
     int row;

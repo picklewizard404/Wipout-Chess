@@ -5,6 +5,7 @@
 #include "Piece.h"
 #include "Board.h"
 #include "Rook.h"
+#include "Check_vs_Checkmate.h"
 #include <string.h>
 #define _CRT_SECURE_NO_WARNINGS //prevents warnings for using non-Microsoft functions
 #pragma warning(disable:4996)
@@ -21,6 +22,7 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
 	enemy_team = nullptr;
 	empty_spaces();
 	color = team_color;
+	current_status = NEUTRAL;
 	if (team_color == WHITE) {
 		namefirstletter = 'w';
 		strcpy(full_name, "White");

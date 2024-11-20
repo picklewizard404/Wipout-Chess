@@ -8,7 +8,7 @@ public:
 	Node(P my_item);
 	//P my_item();
 };
-template<class P> Node<P>::Node<P>(P my_item) {
+template<class P> Node<P>::Node(P my_item) {
 	item = my_item;
 }
 #endif //NODE_INVENTED

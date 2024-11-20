@@ -1,6 +1,7 @@
 #include "Rook.h"
 #include "Board.h"
 #include "Move_horizontally.h"
+#include "Piece.h"
 #include <string.h>
 
 Rook::Rook() {

@@ -2,12 +2,25 @@
 // I grant credit for Dad. He helped a lot.
 #pragma warning(disable:4996)
 #include "Chess_non_main.h"
-#include "diagnoal_direction.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
+#include <windows.h>
+#include <ctime>
 #include "..\Safety.h"
+#include "Undo_move.h"
+
+
 using namespace std;
+
+void sleep5();
+
+bool make_kings_hug(Team *current_team, Team*whiteteam, Team*blackteam) {
+    printf("Player %d hugs player %d. Both win!\n",
+        current_team->color == whiteteam->color ? 1 : 2,
+        current_team->enemy_team->color == blackteam->color ? 2 : 1);
+    return true;
+}
 
 int chess()
 {
@@ -27,11 +40,13 @@ int chess()
     bool isgameover = false;
     char nameofpiecetomove[10];
     int piece = 1;
-    bool did_tie = false;
+    bool did_try_tie = false;
+    int turn = 1;
     //char current_team = 'w';
     Team* current_team = &whiteteam;
 
     TYPE type_of_piecetomove = PAWN;
+    Game_Status current_status = NEUTRAL;
     
     //Setup
     Piece* wKnight2 = whiteteam.pieces[6];
@@ -40,7 +55,6 @@ int chess()
     Piece* bKing = blackteam.pieces[4];
     Piece* current_king = wKing;
     bool am_i_in_check = false;
-    bool landed_on_king = false;
     printf("You can be killed.\n");
 
     //TEMP
@@ -54,17 +68,28 @@ int chess()
         mainboard.print_board();
         printf("%s turn.\n", team_name(current_team->color));
         if (current_team->color == WHITE) {
-            //printf("White turn.\n");
-            if (mainboard.is_in_check((King*)wKing, &blackteam, &mainboard)) {
+            //TODO: This is were we check for checkmate:
+            bool check_for_checkmate = true;
+            if (whiteteam.current_status == CHECK) {
                 am_i_in_check = true;
                 printf("You are in check!\n");
             }
+            if (whiteteam.current_status == CHECKMATE) {
+                printf("Black team wins. Good game.\n");
+                wKing->alive = false;
+                break;
+            }
         }
         else if (current_team->color == BLACK) {
-            //printf("Black turn.\n");
-            if (mainboard.is_in_check((King*)bKing, &whiteteam, &mainboard)) {
+            bool check_for_checkmate = true;
+            if (blackteam.current_status == CHECK) {
                 am_i_in_check = true;
                 printf("You are in check!\n");
+            }
+            if (blackteam.current_status == CHECKMATE) {
+                printf("White team wins. Good game.\n");
+                bKing->alive = false;
+                break;
             }
         }
         printf("Which piece no you want to move? ");
@@ -79,7 +104,7 @@ int chess()
         clearinput();
         if (strcmp(nameofpiecetomove, "sUrrender") == 0) {
             printf("You give up. %s team wins!", current_team->enemy_team->full_name);
-            getchar();
+            sleep5();
             return 0;
         }
         if (strcmp(nameofpiecetomove, "tIe") == 0) {
@@ -92,17 +117,20 @@ int chess()
             }
             if (strcmp(nameofpiecetomove, "Yes") == 0) {
                 printf("You both give up. Neither team wins!");
-                getchar();
+                sleep5();
                 return 0;
             }
             else {
-                did_tie = true;
+                did_try_tie = true;
             }
-            
+        }
+        if (strcmp(nameofpiecetomove, "hUg") == 0) {
+            make_kings_hug(current_team, &whiteteam, &blackteam);
+            return 0;
         }
         //Find piece with that name
         piecefound = false;
-        for (int i = 0; i < 8 && !did_tie; i++) {
+        for (int i = 0; i < 8 && !did_try_tie; i++) {
             if (piecefound) {
                 break;
             }
@@ -120,11 +148,11 @@ int chess()
                 }
             }
         }
-        if (!piecefound && !did_tie) {
+        if (!piecefound && !did_try_tie) {
             printf("Invalid piece.\n");
         }
         //We found the piece. Now move it.
-        if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_tie) {
+        if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_try_tie) {
             printf("Where do you want to move %s?\n", nameofpiecetomove);
             printf("Enter your move.\n");
 
@@ -156,32 +184,41 @@ int chess()
             case QUEEN:
                 break;
             case KING:
-                okmove = ((King*)piecetomove)->can_kingmove(m_row, m_column, &mainboard, &landed_on_king);
-                if (landed_on_king) {
-                    printf("The kings hugged. It's a happy tie!\n");
-                    scanf("%1s", nameofpiecetomove);
-                    return 0;
-                }
+                okmove = ((King*)piecetomove)->can_kingmove(m_row, m_column, &mainboard);
                 break;
             default:
                 saybadmove();
             }
 
             
+            //Where we actually make the move
+            Move tried_move;
+            tried_move.end_row = m_row;
+            tried_move.end_column = m_column;
+            tried_move.piece_that_moved = piecetomove;
+            tried_move.start_row = piecetomove->row;
+            tried_move.start_column = piecetomove->column;
+            
             if (okmove && mainboard.is_on_board(m_row, m_column)) {
-                
-                //If we get to this line, we know the move is valid and if this function returns True,
-                // It's a CHECKMATE and we win.
-                
-                if (do_move(&current_team, &mainboard, piecetomove, m_row, m_column, public_white_team, public_black_team)) {
-                    //checkmate!
-                    printf("%s team wins.", current_team->full_name);
-                    scanf("%1s", nameofpiecetomove);
-                    return 0;
+                mainboard.human_move_piece(&tried_move);
+                current_team = current_team->enemy_team;
+                //Was that move safe? IF
+                //*
+                Game_Status am_I_still_in_check = mainboard.is_in_check(current_team->enemy_team, current_team, &mainboard, false);
+                if (am_I_still_in_check != NEUTRAL) {
+                    printf("Still in check, silly!\n");
+                        //TODO IF UNDO
+                        /*
+                        undo_move(&tried_move, &mainboard, current_team, &am_I_still_in_check);
+                        // We don't switch teams after undoing the move.
+                        Switch the teams again
+                        // END */
                 }
-            }
-
-            else {
+                current_team->enemy_team->current_status = mainboard.is_in_check(current_team->enemy_team, current_team, &mainboard, false);
+                current_team->current_status = mainboard.is_in_check(current_team, current_team->enemy_team, &mainboard);
+                // END
+                // */
+            } else {
                 saybadmove();
             }
 
@@ -194,7 +231,7 @@ int chess()
                 }
             }
             else {
-                if (did_tie) {
+                if (did_try_tie) {
                     printf("Your opponent doen't want to quit yet.\n");
                 }
                 else {
@@ -202,38 +239,27 @@ int chess()
                 }
             }
         }
-        did_tie = false;
+        did_try_tie = false;
     }
-
-    if (!bKing->alive) {
-        printf("White wins!\n");
+    if (whiteteam.the_king.row == blackteam.the_king.row
+        && whiteteam.the_king.column == blackteam.the_king.column) {
+        printf("%s king hugged the %s king. Happy ending!", current_team->enemy_team->full_name, current_team->full_name);
+        return 0;
     }
-    if (!wKing->alive) {
-        printf("Black wins!\n");
+    if (!whiteteam.the_king.alive) {
+        printf("Black team wins.\n");
+        return 2;
     }
-    scanf("%9s", nameofpiecetomove);
+    if (!blackteam.the_king.alive) {
+        printf("White team wins.\n");
+        return 1;
+    }
+    return 0;
 }
 
-struct {
-    bool whitealive;
-    bool blackalive;
-    bool did_hug;
-} Chess_hug;
-bool make_kings_hug() {
-    Board mainboard;
-    Team whiteteam = Team(WHITE, &mainboard);
-    Team blackteam = Team(BLACK, &mainboard);
-    whiteteam.enemy_team = &blackteam;
-    blackteam.enemy_team = &whiteteam;
-    mainboard.place(&(blackteam.the_king), 2, 5);
-    Chess_hug.did_hug = false;
-    Chess_hug.blackalive = blackteam.the_king.alive;
-    Chess_hug.whitealive = whiteteam.the_king.alive;
-    mainboard.move(&(whiteteam.the_king), 2, 5, &(Chess_hug.did_hug));
-    return Chess_hug.did_hug;
+void sleep5() {
+    Sleep(5 * CLOCKS_PER_SEC);
 }
-
-
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu

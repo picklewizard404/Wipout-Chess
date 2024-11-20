@@ -14,6 +14,11 @@ Piece::Piece(COLOR color) {
 }
 
 Piece::Piece(Piece* piece_to_clone) {
+    strcpy_s(chess_class, piece_to_clone->chess_class);
+    piecetype = piece_to_clone->piecetype;
+    team = piece_to_clone->team;
+    strcpy_s(name, piece_to_clone->name);
+    alive = true;
     count = piece_to_clone->count;
     row = piece_to_clone->row;
     column = piece_to_clone->column;
