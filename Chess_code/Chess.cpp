@@ -7,7 +7,7 @@
 #include <string.h>
 #include <windows.h>
 #include <ctime>
-#include "..\Safety.h"
+#include "Safety.h"
 #include "Undo_move.h"
 
 

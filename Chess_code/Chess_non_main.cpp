@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Team.h"
-#include "..\Safety.h"
+#include "Safety.h"
 #include "Check_vs_Checkmate.h"
 #include "Node.h"
 #include "Move.h"
