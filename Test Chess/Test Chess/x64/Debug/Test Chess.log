@@ -1,23 +1,2 @@
-﻿  catch_amalgamated.cpp
-  Board.cpp
-C:\Users\aaron_c6wl5qn\Documents\GitHub\Chess\Chess_code\Board.cpp(198,12): warning C4101: 'one_of_my_pieces': unreferenced local variable
-  Check_for_checkmate.cpp
-  Chess.cpp
-  Chess_non_main.cpp
-  diagnoal_direction.cpp
-  King.cpp
-  Knight.cpp
-  Move.cpp
-  move_diagnolly.cpp
-  Move_horizontally.cpp
-  Move_safety.cpp
-  Pawn.cpp
-  Piece.cpp
-  Rook.cpp
-  Safety.cpp
-  Space.cpp
-  Team.cpp
-  Undo_move.cpp
-  TestChess.cpp
-  Generating Code...
+﻿  LINK : C:\Users\aaron_c6wl5qn\Documents\GitHub\Chess\Test Chess\x64\Debug\Test Chess.exe not found or not built by the last incremental link; performing full link
   Test Chess.vcxproj -> C:\Users\aaron_c6wl5qn\Documents\GitHub\Chess\Test Chess\x64\Debug\Test Chess.exe
