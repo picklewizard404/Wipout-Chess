@@ -1,3 +1,7 @@
+/*
+* Credit to Catch2 for making it easy to run tests!
+*/
+
 #include "Catch2_code\catch_amalgamated.hpp"
 #include "Chess_code\Chess.h"
 #include "Chess_code\Board.h"
