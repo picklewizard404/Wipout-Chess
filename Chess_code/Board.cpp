@@ -20,6 +20,7 @@ Board::Board() {
 }
 //Column and row both range from 1 to 8.
 //The piece has to know where it was when this move happens
+//Teleporting pieces is useful for testing.
 void Board::place(Piece* piece, int row, int column) {
     spaces[piece->row - 1][piece->column - 1] = NULL;
     spaces[row - 1][column - 1] = piece;

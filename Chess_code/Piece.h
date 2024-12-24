@@ -37,8 +37,7 @@ public: // public functions
     void setspace(COLOR b_team, int b_row, int b_column, int b_count);
     void set_up_full_name(const char* nameofpiece);
     bool is_on_board(int b_row, int b_column);
-    bool same_team(char piece_team);
-    Piece clone();
+    bool same_team(COLOR piece_team);
     void place(int b_row, int b_column);
 };
 

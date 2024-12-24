@@ -3,22 +3,16 @@
 #include "Move_horizontally.h"
 #include "Piece.h"
 #include <string.h>
+#define _CRT_SECURE_NO_WARNINGS //prevents warnings for using non-Microsoft functions
+#pragma warning(disable:4996)
 
 Rook::Rook() {
     be_safe(WHITE);
 }
 
 Rook::Rook(COLOR b_team, int b_row, int b_column, int b_count) {
-	setup(b_team, b_row, b_column, b_count);
-}
-
-void Rook::setup(COLOR b_team, int b_row, int b_column, int b_count) {
-    be_safe(b_team);
-    strcpy_s(chess_class, "Rook");
-    piecetype = ROOK;
-    setspace(b_team, b_row, b_column, b_count);
-    //Do name it completly correctly
-    set_up_full_name(chess_class);
+    strcpy(chess_class, "Rook");
+	setup(chess_class, b_team, b_row, b_column, b_count, ROOK);
 }
 
 //The letter b means I'm gonna BE here.

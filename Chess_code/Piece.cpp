@@ -24,8 +24,6 @@ Piece::Piece(Piece* piece_to_clone) {
     column = piece_to_clone->column;
 }
 
-
-
 void Piece::be_safe(COLOR color) {
     count = 0;
     row = -1;
@@ -57,7 +55,7 @@ void Piece::setup(char* typeofpiece, COLOR b_team, int b_row, int b_column, int 
     
 }
 
-bool Piece::same_team(char piece_team) {
+bool Piece::same_team(COLOR piece_team) {
     return team == piece_team;
 }
 

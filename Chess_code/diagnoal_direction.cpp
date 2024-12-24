@@ -1,9 +1,10 @@
 #include "diagnoal_direction.h"
 
-void calculate_diag_mv(int* row, int* column, DIAGONAL direction, int count) {
+//Count should be positive!
+void move_position_info_diag(int* row, int* column, DIAGONAL direction, int count) {
 	switch (direction) {
 	case UP_LEFT:
-		*row = count+ *row;
+		*row = count + *row;
 		*column = (-1 * count) + *column;
 		break;
 	case UP_RIGHT:

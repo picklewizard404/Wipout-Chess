@@ -57,9 +57,6 @@ int chess()
     bool am_i_in_check = false;
     printf("You can be killed.\n");
 
-    //TEMP
-    move_diagnolly(wKing, UP_LEFT, 1, &mainboard);
-
     // If playing
     //*
     while (wKing->alive && bKing->alive)
