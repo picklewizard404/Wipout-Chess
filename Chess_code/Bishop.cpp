@@ -1,3 +1,4 @@
+
 #include "Bishop.h"
 #include "Board.h"
 #include "Move_diagnolly.h"
