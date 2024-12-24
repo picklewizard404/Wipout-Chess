@@ -1,6 +1,7 @@
 #include "Bishop.h"
 #include "Board.h"
 #include "Move_diagnolly.h"
+
 #define _CRT_SECURE_NO_WARNINGS //prevents warnings for using non-Microsoft functions
 #pragma warning(disable:4996)
 Bishop::Bishop() {
