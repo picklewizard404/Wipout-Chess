@@ -140,12 +140,14 @@ int chess()
                         piecefound = true;
                         type_of_piecetomove = piecetomove->piecetype;
                         break;
-                        
                     }
                 }
             }
         }
-        if (!piecefound && !did_try_tie) {
+        
+        if (piecefound && wrong_team(piecetomove, current_team->color)) {
+            printf("Wrong team, dummy!\n");
+        } else if (!piecefound) {
             printf("Invalid piece.\n");
         }
         //We found the piece. Now move it.
@@ -163,12 +165,7 @@ int chess()
             switch (type_of_piecetomove)
             {
             case PAWN:
-                //If pawn is at the end:
-                for (int i = 0; i < 16; i++) {
-                    if (strcmp(nameofpiecetomove, current_team->pieces[i]->name) == 0) {
-                        //TODO: Upgrade current_team->pieces[i]
-                    }
-                }
+                //If pawn is about to go the end: Set a variable notifying you to upgrade it.
                 break;
             case ROOK:
                 okmove = ((Rook*)piecetomove)->can_classmove(m_row, m_column, &mainboard);
@@ -177,6 +174,7 @@ int chess()
                 okmove = ((Knight*)piecetomove)->can_classmove(m_row, m_column, &mainboard);
                 break;
             case BISHOP:
+                okmove = ((Bishop*)piecetomove)->can_classmove(m_row, m_column, &mainboard);
                 break;
             case QUEEN:
                 break;

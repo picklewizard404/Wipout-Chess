@@ -1,6 +1,8 @@
 #include "Bishop.h"
 #include "Board.h"
 #include "Move_diagnolly.h"
+#include "Piece.h"
+#include <string.h>
 
 #define _CRT_SECURE_NO_WARNINGS //prevents warnings for using non-Microsoft functions
 #pragma warning(disable:4996)
@@ -8,12 +10,9 @@ Bishop::Bishop() {
 	be_safe(WHITE);
 }
 
-void Bishop::setup(COLOR b_team, int b_row, int b_column, int b_count) {
-	setspace(b_team, b_row, b_column, b_count);
-}
-
 Bishop::Bishop(COLOR b_team, int b_row, int b_column, int b_count) {
-	setup(b_team, b_row, b_column, b_count);
+	strcpy(chess_class, "Bishop");
+	setup(chess_class, b_team, b_row, b_column, b_count, BISHOP);
 }
 
 bool Bishop::can_classmove(int b_row, int b_column, Board* board_to_move_on) {

@@ -6,6 +6,7 @@
 #include "Teamname.h"
 #include "Piece.h"
 #include "Rook.h"
+#include "Bishop.h"
 #include "Pawn.h"
 #include "Check_vs_Checkmate.h"
 
@@ -23,6 +24,8 @@ public:
 	Knight knight2;
 	Rook rook1;
 	Rook rook2;
+	Bishop bishop1;
+	Bishop bishop2;
 	King the_king;
 	Team* enemy_team;
 	Game_Status current_status;

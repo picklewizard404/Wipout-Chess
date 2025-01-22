@@ -73,6 +73,13 @@ Game_Status Board::is_in_check(Team* my_team, Team* enemy_team, Board* mainboard
                     }
                     else return CHECK;
                 }
+            case BISHOP:
+                if ((Bishop*)enemy_team->pieces[i]->can_classmove(row, column, this)) {
+                    if (false && check_for_checkmate) {
+                        return try_to_escape(my_team, enemy_team, mainboard);
+                    }
+                    else return CHECK;
+                }
                 //Empty spaces go here and do not threaten you
             default:
                 continue;
@@ -133,53 +140,48 @@ bool Board::human_move_piece(Move* move_to_make) {
     }
     return false;
 }
-void Board::print_board() {
-    int length_of_name = 10;
-    int number_of_spaces = 8;
-    bool end_found = false;
-    bool is_alive = true;
-    for (int p_row = 7; p_row > -1; p_row--) {
-        for (int p_column = 0; p_column < number_of_spaces; p_column++) {
-            if (spaces[p_row][p_column] != NULL) {
-                is_alive = spaces[p_row][p_column]->alive;
+void print_piece(Piece *piece /*bool islast*/) {
+    char piecename[11];
+    piecename[10] = '\0';
+    if (piece != NULL) {
+        int charofname = 0;
+        for (; piece->name[charofname] != '\0' && charofname < 11; charofname++) {
+            if (piece->name[charofname] == '\0') {
+                break;
             }
-            if ((p_row == 7 || p_row == 0) and (p_column == 0)) {
-//                if (spaces[p_row][p_column] == NULL)
-                if ((spaces[p_row][p_column] == NULL) || !is_alive)
-                {
-                    printf("%-11s|", "[]");
-                    continue;
-                }
-                else {
-                    printf("[]%-9s|", spaces[p_row][p_column]->name);
-                }
-            }
-            else if (((p_row < 7) && (p_row > 0)) || ((p_column < 7) && (p_column > 0))) {
-//                if (spaces[p_row][p_column] == NULL)
-                if (spaces[p_row][p_column] == NULL || !is_alive)
-                {
-                    printf("%-11s|", "");
-                    continue;
-                }
-                else {
-                    printf("%-11s|", spaces[p_row][p_column]->name);
-                }
-                
-            }
-            if ((p_row == 7 || p_row == 0) and (p_column == 7)) {
-                if (spaces[p_row][p_column] != NULL || !is_alive)
-                {
-                    printf("%-11s|[]", spaces[p_row][p_column]->name);
-                    continue;
-                }
-                else {
-                    printf("%-11s|[]", "");
-                }
-            }
+            piecename[charofname] = piece->name[charofname];
         }
-        putchar('\n');
+        while (charofname < 10) {
+            piecename[charofname] = ' ';
+            charofname++;
+        }
+        printf("%s|", piecename);
     }
-   // printf_s("|[]\n");
+    else printf("          |");
+}
+void Board::print_board() {
+    const int length_of_name = 12;
+    const int number_of_spaces = 8;
+    for (int row = 7; row >= 0; row--) {
+        if (row == 7 || row == 0) {
+            printf("[]");
+        }
+        else {
+            printf("  ");
+        }
+        for (int column = 0; column <= 7; column++) {
+            print_piece(spaces[row][column]);
+        }
+        printf("\n");
+        if (row > 0) {
+            printf("|");
+            for (int i = 0; i < 4 + length_of_name * (number_of_spaces-1); i++) {
+                printf("_");
+            }
+            printf("|\n");
+        }
+    }
+    printf("\n");
 }
 
 void undo_board_move(Move* tried_move, Board* mainboard, Team* team_undoing_move, Game_Status* game_status) {

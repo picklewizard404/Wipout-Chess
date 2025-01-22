@@ -30,6 +30,6 @@ bool can_move_diagnolly(Piece* valid_piece, DIAGONAL direction, int count, Board
 			return false;
 		}
 	}
-	if ((*board_to_move_on).spaces[sp_horiz + count*horizontal_direction - 1][sp_vertic + count*vertical_direction - 1] == NULL) return true;
-	return !(*board_to_move_on).spaces[sp_horiz + count * horizontal_direction - 1][sp_vertic + count * vertical_direction - 1]->same_team(valid_piece->team);
+	if ((*board_to_move_on).spaces[sp_vertic + count * vertical_direction - 1][sp_horiz + count * horizontal_direction - 1] == NULL) return true;
+	return !(*board_to_move_on).spaces[sp_vertic + count * vertical_direction - 1][sp_horiz + count * horizontal_direction - 1]->same_team(valid_piece->team); //
 }
