@@ -1,6 +1,8 @@
 #include "Piece.h"
 #include <iostream>
 #include <string.h>
+#define _CRT_SECURE_NO_WARNINGS //prevents warnings for using non-Microsoft functions
+#pragma warning(disable:4996)
 
 using namespace std;
 //*
@@ -14,10 +16,10 @@ Piece::Piece(COLOR color) {
 }
 
 Piece::Piece(Piece* piece_to_clone) {
-    strcpy_s(chess_class, piece_to_clone->chess_class);
+    strcpy(chess_class, piece_to_clone->chess_class);
     piecetype = piece_to_clone->piecetype;
     team = piece_to_clone->team;
-    strcpy_s(name, piece_to_clone->name);
+    strcpy(name, piece_to_clone->name);
     alive = true;
     count = piece_to_clone->count;
     row = piece_to_clone->row;
@@ -52,7 +54,6 @@ void Piece::setup(char* typeofpiece, COLOR b_team, int b_row, int b_column, int 
     setspace(b_team, b_row, b_column, b_count);
     strcpy_s(chess_class, typeofpiece);
     set_up_full_name(typeofpiece);
-    
 }
 
 bool Piece::same_team(COLOR piece_team) {
@@ -102,10 +103,10 @@ bool Piece::is_on_board(int b_row, int b_column) {
 
 void Piece::set_up_full_name(const char *nameofpiece) {
     if (count == 0) {
-        sprintf_s(name, "%c%s", team, nameofpiece);
+        sprintf(name, "%c%s", team, nameofpiece);
     }
     else {
-        sprintf_s(name, "%c%s%d", team, nameofpiece, count);
+        sprintf(name, "%c%s%d", team, nameofpiece, count);
     }
     bool name_ended = false;
     for (int char_name = 0; char_name < 10; char_name++) {

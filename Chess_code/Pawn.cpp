@@ -12,6 +12,8 @@ Pawn::Pawn() {
 Pawn::Pawn(COLOR b_team, int b_row, int b_column, int b_count) {
 	strcpy(chess_class, "Pawn");
 	setup(chess_class, b_team, b_row, b_column, b_count, PAWN);
+	//Andrew: Once the pawns are implemented, remove this line.
+	alive = false;
 }
 
 bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {

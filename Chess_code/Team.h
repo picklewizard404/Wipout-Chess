@@ -27,6 +27,7 @@ public:
 	Bishop bishop1;
 	Bishop bishop2;
 	King the_king;
+	Piece pawns[8];
 	Team* enemy_team;
 	Game_Status current_status;
 
