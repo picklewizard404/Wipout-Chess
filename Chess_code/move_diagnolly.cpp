@@ -5,6 +5,7 @@
 #include <stdlib.h>
 bool can_move_diagnolly(Piece* valid_piece, DIAGONAL direction, int count, Board* board_to_move_on) {
 	if (!valid_piece->alive) return false;
+	if (direction == WRONG) return false;
 	count = abs(count);
 	int horizontal_direction = 1, vertical_direction = 1;
 	//TODO Do this in calculate_diag_mv

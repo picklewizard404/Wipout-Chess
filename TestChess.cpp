@@ -95,3 +95,10 @@ TEST_CASE("Pieces have to stop after killing an enemy moving diagonally", "[diag
     printf("but after that, he has to stop.\n");
     REQUIRE_FALSE(can_move_diagnolly(&wbish, DOWN_LEFT, 2, &mainboard));
 }
+//I can't guarantee an exception is thrown with code, so I have to test it live.
+/*
+TEST_CASE("I can tell when a move doesn't say what it's moving.", "[moves]") {
+    Board mainboard;
+    King bKing = King(BLACK);
+    REQUIRE_THROWS_MATCHES(Move(1, 5, 8, 5, NULL, &bKing), InvalidMove, Message("InvalidMove::what"));
+}*/

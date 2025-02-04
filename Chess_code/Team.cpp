@@ -10,6 +10,7 @@ from their perspective is on the far RIGHT.
 #include "Board.h"
 #include "Rook.h"
 #include "Check_vs_Checkmate.h"
+#include "Pawn_Upgrader.h"
 #include <string.h>
 #define _CRT_SECURE_NO_WARNINGS //prevents warnings for using non-Microsoft functions
 #pragma warning(disable:4996)

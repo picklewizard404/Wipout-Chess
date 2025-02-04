@@ -8,6 +8,7 @@
 #include "Team.h"
 #include "Safety.h"
 #include "Check_vs_Checkmate.h"
+#include "Pawn_Upgrader.h"
 #include "Node.h"
 #include "Move.h"
 //#include "Undo_move.h"
@@ -28,6 +29,10 @@ void say(int column, int row, Board mainboard) {
         printf("%s\n", mainboard.spaces[row][column]->name);
     }
 
+}
+
+TYPE move_pawn(Pawn *pawn_to_move, Board *mainboard) {
+    return PAWN;
 }
 
 COLOR char_opposing_team(COLOR team) {
