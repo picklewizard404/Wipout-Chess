@@ -57,6 +57,15 @@ int chess()
     bool am_i_in_check = false;
     printf("You can be killed.\n");
 
+    //Begin live test
+    /*
+    try {
+        Move breaks = Move(1, 5, 8, 5, NULL, bKing);
+    }
+    catch (InvalidMove problem) {
+        printf(problem.what());
+    }
+    // */
     // If playing
     //*
     while (wKing->alive && bKing->alive)
@@ -166,6 +175,7 @@ int chess()
             {
             case PAWN:
                 //If pawn is about to go the end: Set a variable notifying you to upgrade it.
+                upgrade_pawn((Pawn*)piecetomove, current_team);
                 break;
             case ROOK:
                 okmove = ((Rook*)piecetomove)->can_classmove(m_row, m_column, &mainboard);

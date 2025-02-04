@@ -6,6 +6,7 @@
 #include "Safety.h"
 #include "Check_vs_Checkmate.h"
 #include "Move.h"
+#include "Pawn_Upgrader.h"
 using namespace std;
 
 Board::Board() {
@@ -41,9 +42,9 @@ bool Board::can_fight(COLOR my_team, int row, int column) {
     }
 }
 
-//TODO pass both teams. Check where this function is called and make sure teams are passed.
+//TODO Check where this function is called and make sure teams are passed.
 //Maybe I am calling this function for the wrong team?
-//The team we are checking check for is team 1.
+//The team we are checking check for is my_team.
 Game_Status Board::is_in_check(Team* my_team, Team* enemy_team, Board* mainboard, bool check_for_checkmate)  {
     //Todo: Use info HERE to try every possible move of my_team
     int column = my_team->the_king.column;
@@ -139,6 +140,9 @@ bool Board::human_move_piece(Move* move_to_make) {
         return false;
     }
     return false;
+}
+void undo_move(Move* move_to_make) {
+    Piece* piece = move_to_make->piece_that_moved;
 }
 void print_piece(Piece *piece /*bool islast*/) {
     char piecename[11];
