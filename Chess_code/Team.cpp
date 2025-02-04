@@ -38,6 +38,7 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
 		rook2 = Rook(team_color, 1, 8, 2);
 		bishop1 = Bishop(team_color, 1, 3, 1);
 		bishop2 = Bishop(team_color, 1, 6, 2);
+		//TODO: ASSING PAWNS DIRECTLY TO THE PIECES ARRAY HERE.
 	}
 	else //team_color == BLACK
 	{
@@ -50,6 +51,7 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
 		rook2 = Rook(team_color, 8, 8, 1);
 		bishop1 = Bishop(team_color, 8, 3, 2);
 		bishop2 = Bishop(team_color, 8, 6, 1);
+		//TODO: ASSING PAWNS DIRECTLY TO THE PIECES ARRAY HERE. AND HERE
 	}
 	pieces[0] = &rook1;
 	pieces[1] = &knight1;

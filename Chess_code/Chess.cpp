@@ -175,7 +175,7 @@ int chess()
             {
             case PAWN:
                 //If pawn is about to go the end: Set a variable notifying you to upgrade it.
-                upgrade_pawn((Pawn*)piecetomove, current_team);
+                okmove = ((Pawn*)piecetomove)->can_classmove(m_row, m_column, &mainboard);
                 break;
             case ROOK:
                 okmove = ((Rook*)piecetomove)->can_classmove(m_row, m_column, &mainboard);
@@ -206,13 +206,17 @@ int chess()
             
             if (okmove && mainboard.is_on_board(m_row, m_column)) {
                 mainboard.human_move_piece(&tried_move);
+                if (piecetomove->piecetype == PAWN) {
+                    upgrade_pawn((Pawn*)piecetomove, current_team);
+                }
+                //NOTE: THE TEAMS SWAP ON THIS LINE
                 current_team = current_team->enemy_team;
                 //Was that move safe? IF
                 //*
                 Game_Status am_I_still_in_check = mainboard.is_in_check(current_team->enemy_team, current_team, &mainboard, false);
                 if (am_I_still_in_check != NEUTRAL) {
                     printf("Still in check, silly!\n");
-                        //TODO IF UNDO
+                        //TODO IF UNDO You might have to downgrade a pawn
                         /*
                         undo_move(&tried_move, &mainboard, current_team, &am_I_still_in_check);
                         // We don't switch teams after undoing the move.

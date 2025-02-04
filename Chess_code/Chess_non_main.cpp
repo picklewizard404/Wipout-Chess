@@ -31,7 +31,8 @@ void say(int column, int row, Board mainboard) {
 
 }
 
-TYPE move_pawn(Pawn *pawn_to_move, Board *mainboard) {
+TYPE move_pawn(Pawn *pawn_to_move, Board *mainboard, Team *current_team) {
+    //TODO Upgrade the pawn if necessary.
     return PAWN;
 }
 

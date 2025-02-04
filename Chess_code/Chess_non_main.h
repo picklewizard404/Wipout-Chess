@@ -14,6 +14,6 @@ void say_pieces_of_team(Board* mainboard, COLOR current_team);
 bool wrong_team(space piecetomove, COLOR current_team);
 COLOR enemy_team(COLOR my_team);
 void do_move(Team** current_team, Board* mainboard, Move* move, Team* public_white_team, Team* public_black_team, bool switch_teams = true);
-TYPE move_pawn(Pawn* pawn_to_move, Board* mainboard)
+TYPE move_pawn(Pawn* pawn_to_move, Board* mainboard, Team* current_team);
 bool check_piece(Board* mainboard, Piece** piecetomove, int row, int column, char nameofpiecetomove[]);
 const char* team_name(COLOR team);
