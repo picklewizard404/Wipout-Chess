@@ -60,7 +60,7 @@ TEST_CASE("Move Down Bishop", "[bishops][pieces]") {
     printf("Row: %d, Column: %d.\n", row, column);
     REQUIRE(row == 7);
     REQUIRE(column == 7);
-    printf("Now pretend it's moving to the left\n");
+    printf("Now pretend it's moving 3 to the left.\n");
     move_position_info_diag(&row, &column, DOWN_LEFT, 3);
     REQUIRE(row == 4);
     REQUIRE(column == 4);
