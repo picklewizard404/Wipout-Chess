@@ -52,7 +52,7 @@ void Piece::setup(char* typeofpiece, COLOR b_team, int b_row, int b_column, int 
     alive = true;
     piecetype = b_piecetype;
     setspace(b_team, b_row, b_column, b_count);
-    strcpy_s(chess_class, typeofpiece);
+    strcpy(chess_class, typeofpiece);
     set_up_full_name(typeofpiece);
 }
 

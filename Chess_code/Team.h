@@ -36,7 +36,6 @@ public:
 	Team(COLOR team_color, Board* the_board_shared);
 	Team();
 	void empty_spaces();
-	void upgrade_pawn(Pawn* pawn_to_upgrade);
 	void put_pieces_on_board(Board* the_board_shared);
 };
 

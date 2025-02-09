@@ -207,7 +207,7 @@ int chess()
             if (okmove && mainboard.is_on_board(m_row, m_column)) {
                 mainboard.human_move_piece(&tried_move);
                 if (piecetomove->piecetype == PAWN) {
-                    upgrade_pawn((Pawn*)piecetomove, current_team);
+                    upgrade_pawn_if_needed((Pawn*)piecetomove, current_team);
                 }
                 //NOTE: THE TEAMS SWAP ON THIS LINE
                 current_team = current_team->enemy_team;

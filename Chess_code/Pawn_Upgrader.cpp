@@ -1,8 +1,9 @@
 #include "Team.h"
 #include <stdio.h>
+#include <string.h>
 #pragma warning(disable:4996)
 //NOTE: This function is called EVERY time a pawn is moved, and it does nothing is the pawn is not on it.
-void upgrade_pawn(Pawn* to_upgrade, Team* team_owner) {
+void upgrade_pawn_if_needed(Pawn* to_upgrade, Team* team_owner) {
 	//TODO Add other playable classes.
 	const char* classes[] = { "Rook",  "Bishop", "Knight" };
 	/*NOTE: Pawns are in posisitions 2:1-2:8,
@@ -18,8 +19,12 @@ void upgrade_pawn(Pawn* to_upgrade, Team* team_owner) {
 	for (int i = 8; i < 16; i++) {
 		if (team_owner->pieces[i] == to_upgrade) {
 			TYPE inputtype = ROOK; //TODO Change this to let the user's selected piece type.
+			Piece* pawn_to_upgrade = team_owner->pieces[i];
 			if (inputtype == ROOK) {
-				//team_owner->pieces[i] = some new rook
+				//TODO: Track the newly created pieces so that you can delete them, maybe using a cleanup() function on the Team class.
+				(team_owner->pieces[i]) = new Rook(pawn_to_upgrade->team, final_pawn_row, pawn_to_upgrade->column, pawn_to_upgrade->count);
+				pawn_to_upgrade = team_owner->pieces[i];;
+				sprintf(pawn_to_upgrade->name, "%c%sp%d", pawn_to_upgrade->team, "Rook", pawn_to_upgrade->count);
 			}
 		}
 	}
