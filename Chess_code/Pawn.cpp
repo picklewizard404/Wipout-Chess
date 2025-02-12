@@ -5,6 +5,8 @@
 #define _CRT_SECURE_NO_WARNINGS //prevents warnings for using non-Microsoft functions
 #pragma warning(disable:4996)
 
+//Aaron has helped and Andrew can still edit.
+
 Pawn::Pawn() {
 	be_safe(WHITE);
 }
