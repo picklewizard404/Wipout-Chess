@@ -27,7 +27,7 @@ public:
 	Game_Status is_in_check(Team* my_team, Team* enemy_team, Board* mainboardbool, bool check_for_checkmate = true);
 	Game_Status try_to_escape(Team* my_team, Team* enemy_team, Board* mainboard);
 	bool does_have_any_piece(int row, int column);
-	bool can_fight(COLOR my_team, int row, int column);
+	bool no_ally_there(COLOR my_team, int row, int column);
 };
 
 //bool do_team_dismatch(Piece* team_moving, Piece* team_there)

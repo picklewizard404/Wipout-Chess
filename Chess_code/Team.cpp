@@ -40,7 +40,7 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
 		bishop2 = Bishop(team_color, 1, 6, 2);
 		//TODO: ASSING PAWNS DIRECTLY TO THE PIECES ARRAY HERE.
 		for (int i = 8; i < 16; i++) {
-			pawns[i-8] = Pawn(team_color, 2, i - 7, i - 7);
+			pawns[i - 8] = Pawn(team_color, 2, i, i);
 		}
 	}
 	else //team_color == BLACK
@@ -55,6 +55,9 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
 		bishop1 = Bishop(team_color, 8, 3, 2);
 		bishop2 = Bishop(team_color, 8, 6, 1);
 		//TODO: ASSING PAWNS DIRECTLY TO THE PIECES ARRAY HERE. AND HERE
+		for (int i = 1; i <= 8; i++) {
+			pawns[i - 8] = Pawn(team_color, 7, i, i);
+		}
 	}
 	pieces[0] = &rook1;
 	pieces[1] = &knight1;

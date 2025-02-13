@@ -18,7 +18,7 @@ bool move_horizontally(Piece* valid_piece, int b_row, int b_column, Board* board
                     return false;
                 }
             }
-            return board_to_move_on->can_fight(valid_piece->team, b_row, b_column);
+            return board_to_move_on->no_ally_there(valid_piece->team, b_row, b_column);
         }
         else {
             //Row down
@@ -27,7 +27,7 @@ bool move_horizontally(Piece* valid_piece, int b_row, int b_column, Board* board
                     return false;
                 }
             }
-            return board_to_move_on->can_fight(valid_piece->team, b_row, b_column);
+            return board_to_move_on->no_ally_there(valid_piece->team, b_row, b_column);
         }
     }
     else {
@@ -40,7 +40,7 @@ bool move_horizontally(Piece* valid_piece, int b_row, int b_column, Board* board
                     return false;
                 }
             }
-            return board_to_move_on->can_fight(valid_piece->team, b_row, b_column);
+            return board_to_move_on->no_ally_there(valid_piece->team, b_row, b_column);
         }
         else {
             //Column to the left
@@ -49,7 +49,7 @@ bool move_horizontally(Piece* valid_piece, int b_row, int b_column, Board* board
                     return false;
                 }
             }
-            return board_to_move_on->can_fight(valid_piece->team, b_row, b_column);;
+            return board_to_move_on->no_ally_there(valid_piece->team, b_row, b_column);;
         }
     }
 

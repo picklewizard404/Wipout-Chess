@@ -33,7 +33,7 @@ bool Board::does_have_any_piece(int row, int column) {
     return spaces[row - 1][column - 1] != NULL;
 }
 
-bool Board::can_fight(COLOR my_team, int row, int column) {
+bool Board::no_ally_there(COLOR my_team, int row, int column) {
     if (spaces[row - 1][column - 1] != NULL) {
         return spaces[row - 1][column - 1]->team != my_team;
     }

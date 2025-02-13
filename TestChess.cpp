@@ -74,6 +74,61 @@ TEST_CASE("Pieces moving diagonally", "[diag][bishop]") {
     REQUIRE(can_move_diagnolly(&wbish, DOWN_LEFT, 3, &mainboard));
 }
 
+TEST_CASE("Pawns killing enemies", "[diag][pawn]") {
+    Board mainboard;
+    Bishop wbish = Bishop(WHITE, 5, 5, 1);
+    Pawn bpawn = Pawn(BLACK, 6, 6, 1);
+    Rook brook = Rook(BLACK, 6, 5, 1);
+    mainboard.place(&brook, 5, 6);
+    mainboard.place(&wbish, 5, 5);
+    mainboard.place(&bpawn, 6, 6);
+    mainboard.print_board();
+    printf("Can a black pawn be blocked by a black bishop?\n");
+    REQUIRE_FALSE(bpawn.can_classmove(6, 5, &mainboard));
+    printf("Yes!\nCan it move like a bishop?\n");
+    REQUIRE_FALSE(bpawn.can_classmove(4, 4, &mainboard));
+    printf("No. And it shouldn't.\n");
+    printf("Can it move to kill an enemy?\n");
+    REQUIRE(bpawn.can_classmove(5, 5, &mainboard));
+    printf("Yes.\n");
+}
+
+TEST_CASE("White pawn can be blocked by black pawn", "[pawn]") {
+    Pawn wpawn = Pawn(WHITE, 2, 1, 1);
+    Pawn bpawn = Pawn(BLACK, 3, 1, 1);
+    Board mainboard;
+    mainboard.place(&wpawn, 2, 1);
+    mainboard.place(&bpawn, 3, 1);
+    mainboard.print_board();
+    printf("Is the white pawn blocked?\n");
+    REQUIRE_FALSE(wpawn.can_classmove(3, 1, &mainboard));
+    printf("Yes!\n");
+
+}
+
+TEST_CASE("White pawn moving up, black pawns moving down") {
+    Pawn wpawn = Pawn(WHITE, 2, 2, 2);
+    Pawn bpawn = Pawn(BLACK, 7, 2, 2);
+    Board mainboard;
+    mainboard.place(&wpawn, 2, 2);
+    mainboard.place(&bpawn, 7, 2);
+    int bcolumn = 1;
+    while (bcolumn != 4) {
+        //printf("Pawn column %d\n", bcolumn);
+        if (bcolumn != 2) {
+            REQUIRE_FALSE(wpawn.can_classmove(3, bcolumn, &mainboard));
+            REQUIRE_FALSE(bpawn.can_classmove(6, bcolumn, &mainboard));
+        }
+        else
+        {
+            REQUIRE(wpawn.can_classmove(3, bcolumn, &mainboard));
+            REQUIRE(bpawn.can_classmove(6, bcolumn, &mainboard));
+        }
+        bcolumn++;
+    }
+    printf("Pawns are moving the way they should.\n");
+}
+
 TEST_CASE("Pieces getting blocked by their own team", "[diag][bishop]") {
     Board mainboard;
     Rook wRook = Rook(WHITE, 1, 1, 1);
