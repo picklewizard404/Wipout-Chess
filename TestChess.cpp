@@ -1,7 +1,7 @@
 /*
 * Credit to Catch2 for making it easy to run tests!
 */
-
+#pragma warning(disable:4996)
 #include "Catch2_code\catch_amalgamated.hpp"
 #include "Chess_code\Chess.h"
 #include "Chess_code\Board.h"
@@ -19,6 +19,45 @@
 #include "Chess_code\Safety.h"
 #include "Chess_code\Teamname.h"
 #include "Chess_code\diagnoal_direction.h"
+#include <iostream>
+TEST_CASE("Upgrade a pawn. Ineractive. You must type a valid class.", "[interactive]") {
+    printf("You are the white team and you just landed a pawn on the top right square. Name a piece type to upgrade your pawn to.\n");
+    Board mainboard;
+    Team whiteteam = Team(WHITE, &mainboard);
+    mainboard.place(&(whiteteam.pawns[7]), 8, 8);
+    mainboard.print_board();
+    TYPE pawn_upgrade_to = upgrade_pawn_if_needed(&(whiteteam.pawns[7]), &whiteteam, &mainboard);
+    Piece* whitepawnfromearlier = &(whiteteam.pawns[7]);
+    REQUIRE(whitepawnfromearlier != NULL);
+    // We no longer point to a pawn, so this pointer is invalid.
+    whitepawnfromearlier = NULL;
+    Rook* upgradedrook = NULL;
+    Knight* upgradedknight = NULL;
+    Bishop* upgradedbishop = NULL;
+    //TODO ADD QUEENS ONCE YOU MAKE THEM
+    switch (pawn_upgrade_to)
+    {
+    case ROOK:
+        upgradedrook = dynamic_cast<Rook*>(whiteteam.pieces[15]);
+        REQUIRE(upgradedrook != NULL);
+        break;
+    case KNIGHT:
+        upgradedknight = dynamic_cast<Knight*>(whiteteam.pieces[15]);
+        REQUIRE(upgradedknight != NULL);
+        break;
+    case BISHOP:
+        upgradedbishop = dynamic_cast<Bishop*>((whiteteam.pieces[15]));
+        REQUIRE(upgradedbishop != NULL);
+        break;
+    case QUEEN:
+        break;
+    default:
+        break;
+    }
+    mainboard.print_board();
+    0; //pause debugger. temp
+}
+
 TEST_CASE("Teams are correct", "[teams]") {
     REQUIRE(team_name(BLACK) == "Black");
     REQUIRE(team_name(WHITE) == "White");
@@ -50,7 +89,7 @@ TEST_CASE("Rooks can't move diagonally", "[pieces][rooks]") {
     mainboard.spaces[1][1] = NULL;
     REQUIRE(testwhite.can_classmove(2, 2, &mainboard) == false);
 }
-TEST_CASE("Move Down Bishop", "[bishops][pieces]") {
+TEST_CASE("Move Down Bishop", "[bishop][pieces]") {
     Board mainboard;
     Bishop bbish = Bishop(BLACK, 8, 6, 2);
     printf("Pretend a bishop starting at row 8 column 6 is moving down and to the right.\n");
@@ -103,10 +142,9 @@ TEST_CASE("White pawn can be blocked by black pawn", "[pawn]") {
     printf("Is the white pawn blocked?\n");
     REQUIRE_FALSE(wpawn.can_classmove(3, 1, &mainboard));
     printf("Yes!\n");
-
 }
 
-TEST_CASE("White pawn moving up, black pawns moving down") {
+TEST_CASE("White pawn moving up, black pawns moving down", "[pawn]") {
     Pawn wpawn = Pawn(WHITE, 2, 2, 2);
     Pawn bpawn = Pawn(BLACK, 7, 2, 2);
     Board mainboard;

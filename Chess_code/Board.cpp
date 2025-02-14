@@ -149,7 +149,7 @@ void print_piece(Piece *piece /*bool islast*/) {
     piecename[10] = '\0';
     if (piece != NULL) {
         int charofname = 0;
-        for (; piece->name[charofname] != '\0' && charofname < 11; charofname++) {
+        for (; piece->name[charofname] != '\0' && charofname < 10; charofname++) {
             if (piece->name[charofname] == '\0') {
                 break;
             }

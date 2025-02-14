@@ -13,6 +13,8 @@
 class Board;
 
 class Team {
+private:
+	void set_upgraded_pointers_to0();
 	//public
 public:
 	//variables
@@ -27,14 +29,19 @@ public:
 	Bishop bishop1;
 	Bishop bishop2;
 	King the_king;
-	Piece pawns[8];
+	Pawn pawns[8];
+	Piece* upgraded_pieces[8];
+	//TODO MAKE AN ARRAY OF UPGRADED QUEENS
+
 	Team* enemy_team;
 	Game_Status current_status;
 
 	//functions
 	//Team(COLOR team_color);
-	Team(COLOR team_color, Board* the_board_shared);
 	Team();
+	~Team();
+	Team(COLOR team_color, Board* the_board_shared);
+	//TODO MAKE A TEAM DESTRUCTOR TO DELETE NEWLY MADE PIECES
 	void empty_spaces();
 	void put_pieces_on_board(Board* the_board_shared);
 };

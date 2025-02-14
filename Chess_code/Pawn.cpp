@@ -31,7 +31,6 @@ bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {
 	if ((b_column -1 <= column) && (column <= b_column + 1)) {
 		can_move_diagonaly = main_board->does_have_any_piece(b_row, b_column) && main_board->no_ally_there(team, b_row, b_column);
 	}
-	//TODO MAYBE YOUR PAWNS THINK THEY CAN MOVE DIAGNOLLY WHEN THEY REALLY CANT Dad suggested making a simple test in which 1 pawn tries to move diagnolly once.
 	
 	return can_move_diagonaly;
 }

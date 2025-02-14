@@ -104,7 +104,7 @@ int chess()
         //Make the name all lowercase.
         nameofpiecetomove[0] = tolower(nameofpiecetomove[0]);
         nameofpiecetomove[1] = toupper(nameofpiecetomove[1]);
-        for (int i = 2; i < 9; i++) {
+        for (int i = 2; i < 10; i++) {
             nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
         }
         clearinput();
@@ -170,12 +170,13 @@ int chess()
             scanf("%d", &m_column);
             
 
-            
+            bool should_upgrade_pawn = FALSE;
             switch (type_of_piecetomove)
             {
             case PAWN:
                 //If pawn is about to go the end: Set a variable notifying you to upgrade it.
                 okmove = ((Pawn*)piecetomove)->can_classmove(m_row, m_column, &mainboard);
+                
                 break;
             case ROOK:
                 okmove = ((Rook*)piecetomove)->can_classmove(m_row, m_column, &mainboard);
@@ -207,7 +208,7 @@ int chess()
             if (okmove && mainboard.is_on_board(m_row, m_column)) {
                 mainboard.human_move_piece(&tried_move);
                 if (piecetomove->piecetype == PAWN) {
-                    upgrade_pawn_if_needed((Pawn*)piecetomove, current_team);
+                    upgrade_pawn_if_needed((Pawn*)piecetomove, current_team, &mainboard);
                 }
                 //NOTE: THE TEAMS SWAP ON THIS LINE
                 current_team = current_team->enemy_team;

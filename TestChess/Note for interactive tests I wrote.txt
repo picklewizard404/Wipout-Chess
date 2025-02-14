@@ -1,0 +1,1 @@
+There exist interactive tests. They are hidden by default and you have to enter [interactive] in the command line to run them.

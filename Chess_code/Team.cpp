@@ -14,14 +14,28 @@ from their perspective is on the far RIGHT.
 #include <string.h>
 #define _CRT_SECURE_NO_WARNINGS //prevents warnings for using non-Microsoft functions
 #pragma warning(disable:4996)
+//private
+void Team::set_upgraded_pointers_to0() {
+	for (int i = 0; i < 8; i++) {
+		upgraded_pieces[i] = NULL;
+	}
+}
+
 //public
-//variables
-
-
 Team::Team() {
 	enemy_team = nullptr;
 	empty_spaces();
 }
+
+Team::~Team() {
+	for (int i = 0; i < 8; i++) {
+		if (upgraded_pieces[i] != NULL) {
+			delete upgraded_pieces[i];
+		}
+		//TODO DELETE UPGRADED QUEENS HERE
+	}
+}
+
 Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
 {
 	enemy_team = nullptr;
@@ -38,9 +52,9 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
 		rook2 = Rook(team_color, 1, 8, 2);
 		bishop1 = Bishop(team_color, 1, 3, 1);
 		bishop2 = Bishop(team_color, 1, 6, 2);
-		//TODO: ASSING PAWNS DIRECTLY TO THE PIECES ARRAY HERE.
+		//ASSIGN PAWNS DIRECTLY TO THE PIECES ARRAY HERE.
 		for (int i = 8; i < 16; i++) {
-			pawns[i - 8] = Pawn(team_color, 2, i, i);
+			pawns[i - 8] = Pawn(team_color, 2, i-7, i-7);
 		}
 	}
 	else //team_color == BLACK
@@ -55,8 +69,8 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
 		bishop1 = Bishop(team_color, 8, 3, 2);
 		bishop2 = Bishop(team_color, 8, 6, 1);
 		//TODO: ASSING PAWNS DIRECTLY TO THE PIECES ARRAY HERE. AND HERE
-		for (int i = 1; i <= 8; i++) {
-			pawns[i - 8] = Pawn(team_color, 7, i, i);
+		for (int i = 0; i < 8; i++) {
+			pawns[i] = Pawn(team_color, 7, i-7, i-7);
 		}
 	}
 	pieces[0] = &rook1;
@@ -76,6 +90,7 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
 	put_pieces_on_board(the_board_shared);
 }
 void Team::empty_spaces() {
+	set_upgraded_pointers_to0();
 	for (int i = 0; i < 16; i++) {
 		pieces[i] = 0;
 	}
