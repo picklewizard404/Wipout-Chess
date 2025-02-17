@@ -74,8 +74,7 @@ int chess()
         mainboard.print_board();
         printf("%s turn.\n", team_name(current_team->color));
         if (current_team->color == WHITE) {
-            //TODO: This is were we check for checkmate:
-            bool check_for_checkmate = true;
+            //We already checked if we are in check or checkmate at the end of our opponent's turn.
             if (whiteteam.current_status == CHECK) {
                 am_i_in_check = true;
                 printf("You are in check!\n");
@@ -87,7 +86,6 @@ int chess()
             }
         }
         else if (current_team->color == BLACK) {
-            bool check_for_checkmate = true;
             if (blackteam.current_status == CHECK) {
                 am_i_in_check = true;
                 printf("You are in check!\n");

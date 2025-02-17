@@ -204,18 +204,28 @@ void undo_board_move(Move* tried_move, Board* mainboard, Team* team_undoing_move
 Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboard) {
     Piece* one_of_my_pieces;
     Move tried_move;
-    Game_Status current_status = CHECK;
-    //I don't really care about hugging so I will assume I didn't land on a king;
-    //TODO Plan:
-    // Each piece must list its possible moves.
-    // That means I need to create a stack of Nodes.
-    // Each Node should store a MOVE.
-    //If this loop ends, you can't escape Check.
-    //TEMP I am pretending I found a move that saved me.
-    current_status = NEUTRAL;
+    for (int i = 0; i < 16; i++)
+    {
+        one_of_my_pieces = my_team->pieces[i];
+        if (!one_of_my_pieces->alive) continue;
+        tried_move.piece_that_moved = my_team->pieces[i];
+        tried_move.start_row = my_team->pieces[i]->row;
+        tried_move.start_column = my_team->pieces[i]->column;
+        for (int tryrow = 1; tryrow <= 8; tryrow++) {
+            tried_move.end_row = tryrow;
+            for (int trycolumn = 1; trycolumn <= 8; trycolumn++) {
+                tried_move.end_column = trycolumn;
+                // We know we can go here, so we might as well try.
+                human_move_piece(&tried_move);
+                if (is_in_check(my_team, enemy_team, this, false) == NEUTRAL) {
+                    undo_move(&tried_move);
+                    return CHECK;
+                }
+            }
+        }
+    }
     //TEMP Here I know the move that saved me and I haven't actually made it on purpose yet,
     // so I need to undo the move before exiting the loop/
     // END OF IMAGINARY LOOP
-    if (current_status != NEUTRAL) return CHECKMATE;
-    else return CHECK;
+    return CHECK;
 };

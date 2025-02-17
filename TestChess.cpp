@@ -122,8 +122,8 @@ TEST_CASE("Pawns killing enemies", "[diag][pawn]") {
     mainboard.place(&wbish, 5, 5);
     mainboard.place(&bpawn, 6, 6);
     mainboard.print_board();
-    printf("Can a black pawn be blocked by a black bishop?\n");
-    REQUIRE_FALSE(bpawn.can_classmove(6, 5, &mainboard));
+    printf("Can a black pawn be blocked by a black rook?\n");
+    REQUIRE_FALSE(bpawn.can_classmove(5, 6, &mainboard));
     printf("Yes!\nCan it move like a bishop?\n");
     REQUIRE_FALSE(bpawn.can_classmove(4, 4, &mainboard));
     printf("No. And it shouldn't.\n");
