@@ -23,25 +23,24 @@ bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {
 	if (team == BLACK) {
 		direction = -1;
 	}
-	//TODO ADD THE CHECK FOR STARTING MOVE VERTICALLY HERE AND RETURN TRUE IF YOU CAN
-	if ((team == WHITE && row == 2) || (team == BLACK && row == 7)) {
-		if (main_board->does_have_any_piece(row + direction, column) ||
-			main_board->does_have_any_piece(row + 2 * direction, column))
+	bool cango1up = !main_board->does_have_any_piece(row + direction, column);
+	if (row + direction == b_row && column == b_column) {
+		//Moving straight up 1.
+		return cango1up && !main_board->does_have_any_piece(b_row, b_column);
+	}
+	if ((team == WHITE && row == 2) || (team == BLACK && row == 7)
+		&& (b_column == column)
+	) {
+		if (cango1up &&
+			!main_board->does_have_any_piece(row + 2 * direction, column))
 		{
-			return false;
-		}
-		else {
-			return true;
+			if (b_row == row + 2 * direction) return true;
 		}
 	}
 	//Assures are moving eactly 1 space
 	if (row + direction != b_row) return false;
-	if (b_column == column) {
-		//Moving straight up or down.
-		return !main_board->does_have_any_piece(b_row, b_column);
-	}
-	if ((b_column -1 <= column) && (column <= b_column + 1)) {
+	if ((b_column == column - 1) || (b_column == column + 1)) {
 		return main_board->does_have_any_piece(b_row, b_column) && main_board->no_ally_there(team, b_row, b_column);
 	}
-
+	return false;
 }

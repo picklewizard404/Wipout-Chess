@@ -22,8 +22,14 @@ Move::Move() {
     piece_that_moved = NULL;
     piece_landed_on = NULL;
 }
-Move::Move(int srow, int scolumn, int erow, int ecolumn, Piece* mpiece_that_moved, Piece* mpiece_landed_on) {
-    printf("Piece that moved: %s\n", mpiece_that_moved == NULL ? "Oops" : mpiece_that_moved->name);
+void Move::print_move() {
+    if (piece_that_moved == NULL) return;
+    printf("Moved %s to row %d, column %d.\n", piece_that_moved->name, end_row, end_column);
+}
+Move::Move(int srow, int scolumn, int erow, int ecolumn, Piece* mpiece_that_moved, Piece* mpiece_landed_on, bool sayimoved) {
+    if (sayimoved) {
+        print_move();
+    }
     if (mpiece_that_moved == NULL) {
         printf("A bad move was made.\n");
         throw InvalidMove(erow, ecolumn);

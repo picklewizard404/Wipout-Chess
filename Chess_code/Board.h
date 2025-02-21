@@ -13,12 +13,16 @@ public:
 	Piece* spaces[8][8];
 	Piece* threatens_white;
 	Piece* threatens_black;
+	Piece* pawnthatjustmoved2;
+	int passant_row;
+	int passant_column;
 
 	// int column;
 	// int row;
 	bool whiteturn;
 
 	//functions move
+	void clearpassant();
 	bool human_move_piece(Move* move_to_make);
 	void place(Piece* piece, int row, int column);
 	void print_board();

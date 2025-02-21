@@ -188,6 +188,56 @@ TEST_CASE("Pieces have to stop after killing an enemy moving diagonally", "[diag
     printf("but after that, he has to stop.\n");
     REQUIRE_FALSE(can_move_diagnolly(&wbish, DOWN_LEFT, 2, &mainboard));
 }
+
+TEST_CASE("Pawns can kill only diagonally 1 space", "[diag][pawn]") {
+    Board mainboard;
+    Pawn bpawn = Pawn(BLACK, 7, 2, 2);
+    mainboard.place(&bpawn, 7, 2);
+    Pawn wpawn1 = Pawn(WHITE, 6, 1, 1);
+    mainboard.place(&wpawn1, 6, 1);
+    Pawn wpawn2 = Pawn(WHITE, 6, 2, 2);
+    mainboard.place(&wpawn2, 6, 2);
+    Pawn wpawn3 = Pawn(WHITE, 6, 3, 3);
+    mainboard.place(&wpawn3, 6, 3);
+    mainboard.print_board();
+    REQUIRE_FALSE(bpawn.can_classmove(5, 2, &mainboard));
+    REQUIRE_FALSE(bpawn.can_classmove(6, 2, &mainboard));
+    printf("Blocked, can't move down.\n");
+    REQUIRE(bpawn.can_classmove(6, 1, &mainboard));
+    printf("Can capture diagonally left.\n");
+    REQUIRE(bpawn.can_classmove(6, 3, &mainboard));
+    printf("Can capture diagonally right.\n");
+}
+TEST_CASE("Pawns can normally move 2 on the start of their trurn, but not if they're blocked", "[pawn][pawn2]") {
+    Board mainboard;
+    Pawn wpawn4 = Pawn(WHITE, 2, 4, 4);
+    mainboard.place(&wpawn4, 2, 4);
+    Move testmove2up = Move(2, 4, 4, 4, &wpawn4, NULL, false);
+    Pawn bpawn4 = Pawn(BLACK, 7, 4, 4);
+    mainboard.place(&bpawn4, 7, 4);
+    Move testmove2down = Move(7, 4, 5, 4, &bpawn4, NULL, false);
+    mainboard.print_board();
+    REQUIRE(mainboard.human_move_piece(&testmove2up));
+    REQUIRE(mainboard.human_move_piece(&testmove2down));
+    testmove2up.print_move();
+    testmove2down.print_move();
+    mainboard.print_board();
+    printf("You can normally move a pawn 2 on your first turn.\n");
+    mainboard.place(&wpawn4, 2, 4);
+    mainboard.place(&bpawn4, 3, 4);
+    mainboard.print_board();
+    REQUIRE_FALSE(mainboard.human_move_piece(&testmove2up));
+    printf("You tried and falied to move up 2.\n");
+    mainboard.print_board();
+    printf("You can be blocked if an opponent stands directly in front of you.\n");
+    mainboard.spaces[2][3] = NULL;
+    Bishop bbishop = Bishop(BLACK, 4, 4, 1);
+    mainboard.place(&bbishop, 4, 4);
+    printf("But what if there was an enemy 2 spaces ahead of you instead?\n");
+    mainboard.print_board();
+    REQUIRE_FALSE(mainboard.human_move_piece(&testmove2up));
+    printf("That doesn't work either.\n");
+}
 //I can't guarantee an exception is thrown with code, so I have to test it live.
 /*
 TEST_CASE("I can tell when a move doesn't say what it's moving.", "[moves]") {

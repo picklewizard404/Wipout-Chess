@@ -13,11 +13,18 @@ Board::Board() {
     whiteturn = true;
     threatens_white = NULL;
     threatens_black = NULL;
+    clearpassant();
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             spaces[i][j] = NULL;
         }
     }
+}
+
+void Board::clearpassant() {
+    pawnthatjustmoved2 = NULL;
+    passant_row = -1;
+    passant_column = -1;
 }
 //Column and row both range from 1 to 8.
 //The piece has to know where it was when this move happens
@@ -97,9 +104,14 @@ bool Board::is_on_board(int b_row, int b_column) {
     return true;
 }
 /*
-b_column and b_row range from 1 to 8. We subtract 1 whenever we need to hit a space on the board.
+b_column and b_row range from 1 to 8. We subtract 1 whenever we reference a space on the board.
 That's because a person starts counting spaces with 1 but the computer starts counting with 0.
-Do this whenever you touch a space on the board.
+TODO ADD SUPPORT FOR ON PASONT RULE.
+If pawn moves 2, save a Piece pointer to the pawn and the spot that it would have
+been in if it moved 1. I call that space SS in this example.
+If the opponent lands on SS THE EXACT TURN AFTER the pawn moved, the pawn dies.
+That means setting the pawn and SS both to NULL after making a move on the opponent's turn.
+Check if you did the passant before clearing it and hopefully everything will work.
 */
 bool Board::human_move_piece(Move* move_to_make) {
     space piece = move_to_make->piece_that_moved;

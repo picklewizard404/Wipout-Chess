@@ -12,7 +12,8 @@ struct Move
 	Piece* piece_that_moved;
 	Piece* piece_landed_on;
 	Move();
-	Move(int srow, int scolumn, int erow, int ecolumn, Piece* mpiece_that_moved, Piece* mpiece_landed_on);
+	Move(int srow, int scolumn, int erow, int ecolumn, Piece* mpiece_that_moved, Piece* mpiece_landed_on, bool sayimoved = true);
+	void print_move();
 };
 #endif // !DEFINE_MOVE
 #ifndef INVALID_MOVE
