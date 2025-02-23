@@ -16,11 +16,41 @@
 #include "Chess_code\Straight_Line.h"
 #include "Chess_code\Rook.h"
 #include "Chess_code\Bishop.h"
+#include "Chess_code\Queen.h"
 #include "Chess_code\Safety.h"
 #include "Chess_code\Teamname.h"
 #include "Chess_code\diagnoal_direction.h"
+#include "Chess_code\InvalidPiece.h"
 #include <iostream>
-TEST_CASE("Upgrade a pawn. Ineractive. You must type a valid class.", "[interactive]") {
+#include <tuple>
+TEST_CASE("Throws errors upgrading pawns to themselves", "[errors]") {
+    Board mainboard;
+    Team whiteteam = Team(WHITE, &mainboard);
+    mainboard.place(&(whiteteam.pawns[0]), 8, 1);
+    mainboard.print_board();
+    try {
+        upgrade_pawn_if_needed(&(whiteteam.pawns[0]), &whiteteam, &mainboard, KING);
+    }
+    
+    catch (InvalidPiece e) {
+        printf("%s", e.what());
+    }
+    catch (std::exception didnt) {
+        FAIL("An error wasn't caught?");
+    }
+    try {
+        upgrade_pawn_if_needed(&(whiteteam.pawns[0]), &whiteteam, &mainboard, PAWN);
+    }
+    catch (InvalidPiece e) {
+        printf("%s", e.what());
+    }
+}
+TEST_CASE("Queens moving diagonally", "[queen]") {
+    Board mainboard;
+    Queen testqueen = Queen(WHITE, 5, 8, 1)
+}
+
+TEST_CASE("Upgrade a pawn. Pretend you typed.", "[.interactive]") {
     printf("You are the white team and you just landed a pawn on the top right square. Name a piece type to upgrade your pawn to.\n");
     Board mainboard;
     Team whiteteam = Team(WHITE, &mainboard);
@@ -55,7 +85,6 @@ TEST_CASE("Upgrade a pawn. Ineractive. You must type a valid class.", "[interact
         break;
     }
     mainboard.print_board();
-    0; //pause debugger. temp
 }
 
 TEST_CASE("Teams are correct", "[teams]") {

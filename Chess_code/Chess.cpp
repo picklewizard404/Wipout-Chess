@@ -3,8 +3,10 @@
 #pragma warning(disable:4996)
 #include "Chess_non_main.h"
 #include <ctype.h>
+#include <tuple>
 #include <stdio.h>
 #include <string.h>
+#include <tuple>
 #include <windows.h>
 #include <ctime>
 #include "Safety.h"
@@ -97,7 +99,7 @@ int chess()
             }
         }
         printf("Which piece no you want to move? ");
-        scanf("%9s", nameofpiecetomove);
+        std::ignore = scanf("%9s", nameofpiecetomove);
         nameofpiecetomove[9] = '\0';
         //Make the name all lowercase.
         nameofpiecetomove[0] = tolower(nameofpiecetomove[0]);
@@ -113,7 +115,7 @@ int chess()
         }
         if (strcmp(nameofpiecetomove, "tIe") == 0) {
             printf("Opponent: Do you agree that this match should be called at tie? ");
-            scanf("%3s", nameofpiecetomove);
+            std::ignore = scanf("%3s", nameofpiecetomove);
             clearinput();
             nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
             for (int i = 1; i < 3; i++) {
@@ -163,9 +165,9 @@ int chess()
             printf("Enter your move.\n");
 
             printf("Row: ");
-            scanf("%d", &m_row);
+            std::ignore = scanf("%d", &m_row);
             printf("Column: ");
-            scanf("%d", &m_column);
+            std::ignore = scanf("%d", &m_column);
             
 
             bool should_upgrade_pawn = FALSE;

@@ -1,15 +1,26 @@
 #include "Team.h"
 #include <stdio.h>
 #include <string.h>
+#include <tuple>
 #include "ctype.h"
 #include "Pawn_Upgrader.h"
 #include "Board.h"
+#include "InvalidPiece.h"
 #pragma warning(disable:4996)
 bool is_pawn(Piece* shouldbepawn) {
 	return shouldbepawn->piecetype == PAWN;
 }
 //NOTE: This function is called EVERY time a pawn is moved, and it does nothing is the pawn is not on it.
-TYPE upgrade_pawn_if_needed(Piece* to_upgrade, Team* team_owner, Board* mainboard) {
+//Possible errors: InvalidPiece
+TYPE upgrade_pawn_if_needed(Piece* to_upgrade, Team* team_owner, Board* mainboard, TYPE upgradeTo) {
+	if (upgradeTo == PAWN) {
+		std::string error = std::string("Pawn");
+		throw InvalidPiece(error);
+	}
+	else if (upgradeTo == KING) {
+		std::string error = std::string("King");
+		throw InvalidPiece(error);
+	}
 	//TODO Add other playable classes. Like Queen.
 	if (!is_pawn(to_upgrade)) {
 		return EMPTY;
@@ -25,20 +36,22 @@ TYPE upgrade_pawn_if_needed(Piece* to_upgrade, Team* team_owner, Board* mainboar
 		return EMPTY;
 	}
 	//SELECT THE PIECE BASED ON USER INPUT
-	TYPE upgrade_to = get_valid_upgrade_type();
-	really_perform_upgrade(to_upgrade, upgrade_to, team_owner, mainboard);
-	return upgrade_to;
+	if (upgradeTo == EMPTY) {
+		upgradeTo = get_valid_upgrade_type();
+	}
+	really_perform_upgrade(to_upgrade, upgradeTo, team_owner, mainboard);
+	return upgradeTo;
 }
 
 TYPE get_valid_upgrade_type() {
 	TYPE to_upgrade_to = EMPTY;
 	bool valid_type = false;
-	char typewanted[10];
+	char typewanted[10] = "";
 	for (int i = 0; i < 10; i++) {
 		typewanted[i] = '\0';
 	}
 	while (!valid_type) {
-		scanf("%9s", typewanted);
+		std::ignore = scanf("%9s", typewanted);
 		typewanted[0] = toupper(typewanted[0]);
 		for (int i = 1; i < 10; i++) {
 			typewanted[i] = tolower(typewanted[i]);
