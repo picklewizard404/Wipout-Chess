@@ -114,18 +114,35 @@ bool Board::human_move_piece(Move* move_to_make) {
                 //TODO: Add this to the stack of moves.
             }
 
-
+            //Apply passant if needed.
+            if (pawnthatjustmoved2 != NULL) {
+                if (piece->piecetype == PAWN && b_row == passant_row && b_column == passant_column && piece->team != pawnthatjustmoved2->team) {
+                    kill_passant();
+                }
+            }
+            
 
             //Either way move the piece.
             spaces[move_to_make->start_row - 1][move_to_make->start_column - 1] = NULL;
             place(piece, b_row, b_column);
             piece->know_i_change_position(b_row, b_column);
+            if (pawnthatjustmoved2 != NULL) {
+                if (pawnthatjustmoved2->team != piece->team) {
+                    pawnthatjustmoved2 = NULL;
+                }
+            }
             return true;
         }
         return false;
     }
     return false;
 }
+
+void Board::kill_passant() {
+    pawnthatjustmoved2->alive = false;
+    spaces[pawnthatjustmoved2->row - 1][pawnthatjustmoved2->column - 1] = NULL;
+}
+
 void undo_move(Move* move_to_make) {
     Piece* piece = move_to_make->piece_that_moved;
 }

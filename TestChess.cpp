@@ -54,8 +54,28 @@ TEST_CASE("The Piece movement is properly changed through inheritance", "[pieces
     REQUIRE(testkpiece->can_classmove(1, 5, &mainboard));
 }
 
-TEST_CASE("Simple White Winning", "[win]") {
+TEST_CASE("Pawns can catch pawns that jumped over", "[passant]") {
+    Board mainboard;
+    Pawn wpawn1 = Pawn(WHITE, 5, 1, 1);
+    Pawn bpawn2 = Pawn(BLACK, 7, 2, 2);
+    mainboard.place(&wpawn1, 5, 1);
+    mainboard.place(&bpawn2, 7, 2);
+    Move passantmove1 = Move(7, 2, 5, 2, &bpawn2, NULL, false);
+    Move passantmove2 = Move(5, 1, 6, 2, &wpawn1, NULL, false);
+    printf("Board before black pawn moved 2:\n");
+    mainboard.print_board();
+    REQUIRE(mainboard.human_move_piece(&passantmove1));
+    printf("Board after black pawn moved 2:\n");
+    mainboard.print_board();
+    REQUIRE(mainboard.pawnthatjustmoved2 == &bpawn2);
+    REQUIRE(mainboard.human_move_piece(&passantmove2));
+    printf("En Passant!\n");
+    mainboard.print_board();
+    REQUIRE_FALSE(bpawn2.alive);
+}
 
+TEST_CASE("Simple White Winning", "[win]") {
+    //TODO
 }
 
 TEST_CASE("Queens moving diagonally", "[queen]") {
