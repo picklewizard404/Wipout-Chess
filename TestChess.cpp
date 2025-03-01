@@ -45,9 +45,22 @@ TEST_CASE("Throws errors upgrading pawns to themselves", "[errors]") {
         printf("%s", e.what());
     }
 }
+
+TEST_CASE("The Piece movement is properly changed through inheritance", "[pieces][virtual]") {
+    King testKing = King(WHITE);
+    Piece* testkpiece = &testKing;
+    Board mainboard = Board();
+    mainboard.place(testkpiece, testKing.row, testKing.column);
+    REQUIRE(testkpiece->can_classmove(1, 5, &mainboard));
+}
+
+TEST_CASE("Simple White Winning", "[win]") {
+
+}
+
 TEST_CASE("Queens moving diagonally", "[queen]") {
     Board mainboard;
-    Queen testqueen = Queen(WHITE, 5, 8, 1)
+    Queen testqueen = Queen(WHITE, 5, 8, 1);
 }
 
 TEST_CASE("Upgrade a pawn. Pretend you typed.", "[.interactive]") {
@@ -92,7 +105,7 @@ TEST_CASE("Teams are correct", "[teams]") {
     REQUIRE(team_name(WHITE) == "White");
 }
 
-TEST_CASE("Pieces can be cloned") {
+TEST_CASE("Pieces can be cloned", "[pieces]") {
     Knight k1 = Knight(WHITE, 1, 2, 1);
     Knight k2 = Knight(k1);
     printf("Pieces can be cloned.\n");

@@ -16,7 +16,9 @@ bool can_move_diagnolly(Piece* valid_piece, DIAGONAL direction, int count, Board
 	if (!(1 <= becolumn && becolumn <= 8)) return false;
 
 	//Check that  we aren't blocked
+	//Row changes vertically.
 	int sp_vertic = valid_piece->row;
+	//Column changes horizontally.
 	int sp_horiz = valid_piece->column;
 	if (direction == DOWN_LEFT || direction == DOWN_RIGHT) {
 		vertical_direction = -1;
@@ -27,7 +29,7 @@ bool can_move_diagnolly(Piece* valid_piece, DIAGONAL direction, int count, Board
 
 	for (int i = 1; i < count; i++)
 	{
-		if ((*board_to_move_on).spaces[sp_horiz + i*horizontal_direction - 1][sp_vertic + i*vertical_direction - 1] != NULL) {
+		if ((*board_to_move_on).spaces[sp_vertic + i*vertical_direction - 1][sp_horiz + i*horizontal_direction - 1] != NULL) {
 			return false;
 		}
 	}

@@ -53,8 +53,8 @@ int chess()
     //Setup
     Piece* wKnight2 = whiteteam.pieces[6];
     Piece* bKnight2 = blackteam.pieces[6];
-    Piece* wKing = whiteteam.pieces[4];
-    Piece* bKing = blackteam.pieces[4];
+    Piece* wKing = whiteteam.pieces[3];
+    Piece* bKing = blackteam.pieces[3];
     Piece* current_king = wKing;
     bool am_i_in_check = false;
     printf("You can be killed.\n");
@@ -178,22 +178,9 @@ int chess()
                 okmove = ((Pawn*)piecetomove)->can_classmove(m_row, m_column, &mainboard);
                 
                 break;
-            case ROOK:
-                okmove = ((Rook*)piecetomove)->can_classmove(m_row, m_column, &mainboard);
-                break;
-            case KNIGHT:
-                okmove = ((Knight*)piecetomove)->can_classmove(m_row, m_column, &mainboard);
-                break;
-            case BISHOP:
-                okmove = ((Bishop*)piecetomove)->can_classmove(m_row, m_column, &mainboard);
-                break;
-            case QUEEN:
-                break;
-            case KING:
-                okmove = ((King*)piecetomove)->can_kingmove(m_row, m_column, &mainboard);
-                break;
+            
             default:
-                saybadmove();
+                okmove = piecetomove->can_classmove(m_row, m_column, &mainboard);
             }
 
             

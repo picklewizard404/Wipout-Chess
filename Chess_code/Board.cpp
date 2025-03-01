@@ -54,43 +54,16 @@ bool Board::no_ally_there(COLOR my_team, int row, int column) {
 //The team we are checking check for is my_team.
 Game_Status Board::is_in_check(Team* my_team, Team* enemy_team, Board* mainboard, bool check_for_checkmate)  {
     //Todo: Use info HERE to try every possible move of my_team
-    int column = my_team->the_king.column;
-    int row = my_team->the_king.row;
+    int mkcolumn = my_team->the_king.column;
+    int mkrow = my_team->the_king.row;
     bool is_hugging_allowed = false;
     for (int i = 0; i < 16; i++) {
         if (enemy_team->pieces[i] != 0) {
-            switch (enemy_team->pieces[i]->piecetype) {
-            case KING:
-                if ((King*)enemy_team->pieces[i]->can_classmove(row, column, mainboard)) {
-                    if (false && check_for_checkmate) {
-                        return try_to_escape(my_team, enemy_team, mainboard);
-                    }
-                    else return CHECK;
+            if (enemy_team->pieces[i]->can_classmove(mkrow, mkcolumn, this)) {
+                if (false && check_for_checkmate) {
+                    return try_to_escape(my_team, enemy_team, mainboard);
                 }
-            case KNIGHT:
-                if ((Knight*)enemy_team->pieces[i]->can_classmove(row, column, this)) {
-                    if (false && check_for_checkmate) {
-                        return try_to_escape(my_team, enemy_team, mainboard);
-                    }
-                    else return CHECK;
-                }
-            case ROOK:
-                if ((Rook*)enemy_team->pieces[i]->can_classmove(row, column, this)) {
-                    if (false && check_for_checkmate) {
-                        return try_to_escape(my_team, enemy_team, mainboard);
-                    }
-                    else return CHECK;
-                }
-            case BISHOP:
-                if ((Bishop*)enemy_team->pieces[i]->can_classmove(row, column, this)) {
-                    if (false && check_for_checkmate) {
-                        return try_to_escape(my_team, enemy_team, mainboard);
-                    }
-                    else return CHECK;
-                }
-                //Empty spaces go here and do not threaten you
-            default:
-                continue;
+                else return CHECK;
             }
         }
     }

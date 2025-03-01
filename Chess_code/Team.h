@@ -3,6 +3,7 @@
 #define TEAM_INCLUDED
 #include "Knight.h"
 #include "King.h"
+#include "Queen.h"
 #include "Teamname.h"
 #include "Piece.h"
 #include "Rook.h"
@@ -29,6 +30,7 @@ public:
 	Bishop bishop1;
 	Bishop bishop2;
 	King the_king;
+	Queen queen;
 	Pawn pawns[8];
 	Piece* upgraded_pieces[8];
 	//TODO MAKE AN ARRAY OF UPGRADED QUEENS
