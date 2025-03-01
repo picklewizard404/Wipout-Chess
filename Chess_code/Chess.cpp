@@ -194,6 +194,7 @@ int chess()
             
             if (okmove && mainboard.is_on_board(m_row, m_column)) {
                 mainboard.human_move_piece(&tried_move);
+                //Important: Upgrade the pawn if needed.
                 if (piecetomove->piecetype == PAWN) {
                     upgrade_pawn_if_needed((Pawn*)piecetomove, current_team, &mainboard);
                 }

@@ -74,7 +74,8 @@ COLOR enemy_team(COLOR my_team) {
     }
 }
 
-//Returns TRUE if you made a winning move
+//Not sure this function is actually called.
+/*
 void do_move(Team** current_team, Board* mainboard, Move* move, Team* public_white_team, Team *public_black_team, int *move_count, Game_Status *new_status) {
     //We check that we are on the right team before we move
     if ((*current_team)->color == move->piece_that_moved->team) {
@@ -102,6 +103,7 @@ void do_move(Team** current_team, Board* mainboard, Move* move, Team* public_whi
         }
     }
 }
+*/
 bool check_piece(Board* mainboard, Piece** piecetomove, int row, int column, char nameofpiecetomove[]) {
     piecetomove = &(mainboard->spaces[row][column]);
     for (int space_row = 0; space_row < 8; space_row++)

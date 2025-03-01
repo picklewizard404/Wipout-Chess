@@ -22,9 +22,7 @@ Board::Board() {
 }
 
 void Board::clearpassant() {
-    pawnthatjustmoved2 = NULL;
-    passant_row = -1;
-    passant_column = -1;
+    passantpawn.reset();
 }
 //Column and row both range from 1 to 8.
 //The piece has to know where it was when this move happens
@@ -76,6 +74,10 @@ bool Board::is_on_board(int b_row, int b_column) {
     }
     return true;
 }
+
+Move Board::make_move(Piece* piece_that_moved, int erow, int ecolumn) {
+    return Move(piece_that_moved->row, piece_that_moved->column, erow, ecolumn, piece_that_moved, spaces[erow - 1][ecolumn - 1], &passantpawn, false);
+}
 /*
 b_column and b_row range from 1 to 8. We subtract 1 whenever we reference a space on the board.
 That's because a person starts counting spaces with 1 but the computer starts counting with 0.
@@ -115,20 +117,20 @@ bool Board::human_move_piece(Move* move_to_make) {
             }
 
             //Apply passant if needed.
-            if (pawnthatjustmoved2 != NULL) {
-                if (piece->piecetype == PAWN && b_row == passant_row && b_column == passant_column && piece->team != pawnthatjustmoved2->team) {
+            if (passantpawn.pawnthatjustmoved2 != NULL) {
+                if (piece->piecetype == PAWN && b_row == passantpawn.passant_row && b_column == passantpawn.passant_column && piece->team != passantpawn.pawnthatjustmoved2->team) {
                     kill_passant();
                 }
             }
-            
+            //Make a move here.?
 
             //Either way move the piece.
             spaces[move_to_make->start_row - 1][move_to_make->start_column - 1] = NULL;
             place(piece, b_row, b_column);
             piece->know_i_change_position(b_row, b_column);
-            if (pawnthatjustmoved2 != NULL) {
-                if (pawnthatjustmoved2->team != piece->team) {
-                    pawnthatjustmoved2 = NULL;
+            if (passantpawn.pawnthatjustmoved2 != NULL) {
+                if (passantpawn.pawnthatjustmoved2->team != piece->team) {
+                    passantpawn.reset();
                 }
             }
             return true;
@@ -139,8 +141,8 @@ bool Board::human_move_piece(Move* move_to_make) {
 }
 
 void Board::kill_passant() {
-    pawnthatjustmoved2->alive = false;
-    spaces[pawnthatjustmoved2->row - 1][pawnthatjustmoved2->column - 1] = NULL;
+    passantpawn.pawnthatjustmoved2->alive = false;
+    spaces[passantpawn.pawnthatjustmoved2->row - 1][passantpawn.pawnthatjustmoved2->column - 1] = NULL;
 }
 
 void undo_move(Move* move_to_make) {

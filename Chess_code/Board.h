@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "Check_vs_Checkmate.h"
 #include "Move.h"
+#include "PassantPawn.h"
 
 typedef Piece * space;
 class Board
@@ -13,9 +14,7 @@ public:
 	Piece* spaces[8][8];
 	Piece* threatens_white;
 	Piece* threatens_black;
-	Pawn* pawnthatjustmoved2;
-	int passant_row;
-	int passant_column;
+	PassantPawn passantpawn;
 
 	// int column;
 	// int row;
@@ -23,6 +22,7 @@ public:
 
 	//functions move
 	void clearpassant();
+	Move make_move(Piece* piece_that_moved, int erow, int ecolumn);
 	bool human_move_piece(Move* move_to_make);
 	void place(Piece* piece, int row, int column);
 	void kill_passant();

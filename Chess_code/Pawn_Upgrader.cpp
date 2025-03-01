@@ -21,11 +21,12 @@ TYPE upgrade_pawn_if_needed(Piece* to_upgrade, Team* team_owner, Board* mainboar
 		std::string error = std::string("King");
 		throw InvalidPiece(error);
 	}
-	//TODO Add other playable classes. Like Queen.
+	//Other classes are playable. Like Queen.
+	//const char* classes[] = { "Rook",  "Bishop", "Knight", "Queen" };
 	if (!is_pawn(to_upgrade)) {
 		return EMPTY;
 	}
-	const char* classes[] = { "Rook",  "Bishop", "Knight" };
+	
 	/*NOTE: Pawns are in posisitions 2:1-2:8,
 	        which means the team treats them as pieces 8-15*/
 	int final_pawn_row = 8;
@@ -68,11 +69,12 @@ TYPE get_valid_upgrade_type() {
 			to_upgrade_to = BISHOP;
 			valid_type = true;
 		}
-		/* TODO: Uncomment this once you've actually made queens.
+		//* TODO: Uncomment this once you've actually made queens.
 		else if (strcmp(typewanted, "Queen") == 0) {
 			to_upgrade_to = QUEEN;
 			valid_type = true;
-		}*/
+		}
+		// */
 		if (!valid_type) {
 			printf("%s is not a valid type to upgrade a pawn to. Try again.", typewanted);
 		}
@@ -113,7 +115,10 @@ void really_perform_upgrade(Piece* to_upgrade, TYPE new_class, Team* team_owner,
 				break;
 
 			//TODO MAKE UPGRADING TO QUEEN POSSIBLE
-
+			case QUEEN:
+				team_owner->upgraded_pieces[i - 8] = new Queen(to_upgrade->team, to_upgrade->row, to_upgrade->column, to_upgrade->count);
+				place_upgraded_piece(team_owner, to_upgrade, "Queen", team_owner->upgraded_pieces[i - 8], mainboard);
+				break;
 			default:
 				break;
 			}

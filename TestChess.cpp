@@ -60,14 +60,15 @@ TEST_CASE("Pawns can catch pawns that jumped over", "[passant]") {
     Pawn bpawn2 = Pawn(BLACK, 7, 2, 2);
     mainboard.place(&wpawn1, 5, 1);
     mainboard.place(&bpawn2, 7, 2);
-    Move passantmove1 = Move(7, 2, 5, 2, &bpawn2, NULL, false);
-    Move passantmove2 = Move(5, 1, 6, 2, &wpawn1, NULL, false);
+    Move passantmove1 = mainboard.make_move(&bpawn2, 5, 2);
+    
     printf("Board before black pawn moved 2:\n");
     mainboard.print_board();
     REQUIRE(mainboard.human_move_piece(&passantmove1));
     printf("Board after black pawn moved 2:\n");
     mainboard.print_board();
-    REQUIRE(mainboard.pawnthatjustmoved2 == &bpawn2);
+    REQUIRE(mainboard.passantpawn.pawnthatjustmoved2 == &bpawn2);
+    Move passantmove2 = mainboard.make_move(&wpawn1, 6, 2); //6,2
     REQUIRE(mainboard.human_move_piece(&passantmove2));
     printf("En Passant!\n");
     mainboard.print_board();
@@ -274,10 +275,10 @@ TEST_CASE("Pawns can normally move 2 on the start of their trurn, but not if the
     Board mainboard;
     Pawn wpawn4 = Pawn(WHITE, 2, 4, 4);
     mainboard.place(&wpawn4, 2, 4);
-    Move testmove2up = Move(2, 4, 4, 4, &wpawn4, NULL, false);
+    Move testmove2up = mainboard.make_move(&wpawn4, 4, 4);
     Pawn bpawn4 = Pawn(BLACK, 7, 4, 4);
     mainboard.place(&bpawn4, 7, 4);
-    Move testmove2down = Move(7, 4, 5, 4, &bpawn4, NULL, false);
+    Move testmove2down = mainboard.make_move(&bpawn4, 5, 4);
     mainboard.print_board();
     REQUIRE(mainboard.human_move_piece(&testmove2up));
     REQUIRE(mainboard.human_move_piece(&testmove2down));
