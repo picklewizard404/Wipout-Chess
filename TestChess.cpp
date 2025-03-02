@@ -301,6 +301,19 @@ TEST_CASE("Pawns can normally move 2 on the start of their trurn, but not if the
     REQUIRE_FALSE(mainboard.human_move_piece(&testmove2up));
     printf("That doesn't work either.\n");
 }
+
+TEST_CASE("I remember En passant state after doing a move and undoing it.", "[undo]") {
+    Board mainboard;
+    Pawn wpawn = Pawn(WHITE, 2, 1, 1);
+    mainboard.place(&wpawn, 2, 1);
+    Pawn bpawn = Pawn(BLACK, 7, 1, 1);
+    mainboard.place(&bpawn, 7, 1);
+    Move first_move = mainboard.make_move(&wpawn, 4, 1);
+    mainboard.human_move_piece(&first_move);
+    mainboard.print_board();
+    //TODO FINISH THIS TEST
+    REQUIRE(mainboard.spaces[3][0] == &wpawn);
+}
 //I can't guarantee an exception is thrown with code, so I have to test it live.
 /*
 TEST_CASE("I can tell when a move doesn't say what it's moving.", "[moves]") {

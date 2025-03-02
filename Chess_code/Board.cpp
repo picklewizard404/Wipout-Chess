@@ -7,6 +7,7 @@
 #include "Check_vs_Checkmate.h"
 #include "Move.h"
 #include "Pawn_Upgrader.h"
+#include "InvalidPiece.h"
 using namespace std;
 
 Board::Board() {
@@ -74,9 +75,28 @@ bool Board::is_on_board(int b_row, int b_column) {
     }
     return true;
 }
-
+//IMPORTANT: ASSUME THE PIECE HAS'NT MOVED YET,
+// SO YOU KNOW WHAT THE PREVIOUS TURN'S STATE WAS,
+//INCLUDING passantpawn!
 Move Board::make_move(Piece* piece_that_moved, int erow, int ecolumn) {
-    return Move(piece_that_moved->row, piece_that_moved->column, erow, ecolumn, piece_that_moved, spaces[erow - 1][ecolumn - 1], &passantpawn, false);
+    if (piece_that_moved == NULL) {
+        throw InvalidPiece(piece_that_moved);
+    }
+    PassantPawn newPassant = PassantPawn();
+    if (piece_that_moved->piecetype == PAWN) {
+        if (piece_that_moved->team == WHITE && piece_that_moved->row == 2 && erow == 4) {
+            newPassant.pawnthatjustmoved2 = (Pawn*)piece_that_moved;
+            newPassant.passant_row = 4;
+            newPassant.passant_column = piece_that_moved->column;
+        }
+        else if(piece_that_moved->team == BLACK && piece_that_moved->row == 7 && erow == 5)
+        {
+            newPassant.pawnthatjustmoved2 = (Pawn*)piece_that_moved;
+            newPassant.passant_row = 5;
+            newPassant.passant_column = piece_that_moved->column;
+        }
+    }
+    return Move(piece_that_moved->row, piece_that_moved->column, erow, ecolumn, piece_that_moved, spaces[erow - 1][ecolumn - 1], &passantpawn, &newPassant, false);
 }
 /*
 b_column and b_row range from 1 to 8. We subtract 1 whenever we reference a space on the board.
@@ -145,8 +165,14 @@ void Board::kill_passant() {
     spaces[passantpawn.pawnthatjustmoved2->row - 1][passantpawn.pawnthatjustmoved2->column - 1] = NULL;
 }
 
-void undo_move(Move* move_to_make) {
-    Piece* piece = move_to_make->piece_that_moved;
+void Board::undo_move(Move* move_i_made) {
+    Piece* piecethatmoved = move_i_made->piece_that_moved;
+    piecethatmoved->row = move_i_made->start_row;
+    piecethatmoved->column = move_i_made->start_column;
+    if (move_i_made->piece_landed_on != NULL) {
+        move_i_made->piece_landed_on->alive = true;
+    }
+    passantpawn = move_i_made->prev_passant_if_any;
 }
 void print_piece(Piece *piece /*bool islast*/) {
     char piecename[11];

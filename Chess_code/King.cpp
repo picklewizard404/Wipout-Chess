@@ -62,6 +62,6 @@ void King::king_setup(COLOR b_team) {
 	else if (b_team == WHITE) {
 		b_row = 1;
 	}
-	setup(chess_class, b_team, b_row, 4, 0, KING);
+	setup(chess_class, b_team, b_row, 5, 0, KING);
 	set_up_full_name(chess_class);
 }

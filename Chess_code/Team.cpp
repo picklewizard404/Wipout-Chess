@@ -39,6 +39,7 @@ Team::~Team() {
 
 Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
 {
+	//NOTE THE QUEEN AND KING SHOULD SWAP
 	enemy_team = nullptr;
 	empty_spaces();
 	color = team_color;
@@ -53,7 +54,7 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
 		rook2 = Rook(team_color, 1, 8, 2);
 		bishop1 = Bishop(team_color, 1, 3, 1);
 		bishop2 = Bishop(team_color, 1, 6, 2);
-		queen = Queen(team_color, 1, 5, 1);
+		queen = Queen(team_color, 1, 4, 1);
 		for (int i = 1; i <= 8; i++) {
 			pawns[i-1] = Pawn(team_color, 2, i, i);
 		}
@@ -69,7 +70,7 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
 		rook2 = Rook(team_color, 8, 8, 1);
 		bishop1 = Bishop(team_color, 8, 3, 2);
 		bishop2 = Bishop(team_color, 8, 6, 1);
-		queen = Queen(team_color, 8, 5, 1);
+		queen = Queen(team_color, 8, 4, 1);
 		for (int i = 1; i <= 8; i++) {
 			pawns[i-1] = Pawn(team_color, 7, i, i);
 		}

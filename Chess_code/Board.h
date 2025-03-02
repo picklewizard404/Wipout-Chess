@@ -11,6 +11,7 @@ class Board
 {
 	//variables
 public:
+	//Row then column
 	Piece* spaces[8][8];
 	Piece* threatens_white;
 	Piece* threatens_black;
@@ -21,6 +22,7 @@ public:
 	bool whiteturn;
 
 	//functions move
+	void undo_move(Move* move_i_made);
 	void clearpassant();
 	Move make_move(Piece* piece_that_moved, int erow, int ecolumn);
 	bool human_move_piece(Move* move_to_make);
