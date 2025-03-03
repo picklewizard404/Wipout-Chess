@@ -37,7 +37,11 @@ bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {
 		{
 			if (b_row == row + 2 * direction) {
 				//Set passant.
+				/*if (main_board->passantpawn.get_piece() != this) {
+					main_board->prevepassant = main_board->passantpawn;
+				}*/
 				main_board->passantpawn = PassantPawn(this, row + direction, column);
+				main_board->passant_number = main_board->turn_number;
 				return true;
 			}
 		}
@@ -46,8 +50,8 @@ bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {
 	if (row + direction != b_row) return false;
 	//Check for passant.
 	if ((b_column == column - 1) || (b_column == column + 1)) {
-		if (main_board->passantpawn.pawnthatjustmoved2 != NULL) {
-			if (main_board->passantpawn.passant_row == b_row && main_board->passantpawn.passant_column == b_column) {
+		if (main_board->passantpawn.get_piece() != NULL) {
+			if (main_board->passantpawn.get_row() == b_row && main_board->passantpawn.get_column() == b_column) {
 				return true;
 			}
 		}

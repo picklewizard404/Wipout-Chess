@@ -200,7 +200,7 @@ int chess()
                 }
                 //NOTE: THE TEAMS SWAP ON THIS LINE
                 current_team = current_team->enemy_team;
-                //Was that move safe? IF
+                //Was that move safe? IF not, I am still in check.
                 //*
                 Game_Status am_I_still_in_check = mainboard.is_in_check(current_team->enemy_team, current_team, &mainboard, false);
                 if (am_I_still_in_check != NEUTRAL) {

@@ -23,6 +23,52 @@
 #include "Chess_code\InvalidPiece.h"
 #include <iostream>
 #include <tuple>
+TEST_CASE("I remember previous turn's passant", "[undo][passant]") {
+    Board mainboard;
+    Team whiteteam = Team(WHITE, &mainboard);
+    Team blackteam = Team(BLACK, &mainboard);
+    Move firstmove = mainboard.make_move(whiteteam.pieces[8 + 5 - 1], 4, 5);
+    mainboard.human_move_piece(&firstmove);
+    mainboard.print_board();
+    /*
+    char pause[2];
+    scanf("%1s", pause);
+    clearinput();
+    // */
+    bool printed = false;
+    mainboard.print_passant(&printed);
+    REQUIRE(printed);
+    REQUIRE(mainboard.passantpawn.get_piece() == whiteteam.pieces[8 + 5 - 1]);
+    Move secondmove = mainboard.make_move(blackteam.pieces[8 + 1 - 1], 5, 1);
+    mainboard.human_move_piece(&secondmove);
+    mainboard.print_board();
+    mainboard.print_passant(&printed);
+    REQUIRE(printed);
+    REQUIRE(mainboard.passantpawn.get_piece() == blackteam.pieces[8 + 1 - 1]);
+    mainboard.undo_move(&secondmove);
+    //TODO WRONG HERE
+    REQUIRE(mainboard.passantpawn.get_piece() == whiteteam.pieces[8 + 5 - 1]);
+    printf("Looks like the passant is undone correctly.\n");
+}
+//TODO: I NEED TO KNOW THE TURN NUMBER ON THE BOARD IN ORDER TO MAKE THIS WORK
+//ONE INT TO SAY THE TURN WHEN THE PASSANT WAS POSSIBLE, ANOTHER TO COUNT THE CURRENT TURN.
+//REMEMBER, PAWNS HELP THE BOARD KNOW WHEN AN EN PASSANT HAPPENS, SO THEY HAVE TO ASK THE
+//BOARD WHAT TURN IT IS.
+TEST_CASE("Passants do have to happen immediately", "[passant][1turn]") {
+    printf("Passants do have to happen immediately\n");
+    Board mainboard;
+    Team whiteteam = Team(WHITE, &mainboard);
+    Team blackteam = Team(BLACK, &mainboard);
+    Move firstmove = mainboard.make_move(whiteteam.pieces[8 + 5 - 1], 4, 5);
+    mainboard.human_move_piece(&firstmove);
+    mainboard.print_board();
+    //TODO WRONG HERE
+    Move secondmove = mainboard.make_move(blackteam.pieces[8 + 1 - 1], 6, 1);
+    mainboard.human_move_piece(&secondmove);
+    REQUIRE(mainboard.passantpawn.get_piece() == NULL);
+    mainboard.undo_move(&secondmove);
+    REQUIRE(mainboard.passantpawn.get_piece() == whiteteam.pieces[8 + 5 - 1]);
+}
 TEST_CASE("Throws errors upgrading pawns to themselves", "[errors]") {
     Board mainboard;
     Team whiteteam = Team(WHITE, &mainboard);
@@ -67,7 +113,7 @@ TEST_CASE("Pawns can catch pawns that jumped over", "[passant]") {
     REQUIRE(mainboard.human_move_piece(&passantmove1));
     printf("Board after black pawn moved 2:\n");
     mainboard.print_board();
-    REQUIRE(mainboard.passantpawn.pawnthatjustmoved2 == &bpawn2);
+    REQUIRE(mainboard.passantpawn.get_piece() == &bpawn2);
     Move passantmove2 = mainboard.make_move(&wpawn1, 6, 2); //6,2
     REQUIRE(mainboard.human_move_piece(&passantmove2));
     printf("En Passant!\n");

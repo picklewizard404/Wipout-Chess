@@ -11,10 +11,13 @@
 using namespace std;
 
 Board::Board() {
+    turn_number = 0;
+    passant_number = -1;
     whiteturn = true;
     threatens_white = NULL;
     threatens_black = NULL;
-    clearpassant();
+    previous_move = Move();
+    passantpawn = PassantPawn();
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             spaces[i][j] = NULL;
@@ -22,9 +25,6 @@ Board::Board() {
     }
 }
 
-void Board::clearpassant() {
-    passantpawn.reset();
-}
 //Column and row both range from 1 to 8.
 //The piece has to know where it was when this move happens
 //Teleporting pieces is useful for testing.
@@ -75,32 +75,45 @@ bool Board::is_on_board(int b_row, int b_column) {
     }
     return true;
 }
-//IMPORTANT: ASSUME THE PIECE HAS'NT MOVED YET,
-// SO YOU KNOW WHAT THE PREVIOUS TURN'S STATE WAS,
-//INCLUDING passantpawn!
+//TODO I AM FAILING HERE. THE PASSANT PAWN IS NOT RESETTING.
 Move Board::make_move(Piece* piece_that_moved, int erow, int ecolumn) {
     if (piece_that_moved == NULL) {
         throw InvalidPiece(piece_that_moved);
     }
-    PassantPawn newPassant = PassantPawn();
+    Pawn* passantpawnpiece = NULL;
+    int passantrow = -1;
+    int passantcolumn = -1;
+    bool createnewpassant = false;
     if (piece_that_moved->piecetype == PAWN) {
         if (piece_that_moved->team == WHITE && piece_that_moved->row == 2 && erow == 4) {
-            newPassant.pawnthatjustmoved2 = (Pawn*)piece_that_moved;
-            newPassant.passant_row = 4;
-            newPassant.passant_column = piece_that_moved->column;
+            passantpawnpiece = (Pawn*)piece_that_moved;
+            passantrow = 4;
+            passantcolumn = piece_that_moved->column;
+            createnewpassant = true;
         }
         else if(piece_that_moved->team == BLACK && piece_that_moved->row == 7 && erow == 5)
         {
-            newPassant.pawnthatjustmoved2 = (Pawn*)piece_that_moved;
-            newPassant.passant_row = 5;
-            newPassant.passant_column = piece_that_moved->column;
+            passantpawnpiece = (Pawn*)piece_that_moved;
+            passantrow = 5;
+            passantcolumn = piece_that_moved->column;
+            createnewpassant = true;
         }
+        if (createnewpassant) {
+            passantpawn = PassantPawn(passantpawnpiece, passantrow, passantcolumn);
+        }
+        
     }
-    return Move(piece_that_moved->row, piece_that_moved->column, erow, ecolumn, piece_that_moved, spaces[erow - 1][ecolumn - 1], &passantpawn, &newPassant, false);
+    
+    Move nextmove = Move(piece_that_moved->row, piece_that_moved->column, erow, ecolumn, 
+        piece_that_moved, spaces[erow - 1][ecolumn - 1],
+        false);
+    return nextmove;
 }
 /*
 b_column and b_row range from 1 to 8. We subtract 1 whenever we reference a space on the board.
 That's because a person starts counting spaces with 1 but the computer starts counting with 0.
+Detects if the move lands on an enemy piece and stores the enemy piece in the move in case it is un-done.
+
 TODO ADD SUPPORT FOR ON PASONT RULE.
 If pawn moves 2, save a Piece pointer to the pawn and the spot that it would have
 been in if it moved 1. I call that space SS in this example.
@@ -112,6 +125,7 @@ bool Board::human_move_piece(Move* move_to_make) {
     space piece = move_to_make->piece_that_moved;
     int b_row = move_to_make->end_row;
     int b_column = move_to_make->end_column;
+    bool changepast = false;
     if (piece != NULL) {
         int p_column = piece->column;
         int p_row = piece->row;
@@ -136,23 +150,54 @@ bool Board::human_move_piece(Move* move_to_make) {
                 //TODO: Add this to the stack of moves.
             }
 
-            //Apply passant if needed.
-            if (passantpawn.pawnthatjustmoved2 != NULL) {
-                if (piece->piecetype == PAWN && b_row == passantpawn.passant_row && b_column == passantpawn.passant_column && piece->team != passantpawn.pawnthatjustmoved2->team) {
-                    kill_passant();
+            //Think about passantpieces moving through a pipe.
+            //First, you forget your oldest memory.
+            //Then your current memory gets older.
+            //Then you make a new memory.
+            if (prevepassant.get_piece() != NULL) {
+                if (prevepassant.get_piece()->team == piece->team) {
+                    prevepassant = PassantPawn();
                 }
             }
-            //Make a move here.?
-
+            
+            if (passantpawn.get_piece() != NULL) {
+                if (passantpawn.get_piece()->team == piece->team) {
+                    if (prevepassant.get_piece() == NULL) {
+                        changepast = true;
+                    }
+                    else if (prevepassant.get_piece()->team == piece->team) {
+                        changepast = true;
+                    }
+                    if (changepast) {
+                        prevepassant = passantpawn;
+                    }
+                }
+            }
             //Either way move the piece.
             spaces[move_to_make->start_row - 1][move_to_make->start_column - 1] = NULL;
             place(piece, b_row, b_column);
             piece->know_i_change_position(b_row, b_column);
-            if (passantpawn.pawnthatjustmoved2 != NULL) {
-                if (passantpawn.pawnthatjustmoved2->team != piece->team) {
-                    passantpawn.reset();
+            if (passantpawn.get_piece() != NULL) {
+                //Apply passant if needed.
+                if (piece->piecetype == PAWN && b_row == passantpawn.get_row() && b_column == passantpawn.get_column() && piece->team != passantpawn.get_piece()->team) {
+                    kill_passant();
+                }
+                else if (passantpawn.get_piece()->team != piece->team) {
+                    prevepassant = passantpawn;
+                    //Create a new intstance of a readonly class to reset it.
+                    passantpawn = PassantPawn();
+                    //Maybe the mistake is here?
                 }
             }
+
+
+            //Now we know we're done moving.
+            //Maybe the passant didn't happen.
+            if (turn_number > passant_number && passantpawn.get_piece() != NULL) {
+                prevepassant = passantpawn;
+                passantpawn = PassantPawn();
+            }
+            turn_number++;
             return true;
         }
         return false;
@@ -161,18 +206,23 @@ bool Board::human_move_piece(Move* move_to_make) {
 }
 
 void Board::kill_passant() {
-    passantpawn.pawnthatjustmoved2->alive = false;
-    spaces[passantpawn.pawnthatjustmoved2->row - 1][passantpawn.pawnthatjustmoved2->column - 1] = NULL;
+    passantpawn.get_piece()->alive = false;
+    spaces[passantpawn.get_piece()->row - 1][passantpawn.get_piece()->column - 1] = NULL;
+    //This is safe because doing a passant will NEVER be followed by a passant.
+    passantpawn = PassantPawn();
 }
 
 void Board::undo_move(Move* move_i_made) {
+    //TODO PRESERVE YOUR EN PASSANT PAWN IN THIS FUNCTION
+    passantpawn = prevepassant;
+    prevepassant = PassantPawn();
     Piece* piecethatmoved = move_i_made->piece_that_moved;
     piecethatmoved->row = move_i_made->start_row;
     piecethatmoved->column = move_i_made->start_column;
     if (move_i_made->piece_landed_on != NULL) {
         move_i_made->piece_landed_on->alive = true;
     }
-    passantpawn = move_i_made->prev_passant_if_any;
+    //passantpawn = prevpassantpawn;
 }
 void print_piece(Piece *piece /*bool islast*/) {
     char piecename[11];
@@ -218,14 +268,12 @@ void Board::print_board() {
     printf("\n");
 }
 
-void undo_board_move(Move* tried_move, Board* mainboard, Team* team_undoing_move, Game_Status* game_status) {
-    mainboard->place(tried_move->piece_that_moved, tried_move->start_row, tried_move->start_column);
-    tried_move->piece_that_moved->row = tried_move->start_row;
-    tried_move->piece_that_moved->column = tried_move->start_column;
-    if (tried_move->piece_landed_on != NULL) {
-        tried_move->piece_landed_on->alive = true;
-        mainboard->place(tried_move->piece_landed_on, tried_move->end_row, tried_move->end_column);
-        *game_status = mainboard->is_in_check(team_undoing_move->enemy_team, team_undoing_move, mainboard, false);
+void Board::print_passant(bool* testprinted) {
+    *testprinted = false;
+    Pawn* passantpawnpiece = passantpawn.get_piece();
+    if (passantpawnpiece != NULL) {
+        printf("%s just jumped over row %d, column %d\n", passantpawnpiece->name, passantpawn.get_row(), passantpawn.get_column());
+        *testprinted = true;
     }
 }
 

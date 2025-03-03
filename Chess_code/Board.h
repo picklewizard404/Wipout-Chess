@@ -5,6 +5,7 @@
 #include "Check_vs_Checkmate.h"
 #include "Move.h"
 #include "PassantPawn.h"
+#include <cstddef>
 
 typedef Piece * space;
 class Board
@@ -13,22 +14,26 @@ class Board
 public:
 	//Row then column
 	Piece* spaces[8][8];
+	Move previous_move;
 	Piece* threatens_white;
 	Piece* threatens_black;
 	PassantPawn passantpawn;
+	PassantPawn prevepassant;
 
 	// int column;
 	// int row;
 	bool whiteturn;
+	int turn_number;
+	int passant_number;
 
 	//functions move
 	void undo_move(Move* move_i_made);
-	void clearpassant();
 	Move make_move(Piece* piece_that_moved, int erow, int ecolumn);
 	bool human_move_piece(Move* move_to_make);
 	void place(Piece* piece, int row, int column);
 	void kill_passant();
 	void print_board();
+	void print_passant(bool* testprinted = NULL);
 	bool is_on_board(int b_row, int b_column);
 	Board();
 	Game_Status is_in_check(Team* my_team, Team* enemy_team, Board* mainboardbool, bool check_for_checkmate = true);

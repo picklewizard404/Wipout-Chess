@@ -1,5 +1,4 @@
 #include "Piece.h"
-#include "PassantPawn.h"
 #include <exception>
 #include <string>
 #ifndef DEFINE_MOVE
@@ -12,10 +11,10 @@ struct Move
 	int end_column;
 	Piece* piece_that_moved;
 	Piece* piece_landed_on;
-	PassantPawn prev_passant_if_any;
-	PassantPawn new_passant_if_any;
 	Move();
-	Move(int srow, int scolumn, int erow, int ecolumn, Piece* mpiece_that_moved, Piece* mpiece_landed_on, PassantPawn* spassant_if_any = NULL, PassantPawn* mpassant_if_any = NULL, bool sayimoved = true);
+	Move(int srow, int scolumn, int erow, int ecolumn,
+		Piece* mpiece_that_moved, Piece* mpiece_landed_on,
+		bool sayimoved = true);
 	void print_move();
 };
 #endif // !DEFINE_MOVE

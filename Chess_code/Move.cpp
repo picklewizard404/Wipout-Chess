@@ -22,13 +22,14 @@ Move::Move() {
     end_column = 0;
     piece_that_moved = NULL;
     piece_landed_on = NULL;
-    new_passant_if_any = PassantPawn();
 }
 void Move::print_move() {
     if (piece_that_moved == NULL) return;
     printf("Moved %s to row %d, column %d.\n", piece_that_moved->name, end_row, end_column);
 }
-Move::Move(int srow, int scolumn, int erow, int ecolumn, Piece* mpiece_that_moved, Piece* mpiece_landed_on, PassantPawn* spassant_if_any, PassantPawn* mpassant_if_any, bool sayimoved) {
+Move::Move(int srow, int scolumn, int erow, int ecolumn,
+    Piece* mpiece_that_moved, Piece* mpiece_landed_on,
+    bool sayimoved) {
     if (sayimoved) {
         print_move();
     }
@@ -42,5 +43,4 @@ Move::Move(int srow, int scolumn, int erow, int ecolumn, Piece* mpiece_that_move
     end_column = ecolumn;
     piece_that_moved = mpiece_that_moved;
     piece_landed_on = mpiece_landed_on;
-    new_passant_if_any = PassantPawn(*mpassant_if_any);
 }
