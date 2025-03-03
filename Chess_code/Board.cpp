@@ -48,9 +48,6 @@ bool Board::no_ally_there(COLOR my_team, int row, int column) {
     }
 }
 
-//TODO Check where this function is called and make sure teams are passed.
-//Maybe I am calling this function for the wrong team?
-//The team we are checking check for is my_team.
 Game_Status Board::is_in_check(Team* my_team, Team* enemy_team, Board* mainboard, bool check_for_checkmate)  {
     //Todo: Use info HERE to try every possible move of my_team
     int mkcolumn = my_team->the_king.column;
@@ -278,7 +275,9 @@ void Board::print_passant(bool* testprinted) {
 }
 
 //TODO I UNDO MOVES WRONGLY
-//By the time I undo the move, I have already forgotten the piece I landed on.
+// FINAL STEP FINISHING THE GAME
+// MAKE SURE TO BACK UP THE STARTING passantpawn AND prevepassant...
+//      AND SET THEM BACK AFTER UNDOING EVERY MOVE
 Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboard) {
     Piece* one_of_my_pieces;
     Move tried_move;
