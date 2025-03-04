@@ -97,7 +97,12 @@ TEST_CASE("The Piece movement is properly changed through inheritance", "[pieces
     Piece* testkpiece = &testKing;
     Board mainboard = Board();
     mainboard.place(testkpiece, testKing.row, testKing.column);
-    REQUIRE(testkpiece->can_classmove(1, 5, &mainboard));
+    printf("Imagine a lonely king on a board alone.\n");
+    mainboard.print_board();
+    Move kingmove = mainboard.make_move(&testKing, 2, 6);
+    REQUIRE(mainboard.human_move_piece(&kingmove));
+    mainboard.print_board();
+    printf("Kings are pieces just like everyone else.\n");
 }
 
 TEST_CASE("Pawns can catch pawns that jumped over", "[passant]") {

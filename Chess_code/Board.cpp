@@ -209,16 +209,20 @@ void Board::kill_passant() {
     passantpawn = PassantPawn();
 }
 
+//TODO IF UNDO You might have to downgrade a pawn
 void Board::undo_move(Move* move_i_made) {
-    //TODO PRESERVE YOUR EN PASSANT PAWN IN THIS FUNCTION
     passantpawn = prevepassant;
     prevepassant = PassantPawn();
+    int previousrow = move_i_made->end_row;
+    int previouscolumn = move_i_made->end_column;
     Piece* piecethatmoved = move_i_made->piece_that_moved;
-    piecethatmoved->row = move_i_made->start_row;
-    piecethatmoved->column = move_i_made->start_column;
+    
     if (move_i_made->piece_landed_on != NULL) {
         move_i_made->piece_landed_on->alive = true;
     }
+    place(piecethatmoved, move_i_made->start_row, move_i_made->start_column);
+    piecethatmoved->row = move_i_made->start_row;
+    piecethatmoved->column = move_i_made->start_column;
     //passantpawn = prevpassantpawn;
 }
 void print_piece(Piece *piece /*bool islast*/) {

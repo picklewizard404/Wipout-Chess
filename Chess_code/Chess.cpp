@@ -69,6 +69,7 @@ int chess()
     }
     // */
     // If playing
+    printf("I'll tell you this exactly once:\nThe top right square is row 8 column 8 and the bottom left square is row 1 column 1.\n");
     //*
     while (wKing->alive && bKing->alive)
     {
@@ -204,13 +205,18 @@ int chess()
                 //*
                 Game_Status am_I_still_in_check = mainboard.is_in_check(current_team->enemy_team, current_team, &mainboard, false);
                 if (am_I_still_in_check != NEUTRAL) {
-                    printf("Still in check, silly!\n");
-                        //TODO IF UNDO You might have to downgrade a pawn
-                        /*
-                        undo_move(&tried_move, &mainboard, current_team, &am_I_still_in_check);
-                        // We don't switch teams after undoing the move.
-                        Switch the teams again
-                        // END */
+                    printf("That's check, silly!\n");
+                    printf("Undo that move?\n");
+                    std::ignore = scanf("%3s", nameofpiecetomove);
+                    clearinput();
+                    nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
+                    for (int i = 1; i < 3; i++) {
+                        nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
+                    }
+                    if (strcmp(nameofpiecetomove, "Yes") == 0) {
+                        mainboard.undo_move(&tried_move);
+                        current_team = current_team->enemy_team;
+                    }
                 }
                 current_team->enemy_team->current_status = mainboard.is_in_check(current_team->enemy_team, current_team, &mainboard, false);
                 current_team->current_status = mainboard.is_in_check(current_team, current_team->enemy_team, &mainboard);
