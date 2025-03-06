@@ -23,6 +23,41 @@
 #include "Chess_code\InvalidPiece.h"
 #include <iostream>
 #include <tuple>
+
+TEST_CASE("Pieces know the first turn they moved", "[FirstTurnPiece]") {
+    Board mainboard;
+    Team whiteteam = Team(WHITE, &mainboard);
+    Team blackteam = Team(BLACK, &mainboard);
+    Pawn* wpawn = &whiteteam.pawns[4];
+    Pawn* bpawn = &blackteam.pawns[4];
+    Move firstmove = mainboard.make_move(wpawn, 4, 5);
+    Move secondmove = mainboard.make_move(bpawn, 5, 5);
+    mainboard.human_move_piece(&firstmove);
+    mainboard.human_move_piece(&secondmove);
+    mainboard.print_board();
+    REQUIRE(wpawn->first_turn_i_moved() == 1);
+    REQUIRE(bpawn->first_turn_i_moved() == 2);
+    printf("Turns seem to be counted.\n");
+    King* wking = &whiteteam.the_king;
+    Move thirdmove = mainboard.make_move(wking, 2, 5);
+    mainboard.human_move_piece(&thirdmove);
+    mainboard.print_board();
+    REQUIRE(wpawn->first_turn_i_moved() == 1);
+    REQUIRE(bpawn->first_turn_i_moved() == 2);
+    REQUIRE(wking->first_turn_i_moved() == 3);
+    printf("They definitely are.\n");
+}
+
+TEST_CASE("Undoing a first move correctly sets it back to -1") {
+    Board mainboard;
+    Rook brook = Rook(BLACK, 2, 2, 1);
+    King wking = King(WHITE);
+    mainboard.place(&brook, 3, 2);
+    mainboard.place(&wking, 1, 5);
+    Pawn wpawn = Pawn(WHITE, 2, 1, 1);
+    //Move firstmove = mainboard.make_move
+}
+
 TEST_CASE("I remember previous turn's passant", "[undo][passant]") {
     Board mainboard;
     Team whiteteam = Team(WHITE, &mainboard);
@@ -105,7 +140,7 @@ TEST_CASE("The Piece movement is properly changed through inheritance", "[pieces
     printf("Kings are pieces just like everyone else.\n");
 }
 
-TEST_CASE("Pawns can catch pawns that jumped over", "[passant]") {
+TEST_CASE("Pawns can catch pawns that jumped over", "[passant][capture]") {
     Board mainboard;
     Pawn wpawn1 = Pawn(WHITE, 5, 1, 1);
     Pawn bpawn2 = Pawn(BLACK, 7, 2, 2);
@@ -120,7 +155,8 @@ TEST_CASE("Pawns can catch pawns that jumped over", "[passant]") {
     mainboard.print_board();
     REQUIRE(mainboard.passantpawn.get_piece() == &bpawn2);
     Move passantmove2 = mainboard.make_move(&wpawn1, 6, 2); //6,2
-    REQUIRE(mainboard.human_move_piece(&passantmove2));
+    bool passant2 = mainboard.human_move_piece(&passantmove2);
+    REQUIRE(passant2);
     printf("En Passant!\n");
     mainboard.print_board();
     REQUIRE_FALSE(bpawn2.alive);

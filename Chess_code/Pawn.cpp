@@ -16,6 +16,7 @@ Pawn::Pawn(COLOR b_team, int b_row, int b_column, int b_count) {
 	setup(chess_class, b_team, b_row, b_column, b_count, PAWN);
 }
 
+//
 bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {
 	//TODO Make it possible to go up 2 spaces if in your starting position
 	//TODO MAKE PASSANT POSSIBLE
@@ -36,12 +37,7 @@ bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {
 			!main_board->does_have_any_piece(row + 2 * direction, column))
 		{
 			if (b_row == row + 2 * direction) {
-				//Set passant.
-				/*if (main_board->passantpawn.get_piece() != this) {
-					main_board->prevepassant = main_board->passantpawn;
-				}*/
-				main_board->passantpawn = PassantPawn(this, row + direction, column);
-				main_board->passant_number = main_board->turn_number;
+				//I can be hit here thanks to the en passant rule.
 				return true;
 			}
 		}

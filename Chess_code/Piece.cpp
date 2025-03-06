@@ -16,6 +16,7 @@ Piece::Piece(COLOR color) {
 }
 
 Piece::Piece(Piece* piece_to_clone) {
+    first_turn = -1;
     strcpy(chess_class, piece_to_clone->chess_class);
     piecetype = piece_to_clone->piecetype;
     team = piece_to_clone->team;
@@ -26,6 +27,11 @@ Piece::Piece(Piece* piece_to_clone) {
     column = piece_to_clone->column;
 }
 
+int Piece::first_turn_i_moved() const
+{
+    return first_turn;
+}
+
 void Piece::be_safe(COLOR color) {
     count = 0;
     row = -1;
@@ -33,6 +39,7 @@ void Piece::be_safe(COLOR color) {
     team = color;
     piecetype = EMPTY;
     alive = true;
+    first_turn = -1;
     /*
     if (false) {
         for (int i = 0; i < 7; i++) {
@@ -55,7 +62,7 @@ void Piece::setup(char* typeofpiece, COLOR b_team, int b_row, int b_column, int 
     set_up_full_name(typeofpiece);
 }
 
-bool Piece::same_team(COLOR piece_team) {
+bool Piece::same_team(COLOR piece_team) const {
     return team == piece_team;
 }
 
@@ -71,7 +78,7 @@ void Piece::place(int b_row, int b_column) {
     column = b_column;
 }
 
-char Piece::team_character() {
+char Piece::team_character() const {
     if (team == WHITE) {
         return 'w';
     }
@@ -81,15 +88,22 @@ char Piece::team_character() {
     return '?';
 }
 
-void Piece::know_i_change_position(int b_row, int b_column) {
+bool Piece::has_moved() const {
+    return first_turn != -1;
+}
+
+void Piece::know_i_change_position(int b_row, int b_column, int on_turn) {
     row = b_row;
     column = b_column;
+    if (!has_moved()) {
+        first_turn = on_turn;
+    }
 }
 
 bool Piece::can_classmove(int b_row, int b_column, Board *board_to_move_on) {
     return false;
 }
-void Piece::sayspace() {
+void Piece::sayspace() const {
     cout << name;
 }
 
@@ -120,7 +134,7 @@ void Piece::set_up_full_name(const char *nameofpiece) {
     // 0;
 }
 
-bool Piece::do_team_match(Piece* team_there) {
+bool Piece::do_team_match(Piece* team_there) const {
     if (team_there == NULL)
     {
         return false;

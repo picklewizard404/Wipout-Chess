@@ -11,8 +11,7 @@
 using namespace std;
 
 Board::Board() {
-    turn_number = 0;
-    passant_number = -1;
+    turn_number = 1;
     whiteturn = true;
     threatens_white = NULL;
     threatens_black = NULL;
@@ -28,6 +27,7 @@ Board::Board() {
 //Column and row both range from 1 to 8.
 //The piece has to know where it was when this move happens
 //Teleporting pieces is useful for testing.
+//Note that this does NOT count as making a move.
 void Board::place(Piece* piece, int row, int column) {
     spaces[piece->row - 1][piece->column - 1] = NULL;
     spaces[row - 1][column - 1] = piece;
@@ -35,11 +35,11 @@ void Board::place(Piece* piece, int row, int column) {
     piece->column = column;
 }
 
-bool Board::does_have_any_piece(int row, int column) {
+bool Board::does_have_any_piece(int row, int column) const {
     return spaces[row - 1][column - 1] != NULL;
 }
 
-bool Board::no_ally_there(COLOR my_team, int row, int column) {
+bool Board::no_ally_there(COLOR my_team, int row, int column) const {
     if (spaces[row - 1][column - 1] != NULL) {
         return spaces[row - 1][column - 1]->team != my_team;
     }
@@ -72,16 +72,17 @@ bool Board::is_on_board(int b_row, int b_column) {
     }
     return true;
 }
-//TODO I AM FAILING HERE. THE PASSANT PAWN IS NOT RESETTING.
+//NOTE: This is only used in tests?
+//It had better not change any state.
 Move Board::make_move(Piece* piece_that_moved, int erow, int ecolumn) {
     if (piece_that_moved == NULL) {
         throw InvalidPiece(piece_that_moved);
     }
-    Pawn* passantpawnpiece = NULL;
+    //Pawn* passantpawnpiece = NULL;
     int passantrow = -1;
     int passantcolumn = -1;
     bool createnewpassant = false;
-    if (piece_that_moved->piecetype == PAWN) {
+    /*if (piece_that_moved->piecetype == PAWN) {
         if (piece_that_moved->team == WHITE && piece_that_moved->row == 2 && erow == 4) {
             passantpawnpiece = (Pawn*)piece_that_moved;
             passantrow = 4;
@@ -98,8 +99,7 @@ Move Board::make_move(Piece* piece_that_moved, int erow, int ecolumn) {
         if (createnewpassant) {
             passantpawn = PassantPawn(passantpawnpiece, passantrow, passantcolumn);
         }
-        
-    }
+    }*/
     
     Move nextmove = Move(piece_that_moved->row, piece_that_moved->column, erow, ecolumn, 
         piece_that_moved, spaces[erow - 1][ecolumn - 1],
@@ -142,10 +142,17 @@ bool Board::human_move_piece(Move* move_to_make) {
             if (spaces[b_row - 1][b_column - 1] != NULL) {
                 spaces[b_row - 1][b_column - 1]->alive = false;
                 spaces[b_row - 1][b_column - 1] = piece;
-                //Remember the fact that I was there in case this move has to be redone.
+                //Remember the piece I landed on in case this move has to be undone.
                 move_to_make->piece_landed_on = spaces[b_row - 1][b_column - 1];
-                //TODO: Add this to the stack of moves.
             }
+
+            //Check if an en passant was made.
+            if (passantpawn.get_piece() != NULL) {
+                if (b_row == passantpawn.get_row() && b_column == passantpawn.get_column() && passantpawn.get_piece()->team != piece->team) {
+                    kill_passant();
+                }
+            }
+            
 
             //Think about passantpieces moving through a pipe.
             //First, you forget your oldest memory.
@@ -158,22 +165,15 @@ bool Board::human_move_piece(Move* move_to_make) {
             }
             
             if (passantpawn.get_piece() != NULL) {
-                if (passantpawn.get_piece()->team == piece->team) {
-                    if (prevepassant.get_piece() == NULL) {
-                        changepast = true;
-                    }
-                    else if (prevepassant.get_piece()->team == piece->team) {
-                        changepast = true;
-                    }
-                    if (changepast) {
-                        prevepassant = passantpawn;
-                    }
+                if (passantpawn.get_turn_made() < turn_number) {
+                    prevepassant = passantpawn;
+                    passantpawn = PassantPawn();
                 }
             }
             //Either way move the piece.
             spaces[move_to_make->start_row - 1][move_to_make->start_column - 1] = NULL;
             place(piece, b_row, b_column);
-            piece->know_i_change_position(b_row, b_column);
+            piece->know_i_change_position(b_row, b_column, turn_number);
             if (passantpawn.get_piece() != NULL) {
                 //Apply passant if needed.
                 if (piece->piecetype == PAWN && b_row == passantpawn.get_row() && b_column == passantpawn.get_column() && piece->team != passantpawn.get_piece()->team) {
@@ -183,17 +183,29 @@ bool Board::human_move_piece(Move* move_to_make) {
                     prevepassant = passantpawn;
                     //Create a new intstance of a readonly class to reset it.
                     passantpawn = PassantPawn();
-                    //Maybe the mistake is here?
+                    //Maybe the mistake is around here?
                 }
             }
 
 
-            //Now we know we're done moving.
+            
             //Maybe the passant didn't happen.
-            if (turn_number > passant_number && passantpawn.get_piece() != NULL) {
+            if (turn_number > passantpawn.get_turn_made() && passantpawn.get_piece() != NULL) {
                 prevepassant = passantpawn;
                 passantpawn = PassantPawn();
             }
+            
+            //Maybe we set one up for our opponent though.
+            if (piece->piecetype == PAWN) {
+                if (piece->team == WHITE && move_to_make->start_row == 2 && move_to_make->end_row == 4) {
+                    passantpawn = PassantPawn((Pawn*)piece, 3, piece->column, turn_number);
+                }
+                else if (piece->team == BLACK && move_to_make->start_row == 7 && move_to_make->end_row == 5) {
+                    passantpawn = PassantPawn((Pawn*)piece, 6, piece->column, turn_number);
+                }
+            }
+
+            //Now we know we're done moving.
             turn_number++;
             return true;
         }
@@ -207,6 +219,11 @@ void Board::kill_passant() {
     spaces[passantpawn.get_piece()->row - 1][passantpawn.get_piece()->column - 1] = NULL;
     //This is safe because doing a passant will NEVER be followed by a passant.
     passantpawn = PassantPawn();
+}
+
+int Board::current_turn() const
+{
+    return turn_number;
 }
 
 //TODO IF UNDO You might have to downgrade a pawn
@@ -223,10 +240,10 @@ void Board::undo_move(Move* move_i_made) {
     place(piecethatmoved, move_i_made->start_row, move_i_made->start_column);
     piecethatmoved->row = move_i_made->start_row;
     piecethatmoved->column = move_i_made->start_column;
-    //passantpawn = prevpassantpawn;
+    turn_number--;
 }
 void print_piece(Piece *piece /*bool islast*/) {
-    char piecename[11];
+    char piecename[11] = "          ";
     piecename[10] = '\0';
     if (piece != NULL) {
         int charofname = 0;

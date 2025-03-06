@@ -11,9 +11,12 @@ typedef Piece * space;
 class Board
 {
 	//variables
+private:
+	int turn_number;
 public:
 	//Row then column
 	Piece* spaces[8][8];
+	
 	Move previous_move;
 	Piece* threatens_white;
 	Piece* threatens_black;
@@ -23,10 +26,9 @@ public:
 	// int column;
 	// int row;
 	bool whiteturn;
-	int turn_number;
-	int passant_number;
 
-	//functions move
+	//functions
+	int current_turn() const;
 	void undo_move(Move* move_i_made);
 	Move make_move(Piece* piece_that_moved, int erow, int ecolumn);
 	bool human_move_piece(Move* move_to_make);
@@ -38,8 +40,8 @@ public:
 	Board();
 	Game_Status is_in_check(Team* my_team, Team* enemy_team, Board* mainboardbool, bool check_for_checkmate = true);
 	Game_Status try_to_escape(Team* my_team, Team* enemy_team, Board* mainboard);
-	bool does_have_any_piece(int row, int column);
-	bool no_ally_there(COLOR my_team, int row, int column);
+	bool does_have_any_piece(int row, int column) const;
+	bool no_ally_there(COLOR my_team, int row, int column) const;
 };
 
 //bool do_team_dismatch(Piece* team_moving, Piece* team_there)
