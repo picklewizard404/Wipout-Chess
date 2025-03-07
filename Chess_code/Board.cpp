@@ -1,4 +1,4 @@
-#include "Piece.h"
+﻿#include "Piece.h"
 #include "Knight.h"
 #include "Board.h"
 
@@ -265,6 +265,12 @@ void Board::print_board() {
     const int length_of_name = 12;
     const int number_of_spaces = 8;
     bool firstcolumn = true;
+
+    //Top row.
+    for (int i = 0; i < 6 + length_of_name * (number_of_spaces - 1); i++) {
+        printf("-");
+    }
+    printf("\n");
     for (int row = 7; row >= 0; row--) {
         firstcolumn = true;
         if (row == 7 || row == 0) {
@@ -296,6 +302,10 @@ void Board::print_board() {
             }
             printf("|\n");
         }
+    }
+    //Bottom row
+    for (int i = 0; i < 6 + length_of_name * (number_of_spaces - 1); i++) {
+        printf("-");
     }
     printf("\n");
 }
