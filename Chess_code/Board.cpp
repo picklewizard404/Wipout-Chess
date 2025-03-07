@@ -264,21 +264,35 @@ void print_piece(Piece *piece /*bool islast*/) {
 void Board::print_board() {
     const int length_of_name = 12;
     const int number_of_spaces = 8;
+    bool firstcolumn = true;
     for (int row = 7; row >= 0; row--) {
+        firstcolumn = true;
         if (row == 7 || row == 0) {
             printf("[]");
+        }
+        else if (firstcolumn) {
+            printf("| ");
         }
         else {
             printf("  ");
         }
         for (int column = 0; column <= 7; column++) {
+            if (firstcolumn && column != 0) {
+                firstcolumn = false;
+            }
             print_piece(spaces[row][column]);
         }
         printf("\n");
         if (row > 0) {
             printf("|");
-            for (int i = 0; i < 4 + length_of_name * (number_of_spaces-1); i++) {
-                printf("_");
+            for (int i = 0, minus = 0; i < 4 + length_of_name * (number_of_spaces-1); i++) {
+                if ((i % length_of_name) != length_of_name-1 - minus) {
+                    printf("_");
+                }
+                else {
+                    printf("|");
+                    minus++;
+                }
             }
             printf("|\n");
         }
