@@ -7,21 +7,24 @@
 #include <stdio.h>
 #include <string.h>
 #include <tuple>
-#include <windows.h>
+
 #include <ctime>
 #include "Safety.h"
 #include "Undo_move.h"
-
+#include <chrono>
+#include <thread>
 
 using namespace std;
-
-void sleep5();
 
 bool make_kings_hug(Team *current_team, Team*whiteteam, Team*blackteam) {
     printf("Player %d hugs player %d. Both win!\n",
         current_team->color == whiteteam->color ? 1 : 2,
         current_team->enemy_team->color == blackteam->color ? 2 : 1);
     return true;
+}
+
+void sleep5() {
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
 int chess()
@@ -57,7 +60,6 @@ int chess()
     Piece* bKing = blackteam.pieces[3];
     Piece* current_king = wKing;
     bool am_i_in_check = false;
-    printf("You can be killed.\n");
 
     //Begin live test
     /*
@@ -68,8 +70,7 @@ int chess()
         printf(problem.what());
     }
     // */
-    // If playing
-    printf("I'll tell you this exactly once:\nThe top right square is row 8 column 8 and the bottom left square is row 1 column 1.\n");
+    
     //*
     while (wKing->alive && bKing->alive)
     {
@@ -171,7 +172,7 @@ int chess()
             std::ignore = scanf("%d", &m_column);
             
 
-            bool should_upgrade_pawn = FALSE;
+            bool should_upgrade_pawn = false;
             switch (type_of_piecetomove)
             {
             case PAWN:
@@ -259,10 +260,6 @@ int chess()
         return 1;
     }
     return 0;
-}
-
-void sleep5() {
-    Sleep(5 * CLOCKS_PER_SEC);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

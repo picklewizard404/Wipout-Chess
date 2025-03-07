@@ -389,22 +389,39 @@ TEST_CASE("Pawns can normally move 2 on the start of their trurn, but not if the
     printf("That doesn't work either.\n");
 }
 
-TEST_CASE("I remember En passant state after doing a move and undoing it.", "[undo]") {
+TEST_CASE("I remember En passant state after doing a move and undoing it.", "[undo][passant]") {
+    printf("I remember En passant state after doing a move and undoing it.\n");
     Board mainboard;
     Pawn wpawn = Pawn(WHITE, 2, 1, 1);
     mainboard.place(&wpawn, 2, 1);
-    Pawn bpawn = Pawn(BLACK, 7, 1, 1);
-    mainboard.place(&bpawn, 7, 1);
+    Pawn bpawn1 = Pawn(BLACK, 7, 1, 1);
+    mainboard.place(&bpawn1, 7, 1);
+    Pawn bpawn2 = Pawn(BLACK, 4, 2, 2);
+    mainboard.place(&bpawn2, 4, 2);
     Move first_move = mainboard.make_move(&wpawn, 4, 1);
+    mainboard.print_board();
     mainboard.human_move_piece(&first_move);
     mainboard.print_board();
     //TODO FINISH THIS TEST
+    printf("I should remember the en passant state now.\n");
     REQUIRE(mainboard.spaces[3][0] == &wpawn);
+    REQUIRE(mainboard.passantpawn.get_piece() == &wpawn);
+    Move second_move = mainboard.make_move(&bpawn1, 6, 1);
+    mainboard.human_move_piece(&second_move);
+    printf("If I went here...\n");
+    mainboard.print_board();
+    REQUIRE(mainboard.passantpawn.get_piece() == NULL);
+    printf("It's too late to make an en passant move.\n");
+    mainboard.undo_move(&second_move);
+    printf("But if I undid that move...\n");
+    mainboard.print_board();
+    REQUIRE(mainboard.passantpawn.get_piece() == &wpawn);
+    printf("It is possible to kill the white piece by moving a black pawn to row %d, column %d.\n",
+        mainboard.passantpawn.get_row(), mainboard.passantpawn.get_column());
+    REQUIRE(bpawn2.can_classmove(3, 1, &mainboard));
+    Move passantmove = mainboard.make_move(&bpawn2, 3, 1);
+    mainboard.human_move_piece(&passantmove);
+    mainboard.print_board();
+    REQUIRE_FALSE(wpawn.alive);
+    printf("Like this!\n");
 }
-//I can't guarantee an exception is thrown with code, so I have to test it live.
-/*
-TEST_CASE("I can tell when a move doesn't say what it's moving.", "[moves]") {
-    Board mainboard;
-    King bKing = King(BLACK);
-    REQUIRE_THROWS_MATCHES(Move(1, 5, 8, 5, NULL, &bKing), InvalidMove, Message("InvalidMove::what"));
-}*/
