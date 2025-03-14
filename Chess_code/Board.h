@@ -34,7 +34,7 @@ public:
 	bool human_move_piece(Move* move_to_make);
 	void place(Piece* piece, int row, int column);
 	void kill_passant();
-	void print_board();
+	void print_board() const;
 	void print_passant(bool* testprinted = NULL);
 	bool is_on_board(int b_row, int b_column);
 	Board();

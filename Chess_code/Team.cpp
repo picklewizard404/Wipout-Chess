@@ -22,6 +22,18 @@ void Team::set_upgraded_pointers_to0() {
 	}
 }
 
+const char* Team::team_name() const {
+	if (color == WHITE) {
+		return "White";
+	}
+	else if (color == BLACK) {
+		return "Black";
+	}
+	else {
+		return "Unknown";
+	}
+}
+
 //public
 Team::Team() {
 	enemy_team = nullptr;

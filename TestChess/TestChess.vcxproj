@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\source\repos\Catch2_code\catch_amalgamated.cpp" />
+    <ClCompile Include="..\..\..\source\repos\Catch2_code\catch_amalgamated.cpp" />
     <ClCompile Include="..\Chess_code\Bishop.cpp" />
     <ClCompile Include="..\Chess_code\Board.cpp" />
     <ClCompile Include="..\Chess_code\Chess.cpp" />
@@ -150,7 +150,7 @@
     <ClCompile Include="..\TestChess.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\source\repos\Catch2_code\catch_amalgamated.hpp" />
+    <ClInclude Include="..\..\..\source\repos\Catch2_code\catch_amalgamated.hpp" />
     <ClInclude Include="..\Chess_code\Bishop.h" />
     <ClInclude Include="..\Chess_code\Board.h" />
     <ClInclude Include="..\Chess_code\Check_vs_Checkmate.h" />

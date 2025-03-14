@@ -46,6 +46,7 @@ public:
 	//TODO MAKE A TEAM DESTRUCTOR TO DELETE NEWLY MADE PIECES
 	void empty_spaces();
 	void put_pieces_on_board(Board* the_board_shared);
+	const char* team_name() const;
 };
 
 #endif TEAM_INCLUDED

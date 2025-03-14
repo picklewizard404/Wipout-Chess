@@ -242,7 +242,7 @@ void Board::undo_move(Move* move_i_made) {
     piecethatmoved->column = move_i_made->start_column;
     turn_number--;
 }
-void print_piece(Piece *piece /*bool islast*/) {
+static void print_piece(Piece *piece /*bool islast*/) {
     char piecename[11] = "          ";
     piecename[10] = '\0';
     if (piece != NULL) {
@@ -261,7 +261,7 @@ void print_piece(Piece *piece /*bool islast*/) {
     }
     else printf("          |");
 }
-void Board::print_board() {
+void Board::print_board() const {
     const int length_of_name = 12;
     const int number_of_spaces = 8;
     bool firstcolumn = true;

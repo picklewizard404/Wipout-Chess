@@ -66,9 +66,6 @@
     <ClCompile Include="..\TestChess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\source\repos\Catch2_code\catch_amalgamated.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Chess_code\Bishop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -76,6 +73,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Chess_code\Queen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\repos\Catch2_code\catch_amalgamated.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -137,9 +137,6 @@
     <ClInclude Include="..\Chess_code\Teamname.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\source\repos\Catch2_code\catch_amalgamated.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Chess_code\Bishop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -153,6 +150,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Chess_code\PassantPawn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\repos\Catch2_code\catch_amalgamated.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

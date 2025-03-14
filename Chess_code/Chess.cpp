@@ -6,7 +6,6 @@
 #include <tuple>
 #include <stdio.h>
 #include <string.h>
-#include <tuple>
 
 #include <ctime>
 #include "Safety.h"
@@ -17,9 +16,9 @@
 using namespace std;
 
 bool make_kings_hug(Team *current_team, Team*whiteteam, Team*blackteam) {
-    printf("Player %d hugs player %d. Both win!\n",
-        current_team->color == whiteteam->color ? 1 : 2,
-        current_team->enemy_team->color == blackteam->color ? 2 : 1);
+    printf("%s player hugs %s player. Both win!\n",
+        current_team->color == whiteteam->color ? whiteteam->team_name() : blackteam->team_name(),
+        current_team->enemy_team->color == blackteam->color ? blackteam->team_name() : whiteteam->team_name());
     return true;
 }
 
@@ -248,7 +247,7 @@ int chess()
     }
     if (whiteteam.the_king.row == blackteam.the_king.row
         && whiteteam.the_king.column == blackteam.the_king.column) {
-        printf("%s king hugged the %s king. Happy ending!", current_team->enemy_team->full_name, current_team->full_name);
+        make_kings_hug(current_team->enemy_team, public_white_team, public_black_team);
         return 0;
     }
     if (!whiteteam.the_king.alive) {
