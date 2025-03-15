@@ -1,8 +1,8 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by PlayChess.rc
+// Used by PlayChess1.rc
 //
-#define IDI_ICON1                       101
+#define IDB_PNG1                        101
 
 // Next default values for new objects
 // 
