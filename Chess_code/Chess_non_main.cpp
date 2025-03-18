@@ -74,36 +74,29 @@ COLOR enemy_team(COLOR my_team) {
     }
 }
 
-//Not sure this function is actually called.
-/*
-void do_move(Team** current_team, Board* mainboard, Move* move, Team* public_white_team, Team *public_black_team, int *move_count, Game_Status *new_status) {
-    //We check that we are on the right team before we move
-    if ((*current_team)->color == move->piece_that_moved->team) {
-        Piece* piecelandedon = mainboard->spaces[move->end_row - 1][move->end_column - 1];
-        int old_row = move->piece_that_moved->row;
-        int old_column = move->piece_that_moved->column;
-        printf("Used to be on row %d, column %d.\n", move->piece_that_moved->row, move->piece_that_moved->column);
-        //This function basically always returns true. At least it should.
-        if (mainboard->human_move_piece(move)) {
-            printf("Valid move.\n");
-            //Check for check;
-            Game_Status still_in_check = mainboard->is_in_check(*current_team, ((*current_team)->enemy_team), mainboard);
-            if (still_in_check != NEUTRAL) {
-                printf("Invalid move. You are entering Check.\nI guess you're A.OK letting your opponet win.\n");
-                //TODO: Re-write undoing this move and return.
-                //UNDO_MOVE8
-            }
-          
-            if (*current_team == public_white_team) {
-                *current_team = public_black_team;
-            }
-            else {
-                *current_team = public_white_team;
-            }
-        }
-    }
+//TODO This function is the last one you need to write, probably.
+//*
+bool do_castle(Team* current_team, Board* mainboard, const char *direction_castle) {
+    /*
+	* Do something like this in the chess() function which should call this function:
+    char direction_castle[6];
+    scanf("%5s", direction_castle);
+	direction_castle[0] = toupper(direction_castle[0]);
+	for (int i = 1; i < 5; i++) {
+		direction_castle[i] = tolower(direction_castle[i]);
+	}
+    */
+	clearinput();
+	if (strcmp("Left", direction_castle) != 0 && strcmp("Right", direction_castle) != 0) {
+		printf("Invalid direction.\n");
+		return false;
+	}
+
+    //You can do this move.
+    current_team->enemy_team->current_status = mainboard->is_in_check(current_team->enemy_team, current_team, mainboard);
+    return true;
 }
-*/
+// */
 bool check_piece(Board* mainboard, Piece** piecetomove, int row, int column, char nameofpiecetomove[]) {
     piecetomove = &(mainboard->spaces[row][column]);
     for (int space_row = 0; space_row < 8; space_row++)

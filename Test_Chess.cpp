@@ -21,6 +21,7 @@
 #include "Chess_code\Teamname.h"
 #include "Chess_code\diagnoal_direction.h"
 #include "Chess_code\InvalidPiece.h"
+#include "Chess_code\Chess_non_main.h"
 #include <iostream>
 #include <tuple>
 
@@ -162,8 +163,48 @@ TEST_CASE("Pawns can catch pawns that jumped over", "[passant][capture]") {
     REQUIRE_FALSE(bpawn2.alive);
 }
 
-TEST_CASE("Simple White Winning", "[win]") {
-    //TODO
+void kill_piece(Board* mainboard, Piece* piece) {
+	piece->alive = false;
+	mainboard->spaces[piece->row - 1][piece->column - 1] = NULL;
+}
+
+TEST_CASE("Simple Castling test", "[.interactive][castle]") {
+    //TODO ACTUALLY MAKE THEM CASTLE AND TELL WHETER OR NOT IT'S POSSIBLE. YOU WILL PROBABLY NEED TO TEST THIS IN 2 TESTS:
+	//1. The king and rook are in the right place.
+    //2. The king hasn't moved yet.
+	printf("Testing Castling.\n");
+    Board mainboard;
+	Team whiteteam = Team(WHITE, &mainboard);
+	Team blackteam = Team(BLACK, &mainboard);
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+	whiteteam.queen.alive = false;
+    kill_piece(&mainboard, &whiteteam.queen);
+	kill_piece(&mainboard, &whiteteam.bishop1);
+    kill_piece(&mainboard, &whiteteam.knight1);
+    mainboard.print_board();
+    
+	REQUIRE(do_castle(&whiteteam, &mainboard, "Left"));
+    0;
+}
+
+TEST_CASE("Simple check that pieces know when they first moved", "[pieces][first]") {
+	Board mainboard;
+	King wking = King(WHITE);
+	King bking = King(BLACK);
+	mainboard.place(&wking, 1, 5);
+	mainboard.place(&bking, 8, 5);
+	REQUIRE(wking.first_turn_i_moved() == -1);
+	REQUIRE(bking.first_turn_i_moved() == -1);
+	Move firstmove = mainboard.make_move(&wking, 2, 5);
+	mainboard.human_move_piece(&firstmove);
+	REQUIRE(wking.first_turn_i_moved() == 1);
+	REQUIRE(bking.first_turn_i_moved() == -1);
+	Move secondmove = mainboard.make_move(&bking, 7, 5);
+	mainboard.human_move_piece(&secondmove);
+    REQUIRE(wking.first_turn_i_moved() == 1);
+    REQUIRE(bking.first_turn_i_moved() == 2);
+	printf("Pieces know when they first moved.\n");
 }
 
 TEST_CASE("Queens moving diagonally", "[queen]") {

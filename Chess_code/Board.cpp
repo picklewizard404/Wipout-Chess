@@ -48,7 +48,17 @@ bool Board::no_ally_there(COLOR my_team, int row, int column) const {
     }
 }
 
-Game_Status Board::is_in_check(Team* my_team, Team* enemy_team, Board* mainboard, bool check_for_checkmate)  {
+int Board::get_turn()
+{
+    return turn_number;
+}
+
+void Board::next_turn()
+{
+    turn_number++;
+}
+
+Game_Status Board::is_in_check(Team* my_team, Team* enemy_team, bool check_for_checkmate)  {
     //Todo: Use info HERE to try every possible move of my_team
     int mkcolumn = my_team->the_king.column;
     int mkrow = my_team->the_king.row;
@@ -57,7 +67,7 @@ Game_Status Board::is_in_check(Team* my_team, Team* enemy_team, Board* mainboard
         if (enemy_team->pieces[i] != 0) {
             if (enemy_team->pieces[i]->can_classmove(mkrow, mkcolumn, this)) {
                 if (false && check_for_checkmate) {
-                    return try_to_escape(my_team, enemy_team, mainboard);
+                    return try_to_escape(my_team, enemy_team, this);
                 }
                 else return CHECK;
             }
@@ -127,11 +137,6 @@ bool Board::human_move_piece(Move* move_to_make) {
         int p_column = piece->column;
         int p_row = piece->row;
         bool can_move = piece->can_classmove(b_row, b_column, this);
-        if (piece != NULL) {
-            if (piece->piecetype == KING) {
-                can_move = can_move || ((King*)piece)->can_kingmove(b_row, b_column, this);
-            }
-        }
         if (can_move) {
             // If you landed on a piece on your team:
             if (piece->do_team_match(spaces[b_row - 1][b_column - 1])) {
@@ -171,6 +176,7 @@ bool Board::human_move_piece(Move* move_to_make) {
                 }
             }
             //Either way move the piece.
+			piece->know_i_moved(turn_number);
             spaces[move_to_make->start_row - 1][move_to_make->start_column - 1] = NULL;
             place(piece, b_row, b_column);
             piece->know_i_change_position(b_row, b_column, turn_number);
@@ -181,9 +187,8 @@ bool Board::human_move_piece(Move* move_to_make) {
                 }
                 else if (passantpawn.get_piece()->team != piece->team) {
                     prevepassant = passantpawn;
-                    //Create a new intstance of a readonly class to reset it.
+                    //Create a new instance of a readonly class to reset it.
                     passantpawn = PassantPawn();
-                    //Maybe the mistake is around here?
                 }
             }
 
@@ -339,7 +344,7 @@ Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboa
                 tried_move.end_column = trycolumn;
                 // We know we can go here, so we might as well try.
                 human_move_piece(&tried_move);
-                if (is_in_check(my_team, enemy_team, this, false) == NEUTRAL) {
+                if (is_in_check(my_team, enemy_team, false) == NEUTRAL) {
                     undo_move(&tried_move);
                     return CHECK;
                 }

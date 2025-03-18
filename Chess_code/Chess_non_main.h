@@ -6,6 +6,8 @@
 #include "Check_vs_Checkmate.h"
 #include "Move.h"
 #include "Pawn_Upgrader.h"
+//NOTE: The teams have access to their enemys
+bool do_castle(Team* current_team, Board* mainboard, const char *direction_castle);
 void tellmeaspace(Piece* piecetomove);
 void saybadmove();
 void say(int column, int row, Board mainboard);

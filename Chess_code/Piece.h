@@ -28,6 +28,7 @@ public: // public functions
     Piece(Piece* clone);
     //Useful for testing.
     int first_turn_i_moved() const;
+    void know_i_moved(int turn_i_moved_on);
     char team_character() const;
     bool has_moved() const;
     void setup(char* typeofpiece, COLOR b_team, int b_row, int b_column, int b_count, TYPE b_piecetype);

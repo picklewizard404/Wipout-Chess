@@ -109,6 +109,8 @@ int chess()
             nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
         }
         clearinput();
+
+		//TODO: IF YOU CASTLE, 'continue;' THE LOOP here.
         if (strcmp(nameofpiecetomove, "sUrrender") == 0) {
             printf("You give up. %s team wins!", current_team->enemy_team->full_name);
             sleep5();
@@ -203,7 +205,7 @@ int chess()
                 current_team = current_team->enemy_team;
                 //Was that move safe? IF not, I am still in check.
                 //*
-                Game_Status am_I_still_in_check = mainboard.is_in_check(current_team->enemy_team, current_team, &mainboard, false);
+                Game_Status am_I_still_in_check = mainboard.is_in_check(current_team->enemy_team, current_team, false);
                 if (am_I_still_in_check != NEUTRAL) {
                     printf("That's check, silly!\n");
                     printf("Undo that move?\n");
@@ -218,7 +220,7 @@ int chess()
                         current_team = current_team->enemy_team;
                     }
                 }
-                current_team->enemy_team->current_status = mainboard.is_in_check(current_team->enemy_team, current_team, &mainboard, false);
+                current_team->enemy_team->current_status = mainboard.is_in_check(current_team->enemy_team, current_team, false);
                 current_team->current_status = mainboard.is_in_check(current_team, current_team->enemy_team, &mainboard);
                 // END
                 // */
