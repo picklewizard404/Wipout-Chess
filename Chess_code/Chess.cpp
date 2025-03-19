@@ -198,7 +198,7 @@ int chess()
             
             if (okmove && mainboard.is_on_board(m_row, m_column)) {
 				try {
-                    //IMPORTANT: This function can throw errors!
+                    //IMPORTANT TO NOTE: This function can throw errors!
 					mainboard.human_move_piece(&tried_move);
 				}
 				catch (InvalidMove problem) {
