@@ -130,6 +130,7 @@
     <ClCompile Include="..\..\Catch2_code\catch_amalgamated.cpp" />
     <ClCompile Include="..\..\Chess_code\Bishop.cpp" />
     <ClCompile Include="..\..\Chess_code\Board.cpp" />
+    <ClCompile Include="..\..\Chess_code\CastleMove.cpp" />
     <ClCompile Include="..\..\Chess_code\Check_for_checkmate.cpp" />
     <ClCompile Include="..\..\Chess_code\Chess.cpp" />
     <ClCompile Include="..\..\Chess_code\Chess_non_main.cpp" />
@@ -149,13 +150,13 @@
     <ClCompile Include="..\..\Chess_code\Safety.cpp" />
     <ClCompile Include="..\..\Chess_code\Space.cpp" />
     <ClCompile Include="..\..\Chess_code\Team.cpp" />
-    <ClCompile Include="..\..\Chess_code\Undo_move.cpp" />
     <ClCompile Include="..\..\Test_Chess.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Catch2_code\catch_amalgamated.hpp" />
     <ClInclude Include="..\..\Chess_code\Bishop.h" />
     <ClInclude Include="..\..\Chess_code\Board.h" />
+    <ClInclude Include="..\..\Chess_code\CastleMove.h" />
     <ClInclude Include="..\..\Chess_code\Check_vs_Checkmate.h" />
     <ClInclude Include="..\..\Chess_code\Chess.h" />
     <ClInclude Include="..\..\Chess_code\Chess_non_main.h" />
@@ -179,7 +180,6 @@
     <ClInclude Include="..\..\Chess_code\Straight_Line.h" />
     <ClInclude Include="..\..\Chess_code\Team.h" />
     <ClInclude Include="..\..\Chess_code\Teamname.h" />
-    <ClInclude Include="..\..\Chess_code\Undo_move.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Chess_code\Main.md" />

@@ -24,6 +24,39 @@
 #include "Chess_code\Chess_non_main.h"
 #include <iostream>
 #include <tuple>
+#include "Chess_code/CastleMove.h"
+
+void kill_piece(Board* mainboard, Piece* piece) {
+    piece->alive = false;
+    mainboard->spaces[piece->row - 1][piece->column - 1] = NULL;
+}
+
+TEST_CASE("Undo castling", "[undo][castle]") {
+	Board mainboard;
+	Team whiteteam = Team(WHITE, &mainboard);
+	Team blackteam = Team(BLACK, &mainboard);
+	whiteteam.enemy_team = &blackteam;
+	blackteam.enemy_team = &whiteteam;
+	whiteteam.queen.alive = false;
+	kill_piece(&mainboard, &whiteteam.queen);
+	kill_piece(&mainboard, &whiteteam.bishop1);
+	kill_piece(&mainboard, &whiteteam.knight1);
+	mainboard.print_board();
+	CastleMove castle = CastleMove(Move(1, 5, 1, 3, &whiteteam.the_king, NULL), &whiteteam.rook1, LEFT);
+	mainboard.human_move_piece(&castle);
+	mainboard.print_board();
+    REQUIRE(whiteteam.the_king.row == 1);
+    REQUIRE(whiteteam.rook1.row == 1);
+	REQUIRE(whiteteam.the_king.column == 3);
+	REQUIRE(whiteteam.rook1.column == 4);
+	mainboard.undo_move(&castle);
+	mainboard.print_board();
+	REQUIRE(whiteteam.the_king.row == 1);
+    REQUIRE(whiteteam.rook1.row == 1);
+	REQUIRE(whiteteam.the_king.column == 5);
+	REQUIRE(whiteteam.rook1.column == 1);
+	printf("Castling is undone.\n");
+}
 
 TEST_CASE("Pieces know the first turn they moved", "[FirstTurnPiece]") {
     Board mainboard;
@@ -161,11 +194,6 @@ TEST_CASE("Pawns can catch pawns that jumped over", "[passant][capture]") {
     printf("En Passant!\n");
     mainboard.print_board();
     REQUIRE_FALSE(bpawn2.alive);
-}
-
-void kill_piece(Board* mainboard, Piece* piece) {
-	piece->alive = false;
-	mainboard->spaces[piece->row - 1][piece->column - 1] = NULL;
 }
 
 TEST_CASE("Simple Castling test", "[.interactive][castle]") {

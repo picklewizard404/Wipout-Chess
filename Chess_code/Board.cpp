@@ -5,9 +5,10 @@
 #include <iostream>
 #include "Safety.h"
 #include "Check_vs_Checkmate.h"
-#include "Move.h"
+#include "CastleMove.h"
 #include "Pawn_Upgrader.h"
 #include "InvalidPiece.h"
+#include <string>
 using namespace std;
 
 Board::Board() {
@@ -129,14 +130,47 @@ That means setting the pawn and SS both to NULL after making a move on the oppon
 Check if you did the passant before clearing it and hopefully everything will work.
 */
 bool Board::human_move_piece(Move* move_to_make) {
+	if (move_to_make == NULL) {
+		throw InvalidPiece(NULL);
+	}
     space piece = move_to_make->piece_that_moved;
     int b_row = move_to_make->end_row;
     int b_column = move_to_make->end_column;
     bool changepast = false;
+	CastleMove* castlemove = dynamic_cast<CastleMove*>(move_to_make);
+	if (castlemove != NULL) {
+        switch (castlemove->which_side_you_castled)
+        {
+		case LEFT:
+            place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 4);
+			break;
+		case RIGHT:
+			place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 6);
+        default:
+            break;
+        }
+        //TODO: MOVE YOUR KING TOO
+		return true;
+	}
     if (piece != NULL) {
         int p_column = piece->column;
         int p_row = piece->row;
+        if (castlemove != NULL) {
+            if (castlemove->piece_that_moved->piecetype == NULL) {
+				throw InvalidPiece(castlemove->piece_that_moved);
+            }
+			if (castlemove->piece_that_moved->piecetype != KING) {
+				throw InvalidMove(string(castlemove->piece_that_moved->name) + string("is NOT your king!"));
+			}
+            if (castlemove->piece_that_moved->first_turn_i_moved() != -1) {
+                throw InvalidMove(string("Too late to castle. You've already moved!"));
+            }
+            return true;
+        }
         bool can_move = piece->can_classmove(b_row, b_column, this);
+		if (move_to_make->piece_that_moved == NULL) {
+			throw InvalidPiece(move_to_make->piece_that_moved);
+		}
         if (can_move) {
             // If you landed on a piece on your team:
             if (piece->do_team_match(spaces[b_row - 1][b_column - 1])) {
@@ -231,7 +265,11 @@ int Board::current_turn() const
     return turn_number;
 }
 
-//TODO IF UNDO You might have to downgrade a pawn
+//TODO IF UNDO You might have to downgrade a pawn.
+// Check if the piece that moved was a pawn and if it moved to the end of the board.
+// If i did then delete team_owner->upgraded_pieces[move_i_made->piece_that_moved->count-8]
+// THEN SET IT TO NULL RIGHT AFTER!
+//TODO UNDO CASTLING BY DOING THE OPPOSITE OF CASTLING PLACING PIECES BACK WHERE THEY WERE
 void Board::undo_move(Move* move_i_made) {
     passantpawn = prevepassant;
     prevepassant = PassantPawn();

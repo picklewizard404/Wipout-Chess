@@ -12,6 +12,7 @@
 #include "Undo_move.h"
 #include <chrono>
 #include <thread>
+#include "InvalidPiece.h"
 
 using namespace std;
 
@@ -196,7 +197,17 @@ int chess()
             tried_move.start_column = piecetomove->column;
             
             if (okmove && mainboard.is_on_board(m_row, m_column)) {
-                mainboard.human_move_piece(&tried_move);
+				try {
+					mainboard.human_move_piece(&tried_move);
+				}
+				catch (InvalidMove problem) {
+					printf(problem.what());
+					continue;
+				}
+				catch (InvalidPiece problem) {
+					printf(problem.what());
+					continue;
+				}
                 //Important: Upgrade the pawn if needed.
                 if (piecetomove->piecetype == PAWN) {
                     upgrade_pawn_if_needed((Pawn*)piecetomove, current_team, &mainboard);

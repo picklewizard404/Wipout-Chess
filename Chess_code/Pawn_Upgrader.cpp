@@ -96,7 +96,6 @@ void place_upgraded_piece(Team* team_owner, Piece* pawn_i_was, const char *newpi
 void really_perform_upgrade(Piece* to_upgrade, TYPE new_class, Team* team_owner, Board* mainboard) {
 	for (int i = 8; i < 16; i++) {
 		if (team_owner->pieces[i] == to_upgrade) {
-			//TODO MAKE ARRAYS OF UPGRADED PIECE POINTERS AND SET THE NEW PIECES TO THEM INSTEAD OF NORMAL PIECES
 			switch (new_class)
 			{
 			case BISHOP: 

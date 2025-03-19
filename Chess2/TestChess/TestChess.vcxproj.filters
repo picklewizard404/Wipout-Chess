@@ -81,10 +81,10 @@
     <ClCompile Include="..\..\Chess_code\Team.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Chess_code\Undo_move.cpp">
+    <ClCompile Include="..\..\Catch2_code\catch_amalgamated.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Catch2_code\catch_amalgamated.cpp">
+    <ClCompile Include="..\..\Chess_code\CastleMove.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -164,10 +164,10 @@
     <ClInclude Include="..\..\Chess_code\Teamname.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Chess_code\Undo_move.h">
+    <ClInclude Include="..\..\Catch2_code\catch_amalgamated.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Catch2_code\catch_amalgamated.hpp">
+    <ClInclude Include="..\..\Chess_code\CastleMove.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
