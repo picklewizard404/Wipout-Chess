@@ -1,6 +1,11 @@
 #include "CastleMove.h"
 #include "InvalidPiece.h"
 
+/* NOTE: ONLY CALLED IN Chess.cpp. 
+*  Note that the constructor should throw an error every single time
+   you try to make an invalid castle move!
+   TODO: Write more tests to confirm castling is ONLY allowed when it should be, according to MY rules,
+   which are slightly more generous because they allow kings to get along instead of killing each other.*/
 CastleMove::CastleMove(Move kingmove, Rook* mrook_that_moved, CastleDirection mwhich_side_you_castled):
     Move(kingmove) {
     if (kingmove.piece_that_moved == NULL) {
