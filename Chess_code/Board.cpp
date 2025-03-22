@@ -143,13 +143,16 @@ bool Board::human_move_piece(Move* move_to_make) {
         {
 		case LEFT:
             place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 4);
+			place(castlemove->piece_that_moved, castlemove->piece_that_moved->row, 3);
 			break;
 		case RIGHT:
 			place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 6);
+            place(castlemove->piece_that_moved, castlemove->piece_that_moved->row, 7);
         default:
             break;
         }
-        //TODO: MOVE YOUR KING TOO
+		castlemove->piece_that_moved->know_i_moved(turn_number);
+		castlemove->rook_that_moved->know_i_moved(turn_number);
 		return true;
 	}
     if (piece != NULL) {
@@ -160,7 +163,7 @@ bool Board::human_move_piece(Move* move_to_make) {
 				throw InvalidPiece(castlemove->piece_that_moved);
             }
 			if (castlemove->piece_that_moved->piecetype != KING) {
-				throw InvalidMove(string(castlemove->piece_that_moved->name) + string("is NOT your king!"));
+				throw InvalidMove(string(castlemove->piece_that_moved->name) + string(" is NOT your king!"));
 			}
             if (castlemove->piece_that_moved->first_turn_i_moved() != -1) {
                 throw InvalidMove(string("Too late to castle. You've already moved!"));
@@ -276,6 +279,28 @@ void Board::undo_move(Move* move_i_made) {
     int previousrow = move_i_made->end_row;
     int previouscolumn = move_i_made->end_column;
     Piece* piecethatmoved = move_i_made->piece_that_moved;
+	if (move_i_made == NULL) {
+		throw InvalidPiece(NULL);
+	}
+
+    CastleMove* castlemove = NULL;
+	castlemove = dynamic_cast<CastleMove*>(move_i_made);
+    
+    if (castlemove != NULL) {
+		castlemove->rook_that_moved->know_i_moved(-1);
+        switch (castlemove->which_side_you_castled)
+        {
+        case LEFT:
+			place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 1);
+			break;
+		case RIGHT:
+            place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 8);
+            break;
+        default:
+            break;
+        }
+    }
+
     
     if (move_i_made->piece_landed_on != NULL) {
         move_i_made->piece_landed_on->alive = true;
@@ -284,6 +309,9 @@ void Board::undo_move(Move* move_i_made) {
     piecethatmoved->row = move_i_made->start_row;
     piecethatmoved->column = move_i_made->start_column;
     turn_number--;
+	if (move_i_made->piece_that_moved->first_turn_i_moved() > turn_number) {
+		move_i_made->piece_that_moved->know_i_moved(-1);
+	}
 }
 static void print_piece(Piece *piece /*bool islast*/) {
     char piecename[11] = "          ";

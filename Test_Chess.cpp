@@ -31,6 +31,42 @@ void kill_piece(Board* mainboard, Piece* piece) {
     mainboard->spaces[piece->row - 1][piece->column - 1] = NULL;
 }
 
+TEST_CASE("Castling BLACK", "[castle][black]") {
+    Board mainboard;
+    Team whiteteam = Team(WHITE, &mainboard);
+    Team blackteam = Team(BLACK, &mainboard);
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+    kill_piece(&mainboard, &blackteam.bishop2);
+    kill_piece(&mainboard, &blackteam.knight2);
+    mainboard.print_board();
+	printf("Castling black.\n");
+	CastleMove castle = CastleMove(Move(8, 5, 8, 7, &blackteam.the_king, NULL), &blackteam.rook2, RIGHT);
+	mainboard.human_move_piece(&castle);
+    mainboard.print_board();
+    0;
+}
+
+TEST_CASE("Castling error checking", "[errors]") {
+	Board mainboard;
+	Queen wqueen = Queen(WHITE, 1, 5, 0);
+	Rook wrook = Rook(WHITE, 1, 1, 1);
+	mainboard.place(&wqueen, 1, 5);
+	mainboard.place(&wrook, 1, 1);
+	mainboard.print_board();
+    CastleMove* badcastle = NULL;
+	bool error_thrown = false;
+    try {
+		badcastle = new CastleMove(Move(1, 5, 1, 3, &wqueen, NULL), &wrook, LEFT);
+	}
+	catch (InvalidMove e) {
+		REQUIRE(strcmp(e.what(), "wQueen is NOT a king!") == 0);
+		error_thrown = true;
+    }
+	REQUIRE(error_thrown);
+	printf("Castling error checking works. You CAN'T castle with a queen.\n");
+}
+
 TEST_CASE("Undo castling", "[undo][castle]") {
 	Board mainboard;
 	Team whiteteam = Team(WHITE, &mainboard);
@@ -38,6 +74,7 @@ TEST_CASE("Undo castling", "[undo][castle]") {
 	whiteteam.enemy_team = &blackteam;
 	blackteam.enemy_team = &whiteteam;
 	whiteteam.queen.alive = false;
+    mainboard.print_board();
 	kill_piece(&mainboard, &whiteteam.queen);
 	kill_piece(&mainboard, &whiteteam.bishop1);
 	kill_piece(&mainboard, &whiteteam.knight1);
@@ -45,6 +82,7 @@ TEST_CASE("Undo castling", "[undo][castle]") {
 	CastleMove castle = CastleMove(Move(1, 5, 1, 3, &whiteteam.the_king, NULL), &whiteteam.rook1, LEFT);
 	mainboard.human_move_piece(&castle);
 	mainboard.print_board();
+	//TODO SIMPLE PROGRESS: MAKE HUMAN_MOVE_PIECE PLACE THE KING WHERE IT SHOULD GO
     REQUIRE(whiteteam.the_king.row == 1);
     REQUIRE(whiteteam.rook1.row == 1);
 	REQUIRE(whiteteam.the_king.column == 3);
@@ -65,7 +103,7 @@ TEST_CASE("Pieces know the first turn they moved", "[FirstTurnPiece]") {
     Pawn* wpawn = &whiteteam.pawns[4];
     Pawn* bpawn = &blackteam.pawns[4];
     Move firstmove = mainboard.make_move(wpawn, 4, 5);
-    Move secondmove = mainboard.make_move(bpawn, 5, 5);
+    Move secondmove = mainboard.make_move(bpawn, 5, 4);
     mainboard.human_move_piece(&firstmove);
     mainboard.human_move_piece(&secondmove);
     mainboard.print_board();
@@ -96,7 +134,7 @@ TEST_CASE("I remember previous turn's passant", "[undo][passant]") {
     Board mainboard;
     Team whiteteam = Team(WHITE, &mainboard);
     Team blackteam = Team(BLACK, &mainboard);
-    Move firstmove = mainboard.make_move(whiteteam.pieces[8 + 5 - 1], 4, 5);
+    Move firstmove = mainboard.make_move(&whiteteam.pawns[5-1], 4, 5);
     mainboard.human_move_piece(&firstmove);
     mainboard.print_board();
     /*
@@ -107,16 +145,16 @@ TEST_CASE("I remember previous turn's passant", "[undo][passant]") {
     bool printed = false;
     mainboard.print_passant(&printed);
     REQUIRE(printed);
-    REQUIRE(mainboard.passantpawn.get_piece() == whiteteam.pieces[8 + 5 - 1]);
-    Move secondmove = mainboard.make_move(blackteam.pieces[8 + 1 - 1], 5, 1);
+    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
+    Move secondmove = mainboard.make_move(&blackteam.pawns[5 - 1], 5, 4);
     mainboard.human_move_piece(&secondmove);
     mainboard.print_board();
     mainboard.print_passant(&printed);
     REQUIRE(printed);
-    REQUIRE(mainboard.passantpawn.get_piece() == blackteam.pieces[8 + 1 - 1]);
+    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[5 - 1]);
     mainboard.undo_move(&secondmove);
     //TODO WRONG HERE
-    REQUIRE(mainboard.passantpawn.get_piece() == whiteteam.pieces[8 + 5 - 1]);
+    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
     printf("Looks like the passant is undone correctly.\n");
 }
 //TODO: I NEED TO KNOW THE TURN NUMBER ON THE BOARD IN ORDER TO MAKE THIS WORK
@@ -128,15 +166,16 @@ TEST_CASE("Passants do have to happen immediately", "[passant][1turn]") {
     Board mainboard;
     Team whiteteam = Team(WHITE, &mainboard);
     Team blackteam = Team(BLACK, &mainboard);
-    Move firstmove = mainboard.make_move(whiteteam.pieces[8 + 5 - 1], 4, 5);
+    Move firstmove = mainboard.make_move(&whiteteam.pawns[5-1], 4, 5);
     mainboard.human_move_piece(&firstmove);
     mainboard.print_board();
     //TODO WRONG HERE
-    Move secondmove = mainboard.make_move(blackteam.pieces[8 + 1 - 1], 6, 1);
+    Move secondmove = mainboard.make_move(&blackteam.pawns[6 - 1], 6, 3);
     mainboard.human_move_piece(&secondmove);
+    mainboard.print_board();
     REQUIRE(mainboard.passantpawn.get_piece() == NULL);
     mainboard.undo_move(&secondmove);
-    REQUIRE(mainboard.passantpawn.get_piece() == whiteteam.pieces[8 + 5 - 1]);
+    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
 }
 TEST_CASE("Throws errors upgrading pawns to themselves", "[errors]") {
     Board mainboard;
@@ -212,7 +251,7 @@ TEST_CASE("Simple Castling test", "[.interactive][castle]") {
     kill_piece(&mainboard, &whiteteam.knight1);
     mainboard.print_board();
     
-	REQUIRE(do_castle(&whiteteam, &mainboard, "Left"));
+	REQUIRE(can_castle(&whiteteam, &mainboard, "Left"));
     0;
 }
 

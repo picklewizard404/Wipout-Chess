@@ -46,6 +46,7 @@ int chess()
     char nameofpiecetomove[10];
     int piece = 1;
     bool did_try_tie = false;
+	bool did_try_castle = false;
     int turn = 1;
     //char current_team = 'w';
     Team* current_team = &whiteteam;
@@ -138,9 +139,25 @@ int chess()
             make_kings_hug(current_team, &whiteteam, &blackteam);
             return 0;
         }
+        if (strcmp(nameofpiecetomove, "cAstle") == 0) {
+			//TODO: Castle WAS IMPLEMENTED AND I JUST HAVEN'T DONE IT YET!!!
+			CastleMove* castle_move = NULL;
+			bool have_decided_direction = false;
+            did_try_castle = true;
+            while (!have_decided_direction) {
+                printf("Which side do you want to castle? ");
+                std::ignore = scanf("%5s", nameofpiecetomove);
+                nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
+                for (int i = 1; i < 5; i++) {
+                    nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
+                }
+            }
+			
+
+        }
         //Find piece with that name
         piecefound = false;
-        for (int i = 0; i < 8 && !did_try_tie; i++) {
+        for (int i = 0; i < 8 && !did_try_tie && !did_try_castle; i++) {
             if (piecefound) {
                 break;
             }
@@ -157,14 +174,13 @@ int chess()
                 }
             }
         }
-        
         if (piecefound && wrong_team(piecetomove, current_team->color)) {
             printf("Wrong team, dummy!\n");
         } else if (!piecefound) {
             printf("Invalid piece.\n");
         }
         //We found the piece. Now move it.
-        if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_try_tie) {
+        if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_try_tie && !did_try_castle) {
             printf("Where do you want to move %s?\n", nameofpiecetomove);
             printf("Enter your move.\n");
 
@@ -175,17 +191,7 @@ int chess()
             
 
             bool should_upgrade_pawn = false;
-            switch (type_of_piecetomove)
-            {
-            case PAWN:
-                //If pawn is about to go the end: Set a variable notifying you to upgrade it.
-                okmove = ((Pawn*)piecetomove)->can_classmove(m_row, m_column, &mainboard);
-                
-                break;
-            
-            default:
-                okmove = piecetomove->can_classmove(m_row, m_column, &mainboard);
-            }
+            okmove = piecetomove->can_classmove(m_row, m_column, &mainboard);
 
             
             //Where we actually make the move

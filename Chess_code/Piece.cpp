@@ -34,8 +34,8 @@ int Piece::first_turn_i_moved() const
 
 void Piece::know_i_moved(int turn_i_moved_on)
 {
-    if(first_turn == -1)
-	first_turn = turn_i_moved_on;
+    if(first_turn == -1) first_turn = turn_i_moved_on;
+	if (turn_i_moved_on == -1) first_turn = -1;
 }
 
 void Piece::be_safe(COLOR color) {

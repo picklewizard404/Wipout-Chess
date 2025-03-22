@@ -73,18 +73,24 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
 	}
 	else //team_color == BLACK
 	{
+		//NOTE: On the black team, the variables in code are named from the WHITE team's perspective.
+		//  But their displayed names are from the black team's perspective.
+		//  That means, for example, the black rook starting on the top right corner is displayed as bRook2 even though the variable is rook1,
+		//  and the black pawn beneath it is displayed as bPawn8 even though the variable is pawns[0].
 		namefirstletter = 'b';
 		strcpy(full_name, "Black");
 		empty_spaces();
-		knight1 = Knight(team_color, 8, 2, 1);
-		knight2 = Knight(team_color, 8, 7, 2);
-		rook1 = Rook(team_color, 8, 1, 1);
-		rook2 = Rook(team_color, 8, 8, 2);
-		bishop1 = Bishop(team_color, 8, 3, 1);
-		bishop2 = Bishop(team_color, 8, 6, 2);
-		queen = Queen(team_color, 8, 4, 1);
+		knight1 = Knight(team_color, 8, 2, 2);
+		knight2 = Knight(team_color, 8, 7, 1);
+		rook1 = Rook(team_color, 8, 1, 2);
+		rook2 = Rook(team_color, 8, 8, 1);
+		bishop1 = Bishop(team_color, 8, 3, 2);
+		bishop2 = Bishop(team_color, 8, 6, 1);
+		queen = Queen(team_color, 8, 4, 0);
 		for (int i = 1; i <= 8; i++) {
-			pawns[i-1] = Pawn(team_color, 7, i, i);
+			//The black king looks at his pawns from the opposite angle, so he calls the
+			// pawn in the absolute top left pawn corner pawn 8.
+			pawns[i-1] = Pawn(team_color, 7, 9-i, i);
 		}
 	}
 	pieces[0] = &rook1;
