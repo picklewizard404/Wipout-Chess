@@ -40,60 +40,60 @@ TEST_CASE("Castling BLACK", "[castle][black]") {
     kill_piece(&mainboard, &blackteam.bishop2);
     kill_piece(&mainboard, &blackteam.knight2);
     mainboard.print_board();
-	printf("Castling black.\n");
-	CastleMove castle = CastleMove(Move(8, 5, 8, 7, &blackteam.the_king, NULL), &blackteam.rook2, RIGHT);
-	mainboard.human_move_piece(&castle);
+    printf("Castling black.\n");
+    CastleMove castle = CastleMove(Move(8, 5, 8, 7, &blackteam.the_king, NULL), &blackteam.rook2, RIGHT);
+    mainboard.human_move_piece(&castle);
     mainboard.print_board();
     0;
 }
 
 TEST_CASE("Castling error checking", "[errors]") {
-	Board mainboard;
-	Queen wqueen = Queen(WHITE, 1, 5, 0);
-	Rook wrook = Rook(WHITE, 1, 1, 1);
-	mainboard.place(&wqueen, 1, 5);
-	mainboard.place(&wrook, 1, 1);
-	mainboard.print_board();
+    Board mainboard;
+    Queen wqueen = Queen(WHITE, 1, 5, 0);
+    Rook wrook = Rook(WHITE, 1, 1, 1);
+    mainboard.place(&wqueen, 1, 5);
+    mainboard.place(&wrook, 1, 1);
+    mainboard.print_board();
     CastleMove* badcastle = NULL;
-	bool error_thrown = false;
+    bool error_thrown = false;
     try {
-		badcastle = new CastleMove(Move(1, 5, 1, 3, &wqueen, NULL), &wrook, LEFT);
-	}
-	catch (InvalidMove e) {
-		REQUIRE(strcmp(e.what(), "wQueen is NOT a king!") == 0);
-		error_thrown = true;
+        badcastle = new CastleMove(Move(1, 5, 1, 3, &wqueen, NULL), &wrook, LEFT);
     }
-	REQUIRE(error_thrown);
-	printf("Castling error checking works. You CAN'T castle with a queen.\n");
+    catch (InvalidMove e) {
+        REQUIRE(strcmp(e.what(), "wQueen is NOT a king!") == 0);
+        error_thrown = true;
+    }
+    REQUIRE(error_thrown);
+    printf("Castling error checking works. You CAN'T castle with a queen.\n");
 }
 
 TEST_CASE("Undo castling", "[undo][castle]") {
-	Board mainboard;
-	Team whiteteam = Team(WHITE, &mainboard);
-	Team blackteam = Team(BLACK, &mainboard);
-	whiteteam.enemy_team = &blackteam;
-	blackteam.enemy_team = &whiteteam;
-	whiteteam.queen.alive = false;
+    Board mainboard;
+    Team whiteteam = Team(WHITE, &mainboard);
+    Team blackteam = Team(BLACK, &mainboard);
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+    whiteteam.queen.alive = false;
     mainboard.print_board();
-	kill_piece(&mainboard, &whiteteam.queen);
-	kill_piece(&mainboard, &whiteteam.bishop1);
-	kill_piece(&mainboard, &whiteteam.knight1);
-	mainboard.print_board();
-	CastleMove castle = CastleMove(Move(1, 5, 1, 3, &whiteteam.the_king, NULL), &whiteteam.rook1, LEFT);
-	mainboard.human_move_piece(&castle);
-	mainboard.print_board();
-	//TODO SIMPLE PROGRESS: MAKE HUMAN_MOVE_PIECE PLACE THE KING WHERE IT SHOULD GO
+    kill_piece(&mainboard, &whiteteam.queen);
+    kill_piece(&mainboard, &whiteteam.bishop1);
+    kill_piece(&mainboard, &whiteteam.knight1);
+    mainboard.print_board();
+    CastleMove castle = CastleMove(Move(1, 5, 1, 3, &whiteteam.the_king, NULL), &whiteteam.rook1, LEFT);
+    mainboard.human_move_piece(&castle);
+    mainboard.print_board();
+    //TODO SIMPLE PROGRESS: MAKE HUMAN_MOVE_PIECE PLACE THE KING WHERE IT SHOULD GO
     REQUIRE(whiteteam.the_king.row == 1);
     REQUIRE(whiteteam.rook1.row == 1);
-	REQUIRE(whiteteam.the_king.column == 3);
-	REQUIRE(whiteteam.rook1.column == 4);
-	mainboard.undo_move(&castle);
-	mainboard.print_board();
-	REQUIRE(whiteteam.the_king.row == 1);
+    REQUIRE(whiteteam.the_king.column == 3);
+    REQUIRE(whiteteam.rook1.column == 4);
+    mainboard.undo_move(&castle);
+    mainboard.print_board();
+    REQUIRE(whiteteam.the_king.row == 1);
     REQUIRE(whiteteam.rook1.row == 1);
-	REQUIRE(whiteteam.the_king.column == 5);
-	REQUIRE(whiteteam.rook1.column == 1);
-	printf("Castling is undone.\n");
+    REQUIRE(whiteteam.the_king.column == 5);
+    REQUIRE(whiteteam.rook1.column == 1);
+    printf("Castling is undone.\n");
 }
 
 TEST_CASE("Pieces know the first turn they moved", "[FirstTurnPiece]") {
@@ -237,41 +237,41 @@ TEST_CASE("Pawns can catch pawns that jumped over", "[passant][capture]") {
 
 TEST_CASE("Simple Castling test", "[.interactive][castle]") {
     //TODO ACTUALLY MAKE THEM CASTLE AND TELL WHETER OR NOT IT'S POSSIBLE. YOU WILL PROBABLY NEED TO TEST THIS IN 2 TESTS:
-	//1. The king and rook are in the right place.
+    //1. The king and rook are in the right place.
     //2. The king hasn't moved yet.
-	printf("Testing Castling.\n");
+    printf("Testing Castling.\n");
     Board mainboard;
-	Team whiteteam = Team(WHITE, &mainboard);
-	Team blackteam = Team(BLACK, &mainboard);
+    Team whiteteam = Team(WHITE, &mainboard);
+    Team blackteam = Team(BLACK, &mainboard);
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
-	whiteteam.queen.alive = false;
+    whiteteam.queen.alive = false;
     kill_piece(&mainboard, &whiteteam.queen);
-	kill_piece(&mainboard, &whiteteam.bishop1);
+    kill_piece(&mainboard, &whiteteam.bishop1);
     kill_piece(&mainboard, &whiteteam.knight1);
     mainboard.print_board();
     
-	REQUIRE(can_castle(&whiteteam, &mainboard, "Left"));
+    REQUIRE(can_castle(&whiteteam, &mainboard, "Left"));
     0;
 }
 
 TEST_CASE("Simple check that pieces know when they first moved", "[pieces][first]") {
-	Board mainboard;
-	King wking = King(WHITE);
-	King bking = King(BLACK);
-	mainboard.place(&wking, 1, 5);
-	mainboard.place(&bking, 8, 5);
-	REQUIRE(wking.first_turn_i_moved() == -1);
-	REQUIRE(bking.first_turn_i_moved() == -1);
-	Move firstmove = mainboard.make_move(&wking, 2, 5);
-	mainboard.human_move_piece(&firstmove);
-	REQUIRE(wking.first_turn_i_moved() == 1);
-	REQUIRE(bking.first_turn_i_moved() == -1);
-	Move secondmove = mainboard.make_move(&bking, 7, 5);
-	mainboard.human_move_piece(&secondmove);
+    Board mainboard;
+    King wking = King(WHITE);
+    King bking = King(BLACK);
+    mainboard.place(&wking, 1, 5);
+    mainboard.place(&bking, 8, 5);
+    REQUIRE(wking.first_turn_i_moved() == -1);
+    REQUIRE(bking.first_turn_i_moved() == -1);
+    Move firstmove = mainboard.make_move(&wking, 2, 5);
+    mainboard.human_move_piece(&firstmove);
+    REQUIRE(wking.first_turn_i_moved() == 1);
+    REQUIRE(bking.first_turn_i_moved() == -1);
+    Move secondmove = mainboard.make_move(&bking, 7, 5);
+    mainboard.human_move_piece(&secondmove);
     REQUIRE(wking.first_turn_i_moved() == 1);
     REQUIRE(bking.first_turn_i_moved() == 2);
-	printf("Pieces know when they first moved.\n");
+    printf("Pieces know when they first moved.\n");
 }
 
 TEST_CASE("Queens moving diagonally", "[queen]") {

@@ -29,6 +29,10 @@ void sleep5() {
 
 int chess()
 {
+    /*TODO NOTE THAT YOU SHOULDN'T BE ABLE TO CASTLE WHILE IN CHECK, BUT YOU CAN.
+    * THE BOARD SHOULD KNOW WHATE TEAMS ARE IN CHECK AND PREVENT CASTLING IF THE TEAM TRYING TO CASTLE IS IN CHECK.
+    * IT IS POSSIBLE FOR BOTH TEAMS TO BE IN CHECK, SO THE BOARD NEEDS 2 BOOLEANS TO TELL WHETHER OR NOT the current team is in check.
+    * */
     Board mainboard;
     Team whiteteam = Team(WHITE, &mainboard);
     Team blackteam = Team(BLACK, &mainboard);
@@ -46,7 +50,7 @@ int chess()
     char nameofpiecetomove[10];
     int piece = 1;
     bool did_try_tie = false;
-	bool did_try_castle = false;
+    bool did_try_castle = false;
     int turn = 1;
     //char current_team = 'w';
     Team* current_team = &whiteteam;
@@ -77,6 +81,7 @@ int chess()
     {
         //say_pieces_of_team(&mainboard, current_team);
         mainboard.print_board();
+        did_try_castle = false;
         printf("%s turn.\n", team_name(current_team->color));
         if (current_team->color == WHITE) {
             //We already checked if we are in check or checkmate at the end of our opponent's turn.
@@ -107,12 +112,11 @@ int chess()
         //Make the name all lowercase.
         nameofpiecetomove[0] = tolower(nameofpiecetomove[0]);
         nameofpiecetomove[1] = toupper(nameofpiecetomove[1]);
-        for (int i = 2; i < 10; i++) {
+         for (int i = 2; i < 10; i++) {
             nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
         }
         clearinput();
 
-		//TODO: IF YOU CASTLE, 'continue;' THE LOOP here.
         if (strcmp(nameofpiecetomove, "sUrrender") == 0) {
             printf("You give up. %s team wins!", current_team->enemy_team->full_name);
             sleep5();
@@ -139,22 +143,107 @@ int chess()
             make_kings_hug(current_team, &whiteteam, &blackteam);
             return 0;
         }
+
+        //Maybe you are trying to castle.
+        CastleMove castle_move;
         if (strcmp(nameofpiecetomove, "cAstle") == 0) {
-			//TODO: Castle WAS IMPLEMENTED AND I JUST HAVEN'T DONE IT YET!!!
-			CastleMove* castle_move = NULL;
-			bool have_decided_direction = false;
+            bool have_decided_direction = false;
             did_try_castle = true;
             while (!have_decided_direction) {
                 printf("Which side do you want to castle? ");
                 std::ignore = scanf("%5s", nameofpiecetomove);
+                clearinput();
                 nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
                 for (int i = 1; i < 5; i++) {
                     nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
                 }
+                if (strcmp(nameofpiecetomove, "Left") == 0) {
+                    try {
+                        castle_move = CastleMove(
+                            Move(current_team->the_king.row, 5, current_team->the_king.row, 3,
+                                &(current_team->the_king),
+                                NULL),
+                            &(current_team->rook1),
+                            LEFT);
+                        have_decided_direction = true;
+                        okmove = true;
+                    }
+                    catch (std::exception e) {
+                        printf(e.what());
+                        //You failed to castle.
+                        okmove = false;
+                        break;
+                    }
+                }
+                else if (strcmp(nameofpiecetomove, "Right") == 0) {
+                    try {
+                        castle_move = CastleMove(
+                            Move(current_team->the_king.row, 5, current_team->the_king.row, 7,
+                                &(current_team->the_king),
+                                NULL),
+                            &(current_team->rook2),
+                            RIGHT);
+                        have_decided_direction = true;
+                        okmove = true;
+                    }
+                    catch (InvalidMove e) {
+                        printf("%s\n", e.what());
+                    }
+                    catch (std::exception e) {
+                        printf(e.what());
+                        //You failed to castle.
+                        okmove = false;
+                        break;
+                    }
+                }
+                else if (strcmp(nameofpiecetomove, "Stop") == 0) {
+                    okmove = false;
+                    break;
+                }
+                else {
+                    printf("Invalid direction. Try again.\n");
+                }
             }
-			
+
+            //Still in the castling block and we know our move is legit if okmove is true.
+            if (okmove) {
+                try {
+                    mainboard.human_move_piece(&castle_move);
+                    /* NOTE: THE TEAMS SWAP ON THIS LINE.
+                    * TODO: UPDATE THE BOARD'S KNOWLEDGE OF THE ENEMY TEAM'S CHECK HERE. */
+                    current_team = current_team->enemy_team;
+                }
+                catch (InvalidMove e) {
+                    printf("%s\n", e.what());
+                    //You failed to castle.
+                    okmove = false;
+                }
+            }
+            //Was that move safe? IF not, I am still in check.
+            //*
+            Game_Status am_I_still_in_check = mainboard.is_in_check(current_team->enemy_team, current_team, false);
+            if (am_I_still_in_check != NEUTRAL) {
+                printf("That's check, silly!\n");
+                printf("Undo that move?\n");
+                std::ignore = scanf("%3s", nameofpiecetomove);
+                clearinput();
+                nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
+                for (int i = 1; i < 3; i++) {
+                    nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
+                }
+                if (strcmp(nameofpiecetomove, "Yes") == 0) {
+                    mainboard.undo_move(&castle_move);
+                    current_team = current_team->enemy_team;
+                }
+            }
+            /* TODO: UPDATE THE BOARD'S KNOWLEDGE OF THE BOTH TEAM'S CHECK HERE. */
+            current_team->enemy_team->current_status = mainboard.is_in_check(current_team->enemy_team, current_team, false);
+            current_team->current_status = mainboard.is_in_check(current_team, current_team->enemy_team, &mainboard);
+            // END
+            // */
 
         }
+
         //Find piece with that name
         piecefound = false;
         for (int i = 0; i < 8 && !did_try_tie && !did_try_castle; i++) {
@@ -176,7 +265,7 @@ int chess()
         }
         if (piecefound && wrong_team(piecetomove, current_team->color)) {
             printf("Wrong team, dummy!\n");
-        } else if (!piecefound) {
+        } else if (!piecefound && !did_try_castle) {
             printf("Invalid piece.\n");
         }
         //We found the piece. Now move it.
@@ -203,24 +292,25 @@ int chess()
             tried_move.start_column = piecetomove->column;
             
             if (okmove && mainboard.is_on_board(m_row, m_column)) {
-				try {
+                try {
                     //IMPORTANT TO NOTE: This function can throw errors!
-					mainboard.human_move_piece(&tried_move);
-				}
-				catch (InvalidMove problem) {
-					printf(problem.what());
-					continue;
-				}
-				catch (InvalidPiece problem) {
-					printf(problem.what());
-					continue;
-				}
+                    mainboard.human_move_piece(&tried_move);
+                }
+                catch (InvalidMove problem) {
+                    printf(problem.what());
+                    continue;
+                }
+                catch (InvalidPiece problem) {
+                    printf(problem.what());
+                    continue;
+                }
                 //Important: Upgrade the pawn if needed.
                 if (piecetomove->piecetype == PAWN) {
                     upgrade_pawn_if_needed((Pawn*)piecetomove, current_team, &mainboard);
                 }
                 //NOTE: THE TEAMS SWAP ON THIS LINE
                 current_team = current_team->enemy_team;
+                did_try_castle = false;
                 //Was that move safe? IF not, I am still in check.
                 //*
                 Game_Status am_I_still_in_check = mainboard.is_in_check(current_team->enemy_team, current_team, false);
@@ -254,7 +344,7 @@ int chess()
                     printf("That piece is dead! Can't move it anymore;\n");
                 }
             }
-            else {
+            else if(!did_try_castle) {
                 if (did_try_tie) {
                     printf("Your opponent doen't want to quit yet.\n");
                 }

@@ -78,20 +78,20 @@ COLOR enemy_team(COLOR my_team) {
 //*
 bool can_castle(Team* current_team, Board* mainboard, const char *direction_castle) {
     /*
-	* Do something like this in the chess() function which should call this function:
+    * Do something like this in the chess() function which should call this function:
     char direction_castle[6];
     scanf("%5s", direction_castle);
-	direction_castle[0] = toupper(direction_castle[0]);
-	for (int i = 1; i < 5; i++) {
-		direction_castle[i] = tolower(direction_castle[i]);
-	}
-	Then assign the direction_castle to the direction_castle parameter.
+    direction_castle[0] = toupper(direction_castle[0]);
+    for (int i = 1; i < 5; i++) {
+        direction_castle[i] = tolower(direction_castle[i]);
+    }
+    Then assign the direction_castle to the direction_castle parameter.
     */
-	clearinput();
-	if (strcmp("Left", direction_castle) != 0 && strcmp("Right", direction_castle) != 0) {
-		printf("Invalid direction.\n");
-		return false;
-	}
+    clearinput();
+    if (strcmp("Left", direction_castle) != 0 && strcmp("Right", direction_castle) != 0) {
+        printf("Invalid direction.\n");
+        return false;
+    }
     if(strcmp("Left", direction_castle) == 0)
 
     //You can do this move.

@@ -12,6 +12,7 @@
 using namespace std;
 
 Board::Board() {
+    team_in_check = NONE;
     turn_number = 1;
     whiteturn = true;
     threatens_white = NULL;
@@ -130,50 +131,66 @@ That means setting the pawn and SS both to NULL after making a move on the oppon
 Check if you did the passant before clearing it and hopefully everything will work.
 */
 bool Board::human_move_piece(Move* move_to_make) {
-	if (move_to_make == NULL) {
-		throw InvalidPiece(NULL);
-	}
+    if (move_to_make == NULL) {
+        throw InvalidPiece(NULL);
+    }
     space piece = move_to_make->piece_that_moved;
     int b_row = move_to_make->end_row;
     int b_column = move_to_make->end_column;
     bool changepast = false;
-	CastleMove* castlemove = dynamic_cast<CastleMove*>(move_to_make);
-	if (castlemove != NULL) {
+    CastleMove* castlemove = dynamic_cast<CastleMove*>(move_to_make);
+    int row = 1;
+    if (piece->team == BLACK) {
+        row = 8;
+    }
+    if (castlemove != NULL) {
         switch (castlemove->which_side_you_castled)
         {
-		case LEFT:
+        case LEFT:
+            //TODO: Check if the spaces are empty.
+            for (int column = 4; column >= 2; column--) {
+                if (spaces[row - 1][column - 1] != NULL) {
+                    throw InvalidMove("Can't castle. There's a piece in the way.");
+                }
+            }
             place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 4);
-			place(castlemove->piece_that_moved, castlemove->piece_that_moved->row, 3);
-			break;
-		case RIGHT:
-			place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 6);
+            place(castlemove->piece_that_moved, castlemove->piece_that_moved->row, 3);
+            break;
+        case RIGHT:
+            for (int column = 6; column <= 7; column++) {
+                if (spaces[row - 1][column - 1] != NULL) {
+                    throw InvalidMove("Can't castle. There's a piece in the way.");
+                }
+            }
+            place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 6);
             place(castlemove->piece_that_moved, castlemove->piece_that_moved->row, 7);
+            break;
         default:
             break;
         }
-		castlemove->piece_that_moved->know_i_moved(turn_number);
-		castlemove->rook_that_moved->know_i_moved(turn_number);
-		return true;
-	}
+        castlemove->piece_that_moved->know_i_moved(turn_number);
+        castlemove->rook_that_moved->know_i_moved(turn_number);
+        return true;
+    }
     if (piece != NULL) {
         int p_column = piece->column;
         int p_row = piece->row;
         if (castlemove != NULL) {
             if (castlemove->piece_that_moved->piecetype == NULL) {
-				throw InvalidPiece(castlemove->piece_that_moved);
+                throw InvalidPiece(castlemove->piece_that_moved);
             }
-			if (castlemove->piece_that_moved->piecetype != KING) {
-				throw InvalidMove(string(castlemove->piece_that_moved->name) + string(" is NOT your king!"));
-			}
+            if (castlemove->piece_that_moved->piecetype != KING) {
+                throw InvalidMove(string(castlemove->piece_that_moved->name) + string(" is NOT your king!"));
+            }
             if (castlemove->piece_that_moved->first_turn_i_moved() != -1) {
                 throw InvalidMove(string("Too late to castle. You've already moved!"));
             }
             return true;
         }
         bool can_move = piece->can_classmove(b_row, b_column, this);
-		if (move_to_make->piece_that_moved == NULL) {
-			throw InvalidPiece(move_to_make->piece_that_moved);
-		}
+        if (move_to_make->piece_that_moved == NULL) {
+            throw InvalidPiece(move_to_make->piece_that_moved);
+        }
         if (can_move) {
             // If you landed on a piece on your team:
             if (piece->do_team_match(spaces[b_row - 1][b_column - 1])) {
@@ -213,7 +230,7 @@ bool Board::human_move_piece(Move* move_to_make) {
                 }
             }
             //Either way move the piece.
-			piece->know_i_moved(turn_number);
+            piece->know_i_moved(turn_number);
             spaces[move_to_make->start_row - 1][move_to_make->start_column - 1] = NULL;
             place(piece, b_row, b_column);
             piece->know_i_change_position(b_row, b_column, turn_number);
@@ -272,28 +289,27 @@ int Board::current_turn() const
 // Check if the piece that moved was a pawn and if it moved to the end of the board.
 // If i did then delete team_owner->upgraded_pieces[move_i_made->piece_that_moved->count-8]
 // THEN SET IT TO NULL RIGHT AFTER!
-//TODO UNDO CASTLING BY DOING THE OPPOSITE OF CASTLING PLACING PIECES BACK WHERE THEY WERE
 void Board::undo_move(Move* move_i_made) {
     passantpawn = prevepassant;
     prevepassant = PassantPawn();
     int previousrow = move_i_made->end_row;
     int previouscolumn = move_i_made->end_column;
     Piece* piecethatmoved = move_i_made->piece_that_moved;
-	if (move_i_made == NULL) {
-		throw InvalidPiece(NULL);
-	}
+    if (move_i_made == NULL) {
+        throw InvalidPiece(NULL);
+    }
 
     CastleMove* castlemove = NULL;
-	castlemove = dynamic_cast<CastleMove*>(move_i_made);
+    castlemove = dynamic_cast<CastleMove*>(move_i_made);
     
     if (castlemove != NULL) {
-		castlemove->rook_that_moved->know_i_moved(-1);
+        castlemove->rook_that_moved->know_i_moved(-1);
         switch (castlemove->which_side_you_castled)
         {
         case LEFT:
-			place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 1);
-			break;
-		case RIGHT:
+            place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 1);
+            break;
+        case RIGHT:
             place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 8);
             break;
         default:
@@ -309,9 +325,9 @@ void Board::undo_move(Move* move_i_made) {
     piecethatmoved->row = move_i_made->start_row;
     piecethatmoved->column = move_i_made->start_column;
     turn_number--;
-	if (move_i_made->piece_that_moved->first_turn_i_moved() > turn_number) {
-		move_i_made->piece_that_moved->know_i_moved(-1);
-	}
+    if (move_i_made->piece_that_moved->first_turn_i_moved() > turn_number) {
+        move_i_made->piece_that_moved->know_i_moved(-1);
+    }
 }
 static void print_piece(Piece *piece /*bool islast*/) {
     char piecename[11] = "          ";
@@ -390,10 +406,6 @@ void Board::print_passant(bool* testprinted) {
     }
 }
 
-//TODO I UNDO MOVES WRONGLY
-// FINAL STEP FINISHING THE GAME
-// MAKE SURE TO BACK UP THE STARTING passantpawn AND prevepassant...
-//      AND SET THEM BACK AFTER UNDOING EVERY MOVE
 Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboard) {
     Piece* one_of_my_pieces;
     Move tried_move;

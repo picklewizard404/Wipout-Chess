@@ -15,38 +15,38 @@ class Board;
 
 class Team {
 private:
-	void set_upgraded_pointers_to0();
-	//public
+    void set_upgraded_pointers_to0();
+    //public
 public:
-	//variables
-	char namefirstletter;
-	char full_name[6];
-	Piece* pieces[16];
-	COLOR color;
-	Knight knight1;
-	Knight knight2;
-	Rook rook1;
-	Rook rook2;
-	Bishop bishop1;
-	Bishop bishop2;
-	King the_king;
-	Queen queen;
-	Pawn pawns[8];
-	Piece* upgraded_pieces[8];
-	//TODO MAKE AN ARRAY OF UPGRADED QUEENS
+    //variables
+    char namefirstletter;
+    char full_name[6];
+    Piece* pieces[16];
+    COLOR color;
+    Knight knight1;
+    Knight knight2;
+    Rook rook1;
+    Rook rook2;
+    Bishop bishop1;
+    Bishop bishop2;
+    King the_king;
+    Queen queen;
+    Pawn pawns[8];
+    Piece* upgraded_pieces[8];
+    //TODO MAKE AN ARRAY OF UPGRADED QUEENS
 
-	Team* enemy_team;
-	Game_Status current_status;
+    Team* enemy_team;
+    Game_Status current_status;
 
-	//functions
-	//Team(COLOR team_color);
-	Team();
-	~Team();
-	Team(COLOR team_color, Board* the_board_shared);
-	//TODO MAKE A TEAM DESTRUCTOR TO DELETE NEWLY MADE PIECES
-	void empty_spaces();
-	void put_pieces_on_board(Board* the_board_shared);
-	const char* team_name() const;
+    //functions
+    //Team(COLOR team_color);
+    Team();
+    ~Team();
+    Team(COLOR team_color, Board* the_board_shared);
+    //TODO MAKE A TEAM DESTRUCTOR TO DELETE NEWLY MADE PIECES
+    void empty_spaces();
+    void put_pieces_on_board(Board* the_board_shared);
+    const char* team_name() const;
 };
 
 #endif TEAM_INCLUDED
