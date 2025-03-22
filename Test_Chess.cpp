@@ -47,7 +47,7 @@ TEST_CASE("Castling BLACK", "[castle][black]") {
     0;
 }
 
-TEST_CASE("Castling error checking", "[errors]") {
+TEST_CASE("Castling error checking", "[errors][castle]") {
     Board mainboard;
     Queen wqueen = Queen(WHITE, 1, 5, 0);
     Rook wrook = Rook(WHITE, 1, 1, 1);
@@ -65,6 +65,8 @@ TEST_CASE("Castling error checking", "[errors]") {
     }
     REQUIRE(error_thrown);
     printf("Castling error checking works. You CAN'T castle with a queen.\n");
+    mainboard.print_board();
+    printf("End of castle error test.\n");
 }
 
 TEST_CASE("Undo castling", "[undo][castle]") {
