@@ -73,7 +73,7 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
     }
     else //team_color == BLACK
     {
-        //NOTE: On the black team, the variables in code are named from the WHITE team's perspective.
+        //NOTE: On the black team, the variables in code are named from the TOP DOWN perspective.
         //  But their displayed names are from the black team's perspective.
         //  That means, for example, the black rook starting on the top right corner is displayed as bRook2 even though the variable is rook1,
         //  and the black pawn beneath it is displayed as bPawn8 even though the variable is pawns[0].

@@ -41,10 +41,63 @@ TEST_CASE("Castling BLACK", "[castle][black]") {
     kill_piece(&mainboard, &blackteam.knight2);
     mainboard.print_board();
     printf("Castling black.\n");
-    CastleMove castle = CastleMove(Move(8, 5, 8, 7, &blackteam.the_king, NULL), &blackteam.rook2, RIGHT);
+    CastleMove castle = CastleMove(Move(8, 5, 8, 7, &blackteam.the_king, NULL), &blackteam.rook2, RIGHT, &mainboard, &blackteam);
     mainboard.human_move_piece(&castle);
     mainboard.print_board();
     0;
+}
+
+TEST_CASE("Castling respects movement rules", "[errors][castle][cstlemovement]") {
+    Board mainboard;
+    Team whiteteam = Team(WHITE, &mainboard);
+    Team blackteam = Team(BLACK, &mainboard);
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+    King blackking = King(BLACK);
+    for (int i = 0; i < 16; i++) {
+        if (!(
+            (blackteam.pieces[i]->piecetype == BISHOP) ||
+            (blackteam.pieces[i]->piecetype == KING) ||
+            (blackteam.pieces[i]->piecetype == ROOK)
+            )) {
+            kill_piece(&mainboard, blackteam.pieces[i]);
+            //blackteam.pieces[i] = NULL;
+        }
+        kill_piece(&mainboard, whiteteam.pieces[i]);
+    }
+    kill_piece(&mainboard, &blackteam.bishop1);
+    mainboard.print_board();
+    Move move1 = Move(8, 6, 7, 7, &blackteam.bishop2, NULL);
+    CastleMove* okcastle = NULL;
+    bool errorcaught = false;
+    bool success = false;
+    mainboard.human_move_piece(&move1);
+    mainboard.print_board();
+    CastleMove castleright;
+    try {
+        castleright = CastleMove(Move(8, 5, 8, 7, &blackking, NULL), &blackteam.rook2, RIGHT, &mainboard, &blackteam);
+        success = true;
+    }
+    catch (InvalidMove e) {
+        printf("%s\n", e.what());
+        REQUIRE(false);
+    }
+    REQUIRE(blackteam.bishop2.first_turn_i_moved() == 1);
+    REQUIRE(success == true);
+    mainboard.human_move_piece(&castleright);
+    mainboard.print_board();
+    success = false;
+    REQUIRE(blackking.first_turn_i_moved() == 2);
+    REQUIRE(blackteam.rook2.first_turn_i_moved() == 2);
+    mainboard.undo_move(&castleright);
+    printf("Never mind...\n");
+    REQUIRE(blackking.first_turn_i_moved() == -1);
+    REQUIRE(blackteam.rook2.first_turn_i_moved() == -1);
+    Move brook1move = Move(8, 1, 8, 2, &blackteam.rook1, NULL);
+    Move brook1goback = Move(8, 2, 8, 1, &blackteam.rook1, NULL);
+    mainboard.human_move_piece(&brook1move);
+    mainboard.human_move_piece(&brook1goback);
+    REQUIRE(blackteam.rook1.first_turn_i_moved() == 2);
 }
 
 TEST_CASE("Castling error checking", "[errors][castle]") {
@@ -57,16 +110,52 @@ TEST_CASE("Castling error checking", "[errors][castle]") {
     CastleMove* badcastle = NULL;
     bool error_thrown = false;
     try {
-        badcastle = new CastleMove(Move(1, 5, 1, 3, &wqueen, NULL), &wrook, LEFT);
+        badcastle = new CastleMove(Move(1, 5, 1, 3, &wqueen, NULL), &wrook, LEFT, &mainboard, NULL);
     }
     catch (InvalidMove e) {
         REQUIRE(strcmp(e.what(), "wQueen is NOT a king!") == 0);
         error_thrown = true;
     }
+    delete badcastle;
+    badcastle = NULL;
     REQUIRE(error_thrown);
     printf("Castling error checking works. You CAN'T castle with a queen.\n");
     mainboard.print_board();
-    printf("End of castle error test.\n");
+    printf("Queen can't castle. Check.\n");
+    
+}
+
+TEST_CASE("Castling in or through check should fail", "[castle][check]") {
+    Board mainboard;
+    Team whiteteam = Team(WHITE, &mainboard);
+    Team blackteam = Team(BLACK, &mainboard);
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+    bool castle_failed = false;
+    for (int i = 0; i < 16; i++) {
+        if (whiteteam.pieces[i]->piecetype != ROOK && whiteteam.pieces[i]->piecetype != KING) {
+            kill_piece(&mainboard, whiteteam.pieces[i]);
+        }
+    }
+    //In check
+    Move enablequeenmove = Move(7, 5, 6, 5, &blackteam.pawns[3], NULL);
+    mainboard.human_move_piece(&enablequeenmove);
+    Move queenattack1 = Move(8, 4, 6, 6, &blackteam.queen, NULL);
+    mainboard.human_move_piece(&queenattack1);
+    Move queenattack2 = Move(6, 6, 5, 5, &blackteam.queen, NULL);
+    mainboard.human_move_piece(&queenattack2);
+    mainboard.print_board();
+    try {
+        CastleMove castlewhiteleft = CastleMove(
+            Move(1, 5, 1, 3, &whiteteam.the_king, NULL),
+            &whiteteam.rook1, LEFT, &mainboard, &whiteteam
+        );
+    }
+    catch (InvalidMove e) {
+        printf("%s\n", e.what());
+        castle_failed = true;
+    }
+    REQUIRE(castle_failed);
 }
 
 TEST_CASE("Undo castling", "[undo][castle]") {
@@ -81,7 +170,7 @@ TEST_CASE("Undo castling", "[undo][castle]") {
     kill_piece(&mainboard, &whiteteam.bishop1);
     kill_piece(&mainboard, &whiteteam.knight1);
     mainboard.print_board();
-    CastleMove castle = CastleMove(Move(1, 5, 1, 3, &whiteteam.the_king, NULL), &whiteteam.rook1, LEFT);
+    CastleMove castle = CastleMove(Move(1, 5, 1, 3, &whiteteam.the_king, NULL), &whiteteam.rook1, LEFT, &mainboard, &whiteteam);
     mainboard.human_move_piece(&castle);
     mainboard.print_board();
     //TODO SIMPLE PROGRESS: MAKE HUMAN_MOVE_PIECE PLACE THE KING WHERE IT SHOULD GO
@@ -281,7 +370,8 @@ TEST_CASE("Queens moving diagonally", "[queen]") {
     Queen testqueen = Queen(WHITE, 5, 8, 1);
 }
 
-TEST_CASE("Upgrade a pawn. Pretend you typed.", "[.interactive]") {
+//TODO: WRITE A TEST TO GUARANTEE THAT THE UPGRADED PAWNS ARE DELETED AND THE PAWNS ARE REVIVED WHEN UNDOING A MOVE!
+TEST_CASE("Upgrade a pawn. Pretend you typed.", "[.interactive][upgrade]") {
     printf("You are the white team and you just landed a pawn on the top right square. Name a piece type to upgrade your pawn to.\n");
     Board mainboard;
     Team whiteteam = Team(WHITE, &mainboard);

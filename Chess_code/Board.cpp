@@ -168,8 +168,10 @@ bool Board::human_move_piece(Move* move_to_make) {
         default:
             break;
         }
+        //NOTE: INCREMENT TURN NUMBER BEFORE RETURNING TRUE. ALWAYS.
         castlemove->piece_that_moved->know_i_moved(turn_number);
         castlemove->rook_that_moved->know_i_moved(turn_number);
+        turn_number++;
         return true;
     }
     if (piece != NULL) {
@@ -185,6 +187,7 @@ bool Board::human_move_piece(Move* move_to_make) {
             if (castlemove->piece_that_moved->first_turn_i_moved() != -1) {
                 throw InvalidMove(string("Too late to castle. You've already moved!"));
             }
+            turn_number++;
             return true;
         }
         bool can_move = piece->can_classmove(b_row, b_column, this);
@@ -303,7 +306,10 @@ void Board::undo_move(Move* move_i_made) {
     castlemove = dynamic_cast<CastleMove*>(move_i_made);
     
     if (castlemove != NULL) {
+        /* No matter which side it's on if we know it castled we know it had'nt moved before this.
+        * Reset the king too.*/
         castlemove->rook_that_moved->know_i_moved(-1);
+        castlemove->piece_that_moved->know_i_moved(-1);
         switch (castlemove->which_side_you_castled)
         {
         case LEFT:

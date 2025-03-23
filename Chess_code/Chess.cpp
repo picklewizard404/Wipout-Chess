@@ -164,7 +164,7 @@ int chess()
                                 &(current_team->the_king),
                                 NULL),
                             &(current_team->rook1),
-                            LEFT);
+                            LEFT, &mainboard, current_team);
                         have_decided_direction = true;
                         okmove = true;
                     }
@@ -182,7 +182,7 @@ int chess()
                                 &(current_team->the_king),
                                 NULL),
                             &(current_team->rook2),
-                            RIGHT);
+                            RIGHT, &mainboard, current_team);
                         have_decided_direction = true;
                         okmove = true;
                     }
