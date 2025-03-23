@@ -138,24 +138,24 @@ TEST_CASE("Castling in or through check should fail", "[castle][check]") {
         }
     }
     //In check
-    Move enablequeenmove = Move(7, 5, 6, 5, &blackteam.pawns[3], NULL);
-    mainboard.human_move_piece(&enablequeenmove);
-    Move queenattack1 = Move(8, 4, 6, 6, &blackteam.queen, NULL);
-    mainboard.human_move_piece(&queenattack1);
-    Move queenattack2 = Move(6, 6, 5, 5, &blackteam.queen, NULL);
-    mainboard.human_move_piece(&queenattack2);
-    mainboard.print_board();
-    try {
-        CastleMove castlewhiteleft = CastleMove(
-            Move(1, 5, 1, 3, &whiteteam.the_king, NULL),
-            &whiteteam.rook1, LEFT, &mainboard, &whiteteam
-        );
+    //Free rook
+    kill_piece(&mainboard, &blackteam.pawns[0]);
+    for (int i = 5; i >= 1; i--) {
+        mainboard.place(&blackteam.rook2, 6, i);
+        mainboard.print_board();
+        try {
+            CastleMove castlewhiteleft = CastleMove(
+                Move(1, 5, 1, 3, &whiteteam.the_king, NULL),
+                &whiteteam.rook1, LEFT, &mainboard, &whiteteam
+            );
+        }
+        catch (InvalidMove e) {
+            printf("%s\n", e.what());
+            castle_failed = true;
+        }
+        REQUIRE(castle_failed);
+        castle_failed = false;
     }
-    catch (InvalidMove e) {
-        printf("%s\n", e.what());
-        castle_failed = true;
-    }
-    REQUIRE(castle_failed);
 }
 
 TEST_CASE("Undo castling", "[undo][castle]") {
