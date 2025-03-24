@@ -186,6 +186,7 @@
     <ResourceCompile Include="PlayChess1.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\icon1.ico" />
     <Image Include="..\..\icon1.png" />
   </ItemGroup>
   <ItemGroup>
