@@ -131,18 +131,40 @@ TEST_CASE("Upgraded pawns downgrade and delete their upgrades after the move tha
     Team blackteam = Team(BLACK, &mainboard);
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
-    kill_piece(&mainboard, mainboard.spaces[7 - 1][2 - 1]);
-    mainboard.place(&whiteteam.pawns[1], 7, 2);
-    Move upgradepawn = Move(7, 2, 8, 1, &whiteteam.pawns[1], NULL);
+    kill_piece(&mainboard, mainboard.spaces[1][6]);
+
+    mainboard.place(&blackteam.pawns[1], 2, 7);
+    Move upgradepawn = Move(2, 7, 1, 8, &blackteam.pawns[1], NULL);
     mainboard.print_board();
     mainboard.human_move_piece(&upgradepawn);
-    std::ignore = upgrade_pawn_if_needed(&whiteteam.pawns[1], &whiteteam, &mainboard, KNIGHT);
-    Piece** knightholder = &whiteteam.upgraded_pieces[1];
-    Knight* upgraded = dynamic_cast<Knight*>(whiteteam.upgraded_pieces[1]);
-    REQUIRE(whiteteam.pieces[8 + 1]->piecetype == KNIGHT);
-    if (upgraded != NULL) {
-        delete upgraded;
+    printf("The black pawn just moved to the bottom of the board...\n");
+    mainboard.print_board();
+    std::ignore = upgrade_pawn_if_needed(&blackteam.pawns[1], &blackteam, &mainboard, KNIGHT);
+    Piece** knightholder = &blackteam.upgraded_pieces[6];
+    Knight* upgraded = dynamic_cast<Knight*>(blackteam.upgraded_pieces[6]);
+    REQUIRE(blackteam.upgraded_pieces[6] != NULL);
+    REQUIRE(blackteam.upgraded_pieces[6]->piecetype == KNIGHT);
+    mainboard.undo_move(&upgradepawn, &blackteam);
+    mainboard.print_board();
+    for (int i = 0; i < 8; i++) {
+        REQUIRE(blackteam.upgraded_pieces[i] == NULL);
     }
+    REQUIRE(blackteam.pieces[7 + 2]->piecetype == PAWN);
+    REQUIRE(blackteam.pieces[7 + 2]->row == 2);
+    mainboard.place(&whiteteam.pawns[0], 7, 1);
+    Move upwhite = Move(7, 1, 8, 2, &whiteteam.pawns[0], NULL);
+    mainboard.human_move_piece(&upwhite);
+    mainboard.print_board();
+    std::ignore = upgrade_pawn_if_needed(&whiteteam.pawns[0], &whiteteam, &mainboard, BISHOP);
+    mainboard.print_board();
+    REQUIRE(whiteteam.upgraded_pieces[0] != NULL);
+    REQUIRE(whiteteam.upgraded_pieces[0]->piecetype == BISHOP);
+    mainboard.undo_move(&upwhite, &whiteteam);
+    REQUIRE(whiteteam.upgraded_pieces[0] == NULL);
+    REQUIRE(whiteteam.pieces[8] != NULL);
+    bool undidwhiteupgrade = whiteteam.pawns[0].alive && whiteteam.pawns[0].row == 7 && whiteteam.pawns[0].column == 1;
+    REQUIRE(undidwhiteupgrade);
+    printf("All done with chess!\n");
 }
 
 TEST_CASE("Castling in or through check should fail", "[castle][check]") {
@@ -434,7 +456,7 @@ TEST_CASE("Queens moving diagonally", "[queen]") {
 }
 
 //TODO: WRITE A TEST TO GUARANTEE THAT THE UPGRADED PAWNS ARE DELETED AND THE PAWNS ARE REVIVED WHEN UNDOING A MOVE!
-TEST_CASE("Upgrade a pawn. Pretend you typed.", "[.interactive][upgrade]") {
+TEST_CASE("Upgrade a pawn. Pretend you typed.", "[upgrade]") {
     printf("You are the white team and you just landed a pawn on the top right square. Name a piece type to upgrade your pawn to.\n");
     Board mainboard;
     Team whiteteam = Team(WHITE, &mainboard);
@@ -448,7 +470,7 @@ TEST_CASE("Upgrade a pawn. Pretend you typed.", "[.interactive][upgrade]") {
     Rook* upgradedrook = NULL;
     Knight* upgradedknight = NULL;
     Bishop* upgradedbishop = NULL;
-    //TODO ADD QUEENS ONCE YOU MAKE THEM
+    Queen* upgradedqueen = NULL;
     switch (pawn_upgrade_to)
     {
     case ROOK:
@@ -464,7 +486,8 @@ TEST_CASE("Upgrade a pawn. Pretend you typed.", "[.interactive][upgrade]") {
         REQUIRE(upgradedbishop != NULL);
         break;
     case QUEEN:
-        break;
+        upgradedqueen = dynamic_cast<Queen*>(whiteteam.pieces[15]);
+        REQUIRE(upgradedqueen != NULL);
     default:
         break;
     }

@@ -305,17 +305,40 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
     }
 
     if (move_i_made->piece_that_moved->piecetype == PAWN) {
+        Pawn* movedpawn = (Pawn*)move_i_made->piece_that_moved;
+        bool did_upgrade = false;
         switch (move_i_made->piece_that_moved->team) {
         case WHITE:
-            if (move_i_made->end_row == 8) {
-                if (team_that_moved != NULL) {
-                    if (team_that_moved->pieces[move_i_made->piece_that_moved->count + 7]) {
-                        //TODO IT IS SO, SO, IMPORTANT TO HELP ME FINISH DELETING UPGRADED PAWNS! THE ONLY THING I HAVE LEFT TO DO!
-                    }
+            did_upgrade = move_i_made->end_row == 8;
+            break;
+        
+        case BLACK:
+            did_upgrade = move_i_made->end_row == 1;
+            break;
+        }
+        if (team_that_moved != NULL && did_upgrade) {
+            if (team_that_moved->pieces[move_i_made->piece_that_moved->count + 7] != NULL) {
+                //TODO IT IS SO, SO, IMPORTANT TO HELP ME FINISH DELETING UPGRADED PAWNS! THE ONLY THING I HAVE LEFT TO DO!
+                if (team_that_moved->upgraded_pieces[movedpawn->get_start_column() - 1] != NULL) {
+                    delete team_that_moved->upgraded_pieces[movedpawn->get_start_column() - 1];
+                    team_that_moved->upgraded_pieces[movedpawn->get_start_column() - 1] = NULL;
+                    team_that_moved->pieces[move_i_made->piece_that_moved->count + 7] = movedpawn;
+                    team_that_moved->pieces[move_i_made->piece_that_moved->count + 7]->alive = true;
                 }
             }
         }
-        //TODO ADD CASE BLACK HERE
+        /*if (move_i_made->end_row == 1) {
+            if (team_that_moved != NULL) {
+                if (team_that_moved->pieces[move_i_made->piece_that_moved->count + 7] != NULL) {
+                    //TODO IT IS SO, SO, IMPORTANT TO HELP ME FINISH DELETING UPGRADED PAWNS! THE ONLY THING I HAVE LEFT TO DO!
+                    if (team_that_moved->upgraded_pieces[movedpawn->get_start_column() - 1] != NULL) {
+                        delete team_that_moved->upgraded_pieces[movedpawn->get_start_column() - 1];
+                        team_that_moved->upgraded_pieces[movedpawn->get_start_column() - 1] = NULL;
+                        team_that_moved->pieces[move_i_made->piece_that_moved->count + 7]->alive = true;
+                    }
+                }
+            }
+        }*/
     }
 
     CastleMove* castlemove = NULL;
@@ -347,7 +370,7 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
     piecethatmoved->row = move_i_made->start_row;
     piecethatmoved->column = move_i_made->start_column;
     turn_number--;
-    if (move_i_made->piece_that_moved->first_turn_i_moved() > turn_number) {
+    if (move_i_made->piece_that_moved->first_turn_i_moved() >= turn_number) {
         move_i_made->piece_that_moved->know_i_moved(-1);
     }
 }

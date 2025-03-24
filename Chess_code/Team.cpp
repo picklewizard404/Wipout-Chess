@@ -41,11 +41,11 @@ Team::Team() {
 }
 
 Team::~Team() {
+    //NOTE: DELETE UPGRADED QUEENS HERE
     for (int i = 0; i < 8; i++) {
         if (upgraded_pieces[i] != NULL) {
             delete upgraded_pieces[i];
         }
-        //TODO DELETE UPGRADED QUEENS HERE
     }
 }
 
@@ -76,8 +76,9 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
         //NOTE: On the black team, the variables in code are named from the TOP DOWN perspective.
         // The pawn indexes are set up the other way, with the 0th pawn being the top right black pawn.
         //  But their displayed names are from the black team's perspective.
+        //  So are the the pawn *indexes*.
         //  That means, for example, the black rook starting on the top right corner is displayed as bRook2 even though the variable is rook1,
-        //  and the black pawn beneath it is displayed as bPawn8 even though the variable is pawns[0].
+        //  and the black pawn beneath it is displayed as bPawn8 and the variable is pawns[7].
         namefirstletter = 'b';
         strcpy(full_name, "Black");
         empty_spaces();

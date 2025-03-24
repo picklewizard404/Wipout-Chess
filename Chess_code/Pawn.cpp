@@ -8,12 +8,23 @@
 //Aaron has helped and Andrew can still edit.
 
 Pawn::Pawn() {
+    starting_column = -1;
     be_safe(WHITE);
 }
 
+int Pawn::get_start_column()
+{
+    return starting_column;
+}
+
 Pawn::Pawn(COLOR b_team, int b_row, int b_column, int b_count) {
+    starting_column = b_column;
     strcpy(chess_class, "Pawn");
     setup(chess_class, b_team, b_row, b_column, b_count, PAWN);
+    if (b_team == BLACK) {
+        //Changes the way the piece is named visually but NOT functionally!
+        name[5] = '0' + 9 - column;
+    }
 }
 
 //

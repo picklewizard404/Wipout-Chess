@@ -66,15 +66,7 @@ int chess()
     Piece* current_king = wKing;
     bool am_i_in_check = false;
 
-    //Begin live test
-    /*
-    try {
-        Move breaks = Move(1, 5, 8, 5, NULL, bKing);
-    }
-    catch (InvalidMove problem) {
-        printf(problem.what());
-    }
-    // */
+    printf("God answered my prayers and helped me make this game. He deserves credit!\n");
     
     //*
     while (wKing->alive && bKing->alive)

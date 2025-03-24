@@ -12,7 +12,7 @@ bool is_pawn(Piece* shouldbepawn) {
 }
 //NOTE: This function is called EVERY time a pawn is moved, and it does nothing is the pawn is not on it.
 //Possible errors: InvalidPiece
-TYPE upgrade_pawn_if_needed(Piece* to_upgrade, Team* team_owner, Board* mainboard, TYPE upgradeTo) {
+TYPE upgrade_pawn_if_needed(Pawn* to_upgrade, Team* team_owner, Board* mainboard, TYPE upgradeTo) {
     if (upgradeTo == PAWN) {
         std::string error = std::string("Pawn");
         throw InvalidPiece(error);
@@ -52,6 +52,7 @@ TYPE get_valid_upgrade_type() {
         typewanted[i] = '\0';
     }
     while (!valid_type) {
+        printf("What kind of piece do you want? ");
         std::ignore = scanf("%9s", typewanted);
         typewanted[0] = toupper(typewanted[0]);
         for (int i = 1; i < 10; i++) {
@@ -82,7 +83,7 @@ TYPE get_valid_upgrade_type() {
     return to_upgrade_to;
 }
 
-void place_upgraded_piece(Team* team_owner, Piece* pawn_i_was, const char *newpiece_type, Piece* upgraded_piece, Board* mainboard) {
+void place_upgraded_piece(Team* team_owner, Pawn* pawn_i_was, const char *newpiece_type, Piece* upgraded_piece, Board* mainboard) {
     //CREDIT: Dad reminded me that I can tell what type of piece a Piece pointer points to based on it class,
     //so I don't need a different array for each possible piece type.
     pawn_i_was->alive = false;
@@ -90,35 +91,39 @@ void place_upgraded_piece(Team* team_owner, Piece* pawn_i_was, const char *newpi
     upgraded_piece->alive = true;
     sprintf(upgraded_piece->name, "%c%sp%d", pawn_i_was->team, newpiece_type, pawn_i_was->count);
     // VERY IMPORTANT NOTE: THIS IS WHERE THE UPGRADED PAWN IS ADDED TO THE TEAM!
-    team_owner->pieces[pawn_i_was->count + 7] = upgraded_piece;
+    team_owner->pieces[pawn_i_was->get_start_column() + 7] = upgraded_piece;
     mainboard->place(upgraded_piece, upgraded_piece->row, upgraded_piece->column);
 }
 
 //VERY IMPORTANT NOTE: I CREATE A NEW PIECE, SO IT MUST BE DELETED WHEN THE MOVE IS UNDONE!
-void really_perform_upgrade(Piece* to_upgrade, TYPE new_class, Team* team_owner, Board* mainboard) {
+void really_perform_upgrade(Pawn* to_upgrade, TYPE new_class, Team* team_owner, Board* mainboard) {
     for (int i = 8; i < 16; i++) {
         if (team_owner->pieces[i] == to_upgrade) {
+            int upgraded_index = to_upgrade->get_start_column() - 1;
             switch (new_class)
             {
+                //NOTE: WE PLACE THE UPGRADED PAWNS BASED ON THEIR STARTING COLUMN!
             case BISHOP: 
-                team_owner->upgraded_pieces[i - 8] = new Bishop(to_upgrade->team, to_upgrade->row, to_upgrade->column, to_upgrade->count);
-                place_upgraded_piece(team_owner, to_upgrade, "Bishop", team_owner->upgraded_pieces[i - 8], mainboard);
+                team_owner->upgraded_pieces[upgraded_index] = new Bishop(to_upgrade->team, to_upgrade->row, to_upgrade->column, to_upgrade->count);
+                place_upgraded_piece(team_owner, to_upgrade, "Bishop", team_owner->upgraded_pieces[upgraded_index], mainboard);
+                return;
                 break;
 
             case KNIGHT:
-                team_owner->upgraded_pieces[i - 8] = new Knight(to_upgrade->team, to_upgrade->row, to_upgrade->column, to_upgrade->count);
-                place_upgraded_piece(team_owner, to_upgrade, "Knight", team_owner->upgraded_pieces[i - 8], mainboard);
+                team_owner->upgraded_pieces[upgraded_index] = new Knight(to_upgrade->team, to_upgrade->row, to_upgrade->column, to_upgrade->count);
+                place_upgraded_piece(team_owner, to_upgrade, "Knight", team_owner->upgraded_pieces[upgraded_index], mainboard);
+                return;
                 break;
 
             case ROOK: 
-                team_owner->upgraded_pieces[i - 8] = new Rook(to_upgrade->team, to_upgrade->row, to_upgrade->column, to_upgrade->count);
-                place_upgraded_piece(team_owner, to_upgrade, "Rook", team_owner->upgraded_pieces[i - 8], mainboard);
+                team_owner->upgraded_pieces[upgraded_index] = new Rook(to_upgrade->team, to_upgrade->row, to_upgrade->column, to_upgrade->count);
+                place_upgraded_piece(team_owner, to_upgrade, "Rook", team_owner->upgraded_pieces[upgraded_index], mainboard);
+                return;
                 break;
-
-            //TODO MAKE UPGRADING TO QUEEN POSSIBLE
             case QUEEN:
-                team_owner->upgraded_pieces[i - 8] = new Queen(to_upgrade->team, to_upgrade->row, to_upgrade->column, to_upgrade->count);
-                place_upgraded_piece(team_owner, to_upgrade, "Queen", team_owner->upgraded_pieces[i - 8], mainboard);
+                team_owner->upgraded_pieces[upgraded_index] = new Queen(to_upgrade->team, to_upgrade->row, to_upgrade->column, to_upgrade->count);
+                place_upgraded_piece(team_owner, to_upgrade, "Queen", team_owner->upgraded_pieces[upgraded_index], mainboard);
+                return;
                 break;
             default:
                 break;
