@@ -12,8 +12,13 @@ int main(int argc, char*argv[]) {
             if (strcmp("--hug", argv[i]) == 0) {
                 talkhug = true;
             }
-            if (strcmp(argv[i], "/?") == 0) {
+            if (strcmp(argv[i], "/?") == 0 || strcmp(argv[i], "--help") == 0) {
                 printf("Command line arguments:\n--hug: Learn how to help the kings hug!\n");
+                printf("--help or /?: View these help messages.\n");
+                printf("Space numbering:\nThe top right square is row 8 column 8 and the bottom left square is row 1 column 1.\n");
+                printf("You can be killed. Or you can hug!\n");
+                printf("God answered my prayers and helped me make this game. He deserves credit!\n");
+                return 0;
             }
         }
         if (talkhug) {
