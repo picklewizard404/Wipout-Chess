@@ -13,10 +13,14 @@ int main(int argc, char*argv[]) {
                 talkhug = true;
             }
             if (strcmp(argv[i], "/?") == 0 || strcmp(argv[i], "--help") == 0) {
-                printf("Command line arguments:\n--hug: Learn how to help the kings hug!\n");
                 printf("--help or /?: View these help messages.\n");
                 printf("Space numbering:\nThe top right square is row 8 column 8 and the bottom left square is row 1 column 1.\n");
                 printf("You can be killed. Or you can hug!\n");
+                printf("You can surrender by typing the word surrender.\n");
+                printf("Or if your opponent agrees, you can tie by typing the word tie.\n");
+                printf("Or you can make kings hug by helping them land on the same space and meet, or by typing the word hug instead of selecting a piece.\n");
+                printf("Command line arguments:\n--hug: Display that the kings can hug when starting the actual game!\n");
+                printf(">  Hugging is a secret move. Think of it as a reward for being nice.\n");
                 printf("God answered my prayers and helped me make this game. He deserves credit!\n");
                 return 0;
             }
