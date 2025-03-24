@@ -33,48 +33,45 @@ CastleMove::CastleMove(Move kingmove, Rook* mrook_that_moved, CastleDirection mw
         if (mrook_that_moved->column != 1) {
             throw InvalidMove("That rook isn't in the left column. Can't castle with that one!");
         }
-        int one_left = 4;
-        if (board_its_on->does_have_any_piece(starting_row, one_left)) {
-            throw InvalidMove(
-                std::string(board_its_on->spaces[starting_row - 1][one_left - 1]->name) +
-                std::string(" is blocking you from castling!")
-            );
+        for (int slide_left = 4; slide_left >= 3; slide_left--) {
+            if (board_its_on->does_have_any_piece(starting_row, slide_left)) {
+                throw InvalidMove(
+                    std::string(board_its_on->spaces[starting_row - 1][slide_left - 1]->name) +
+                    std::string(" is blocking you from castling!")
+                );
+            }
+            board_its_on->place(&myteam->the_king, starting_row, slide_left);
+            if (board_its_on->is_in_check(myteam, myteam->enemy_team, false)) {
+                board_its_on->place(&myteam->the_king, starting_row, 5);
+                throw InvalidMove(
+                    "Error: Space " + std::to_string(slide_left) + "is attacked, so you can't castle left.\n"
+                );
+            }
         }
-        board_its_on->place(&myteam->the_king, starting_row, one_left);
-        if (board_its_on->is_in_check(myteam, myteam->enemy_team, false)) {
-            board_its_on->place(&myteam->the_king, starting_row, 5);
-            throw InvalidMove(
-                "Error: Space " + std::to_string(one_left) + "is attacked, so you can't castle left.\n"
-            );
-        }
-        
-        //TODO CHECK IF YOU ARE IN CHECK AFTER YOU CASTLE.
-        //Note to undo your move because you're just CHECKING if the space is in attack, not actually moving there!
-        board_its_on->place(&myteam->the_king, starting_row, 5);
     }
+    
     else if (mwhich_side_you_castled == RIGHT) {
         if (mrook_that_moved->column != 8) {
             throw InvalidMove("That rook isn't in the right column. Can't castle with that one!");
         }
-        for (int i = 6; i < 8; i++) {
-            if (board_its_on->does_have_any_piece(starting_row, i)) {
+        for (int slide_right = 6; slide_right <= 7; slide_right++) {
+            if (board_its_on->does_have_any_piece(starting_row, slide_right)) {
                 throw InvalidMove(
-                    std::string(board_its_on->spaces[starting_row - 1][i - 1]->name) +
+                    std::string(board_its_on->spaces[starting_row - 1][slide_right - 1]->name) +
                     std::string(" is blocking you from castling!")
                 );
             }
-            board_its_on->place(&myteam->the_king, starting_row, i);
+            board_its_on->place(&myteam->the_king, starting_row, slide_right);
             if (board_its_on->is_in_check(myteam, myteam->enemy_team, false)) {
                 board_its_on->place(&myteam->the_king, starting_row, 5);
                 throw InvalidMove(
-                    "Error: Space " + std::to_string(i) + "is attacked, so you can't castle left.\n"
+                    "Error: Space " + std::to_string(slide_right) + "is attacked, so you can't castle right.\n"
                 );
             }
         }
-        //Note to undo your move because you're just CHECKING if the space is in attack, not actually moving there!
-        board_its_on->place(&myteam->the_king, starting_row, 5);
     }
-    
+    //Note to undo your move because you're just CHECKING if the space is in attack, not actually moving there!
+    board_its_on->place(&myteam->the_king, starting_row, 5);
     rook_that_moved = mrook_that_moved;
     //When the human moves, do this: rook_that_moved->know_i_moved(kingmove.piece_that_moved->first_turn_i_moved());
     which_side_you_castled = mwhich_side_you_castled;

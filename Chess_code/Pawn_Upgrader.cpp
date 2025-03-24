@@ -89,10 +89,12 @@ void place_upgraded_piece(Team* team_owner, Piece* pawn_i_was, const char *newpi
     //This may not be needed, but it is safe.
     upgraded_piece->alive = true;
     sprintf(upgraded_piece->name, "%c%sp%d", pawn_i_was->team, newpiece_type, pawn_i_was->count);
+    // VERY IMPORTANT NOTE: THIS IS WHERE THE UPGRADED PAWN IS ADDED TO THE TEAM!
     team_owner->pieces[pawn_i_was->count + 7] = upgraded_piece;
     mainboard->place(upgraded_piece, upgraded_piece->row, upgraded_piece->column);
 }
 
+//VERY IMPORTANT NOTE: I CREATE A NEW PIECE, SO IT MUST BE DELETED WHEN THE MOVE IS UNDONE!
 void really_perform_upgrade(Piece* to_upgrade, TYPE new_class, Team* team_owner, Board* mainboard) {
     for (int i = 8; i < 16; i++) {
         if (team_owner->pieces[i] == to_upgrade) {

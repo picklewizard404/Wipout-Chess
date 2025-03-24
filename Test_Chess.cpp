@@ -125,6 +125,26 @@ TEST_CASE("Castling error checking", "[errors][castle]") {
     
 }
 
+TEST_CASE("Upgraded pawns downgrade and delete their upgrades after the move that upgraded them is undone..", "[upgrade][undo]") {
+    Board mainboard;
+    Team whiteteam = Team(WHITE, &mainboard);
+    Team blackteam = Team(BLACK, &mainboard);
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+    kill_piece(&mainboard, mainboard.spaces[7 - 1][2 - 1]);
+    mainboard.place(&whiteteam.pawns[1], 7, 2);
+    Move upgradepawn = Move(7, 2, 8, 1, &whiteteam.pawns[1], NULL);
+    mainboard.print_board();
+    mainboard.human_move_piece(&upgradepawn);
+    std::ignore = upgrade_pawn_if_needed(&whiteteam.pawns[1], &whiteteam, &mainboard, KNIGHT);
+    Piece** knightholder = &whiteteam.upgraded_pieces[1];
+    Knight* upgraded = dynamic_cast<Knight*>(whiteteam.upgraded_pieces[1]);
+    REQUIRE(whiteteam.pieces[8 + 1]->piecetype == KNIGHT);
+    if (upgraded != NULL) {
+        delete upgraded;
+    }
+}
+
 TEST_CASE("Castling in or through check should fail", "[castle][check]") {
     Board mainboard;
     Team whiteteam = Team(WHITE, &mainboard);
@@ -138,9 +158,7 @@ TEST_CASE("Castling in or through check should fail", "[castle][check]") {
         }
     }
     //In check
-    //Free rook
-    kill_piece(&mainboard, &blackteam.pawns[0]);
-    for (int i = 5; i >= 1; i--) {
+    for (int i = 5; i >= 3; i--) {
         mainboard.place(&blackteam.rook2, 6, i);
         mainboard.print_board();
         try {
@@ -156,6 +174,51 @@ TEST_CASE("Castling in or through check should fail", "[castle][check]") {
         REQUIRE(castle_failed);
         castle_failed = false;
     }
+    mainboard.place(&blackteam.rook2, 6, 2);
+    mainboard.print_board();
+    try {
+        CastleMove castlewhiteleft = CastleMove(
+            Move(1, 5, 1, 3, &whiteteam.the_king, NULL),
+            &whiteteam.rook1, LEFT, &mainboard, &whiteteam
+        );
+    }
+    catch (InvalidMove e) {
+        printf("%s\n", e.what());
+        castle_failed = true;
+    }
+    REQUIRE_FALSE(castle_failed);
+    printf("Castle check works on the left side.\n");
+    for (int i = 5; i <= 7; i++) {
+        mainboard.place(&blackteam.rook2, 6, i);
+        mainboard.print_board();
+        try {
+            CastleMove castlewhiteright = CastleMove(
+                Move(1, 5, 1, 7, &whiteteam.the_king, NULL),
+                &whiteteam.rook2, RIGHT, &mainboard, &whiteteam
+            );
+        }
+        catch (InvalidMove e) {
+            printf("%s\n", e.what());
+            castle_failed = true;
+        }
+        REQUIRE(castle_failed);
+        castle_failed = false;
+    }
+    mainboard.place(&blackteam.rook2, 6, 2);
+    try {
+        CastleMove castlewhiteright = CastleMove(
+            Move(1, 5, 1, 7, &whiteteam.the_king, NULL),
+            &whiteteam.rook2, RIGHT, &mainboard, &whiteteam
+        );
+    }
+    catch (InvalidMove e) {
+        printf("%s\n", e.what());
+        castle_failed = true;
+    }
+    REQUIRE_FALSE(castle_failed);
+    bool king_is_in_starting_space = (whiteteam.the_king.row == 1 && whiteteam.the_king.column == 5 && whiteteam.the_king.first_turn_i_moved() == -1);
+    REQUIRE(king_is_in_starting_space);
+    printf("Castling is correctly followed!\n");
 }
 
 TEST_CASE("Undo castling", "[undo][castle]") {
@@ -389,7 +452,7 @@ TEST_CASE("Upgrade a pawn. Pretend you typed.", "[.interactive][upgrade]") {
     switch (pawn_upgrade_to)
     {
     case ROOK:
-        upgradedrook = dynamic_cast<Rook*>(whiteteam.pieces[15]);
+        upgradedrook = dynamic_cast<Rook*>(whiteteam.upgraded_pieces[1]);
         REQUIRE(upgradedrook != NULL);
         break;
     case KNIGHT:

@@ -204,7 +204,8 @@ bool Board::human_move_piece(Move* move_to_make) {
             if (spaces[b_row - 1][b_column - 1] != NULL) {
                 spaces[b_row - 1][b_column - 1]->alive = false;
                 spaces[b_row - 1][b_column - 1] = piece;
-                //Remember the piece I landed on in case this move has to be undone.
+                /*NOTE: THE piece_landed_on variable CAN be null before this function was called.
+                * Remember the piece I landed on in case this move has to be undone. */
                 move_to_make->piece_landed_on = spaces[b_row - 1][b_column - 1];
             }
 
@@ -292,7 +293,8 @@ int Board::current_turn() const
 // Check if the piece that moved was a pawn and if it moved to the end of the board.
 // If i did then delete team_owner->upgraded_pieces[move_i_made->piece_that_moved->count-8]
 // THEN SET IT TO NULL RIGHT AFTER!
-void Board::undo_move(Move* move_i_made) {
+// Note: IT IS VERY IMPORTANT IN THE LIVE GAME TO ALWAYS PASS THE TEAM THAT MOVED!
+void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
     passantpawn = prevepassant;
     prevepassant = PassantPawn();
     int previousrow = move_i_made->end_row;
@@ -300,6 +302,20 @@ void Board::undo_move(Move* move_i_made) {
     Piece* piecethatmoved = move_i_made->piece_that_moved;
     if (move_i_made == NULL) {
         throw InvalidPiece(NULL);
+    }
+
+    if (move_i_made->piece_that_moved->piecetype == PAWN) {
+        switch (move_i_made->piece_that_moved->team) {
+        case WHITE:
+            if (move_i_made->end_row == 8) {
+                if (team_that_moved != NULL) {
+                    if (team_that_moved->pieces[move_i_made->piece_that_moved->count + 7]) {
+                        //TODO IT IS SO, SO, IMPORTANT TO HELP ME FINISH DELETING UPGRADED PAWNS! THE ONLY THING I HAVE LEFT TO DO!
+                    }
+                }
+            }
+        }
+        //TODO ADD CASE BLACK HERE
     }
 
     CastleMove* castlemove = NULL;
@@ -429,7 +445,7 @@ Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboa
                 // We know we can go here, so we might as well try.
                 human_move_piece(&tried_move);
                 if (is_in_check(my_team, enemy_team, false) == NEUTRAL) {
-                    undo_move(&tried_move);
+                    undo_move(&tried_move, my_team);
                     return CHECK;
                 }
             }

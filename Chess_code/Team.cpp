@@ -89,9 +89,12 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
         bishop2 = Bishop(team_color, 8, 6, 1);
         queen = Queen(team_color, 8, 4, 0);
         for (int i = 1; i <= 8; i++) {
-            //The black king looks at his pawns from the opposite angle, so he calls the
-            // pawn in the absolute top left pawn corner pawn 8.
-            pawns[i-1] = Pawn(team_color, 7, 9-i, i);
+            /*The black king looks at his pawns from the opposite angle, so he calls the
+            * pawn in the absolute top left pawn corner pawn 8. That means pawns[8-1], (or in other words pawns[7]) is in row 7 column 1.
+            * I know it's kinda confusing that the pawns are created from the team's perspective while the other pieces are created from the top-down perspective,
+            * but to make it easier, just think of the pawn's index as the 8 - the pawn's column.
+              */
+            pawns[8-i] = Pawn(team_color, 7, i, i);
         }
     }
     pieces[0] = &rook1;

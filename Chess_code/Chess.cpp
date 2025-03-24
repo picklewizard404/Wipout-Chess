@@ -232,7 +232,7 @@ int chess()
                     nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
                 }
                 if (strcmp(nameofpiecetomove, "Yes") == 0) {
-                    mainboard.undo_move(&castle_move);
+                    mainboard.undo_move(&castle_move, current_team);
                     current_team = current_team->enemy_team;
                 }
             }
@@ -324,7 +324,7 @@ int chess()
                         nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
                     }
                     if (strcmp(nameofpiecetomove, "Yes") == 0) {
-                        mainboard.undo_move(&tried_move);
+                        mainboard.undo_move(&tried_move, current_team);
                         current_team = current_team->enemy_team;
                     }
                 }
