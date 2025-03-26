@@ -31,11 +31,6 @@ void say(int column, int row, Board mainboard) {
 
 }
 
-/*TYPE move_pawn(Pawn* pawn_to_move, Board* mainboard, Team* current_team) {
-    //TODO Upgrade the pawn if necessary.
-    return PAWN;
-}*/
-
 COLOR char_opposing_team(COLOR team) {
     if (team == WHITE) return BLACK;
     else return WHITE;
@@ -74,7 +69,6 @@ COLOR enemy_team(COLOR my_team) {
     }
 }
 
-//TODO This function is the last one you need to write, probably.
 //*
 bool can_castle(Team* current_team, Board* mainboard, const char *direction_castle) {
     /*

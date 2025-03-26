@@ -1,14 +1,12 @@
 #include "Piece.h"
 #include "Board.h"
 #include "diagnoal_direction.h"
-//TODO Implement this function. It might be done?
 #include <stdlib.h>
 bool can_move_diagnolly(Piece* valid_piece, DIAGONAL direction, int count, Board* board_to_move_on) {
     if (!valid_piece->alive) return false;
     if (direction == WRONG) return false;
     count = abs(count);
     int horizontal_direction = 1, vertical_direction = 1;
-    //TODO Do this in calculate_diag_mv
     int berow = valid_piece->row;
     int becolumn = valid_piece->column;
     move_position_info_diag(&berow, &becolumn, direction, count);

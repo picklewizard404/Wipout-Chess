@@ -29,7 +29,7 @@ void sleep5() {
 
 int chess()
 {
-    /*TODO NOTE THAT YOU SHOULDN'T BE ABLE TO CASTLE WHILE IN CHECK, BUT YOU CAN.
+    /*NOTE THAT YOU CAN'T CASTLE WHILE IN CHECK.
     * THE BOARD SHOULD KNOW WHATE TEAMS ARE IN CHECK AND PREVENT CASTLING IF THE TEAM TRYING TO CASTLE IS IN CHECK.
     * IT IS POSSIBLE FOR BOTH TEAMS TO BE IN CHECK, SO THE BOARD NEEDS 2 BOOLEANS TO TELL WHETHER OR NOT the current team is in check.
     * */
@@ -235,9 +235,9 @@ int chess()
                     current_team = current_team->enemy_team;
                 }
             }
-            /* TODO: UPDATE THE BOARD'S KNOWLEDGE OF THE BOTH TEAM'S CHECK HERE. */
+            /* UPDATE THE BOARD'S KNOWLEDGE OF THE BOTH TEAM'S CHECK HERE. */
             current_team->enemy_team->current_status = mainboard.is_in_check(current_team->enemy_team, current_team, false);
-            current_team->current_status = mainboard.is_in_check(current_team, current_team->enemy_team, &mainboard);
+            current_team->current_status = mainboard.is_in_check(current_team, current_team->enemy_team, true);
             // END
             // */
         }

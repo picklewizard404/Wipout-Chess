@@ -122,7 +122,6 @@ void Team::empty_spaces() {
     }
 }
 
-//TODO: Function to change a piece's class.
 void Team::put_pieces_on_board(Board* the_board_shared) {
     for (int i = 0; i < 16; i++) {
         if (pieces[i] != 0) {

@@ -33,7 +33,6 @@ public:
     Queen queen;
     Pawn pawns[8];
     Piece* upgraded_pieces[8];
-    //TODO MAKE AN ARRAY OF UPGRADED QUEENS
 
     Team* enemy_team;
     Game_Status current_status;
@@ -43,7 +42,6 @@ public:
     Team();
     ~Team();
     Team(COLOR team_color, Board* the_board_shared);
-    //TODO MAKE A TEAM DESTRUCTOR TO DELETE NEWLY MADE PIECES
     void empty_spaces();
     void put_pieces_on_board(Board* the_board_shared);
     const char* team_name() const;

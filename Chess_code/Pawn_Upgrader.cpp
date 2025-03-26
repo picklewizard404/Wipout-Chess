@@ -70,7 +70,6 @@ TYPE get_valid_upgrade_type() {
             to_upgrade_to = BISHOP;
             valid_type = true;
         }
-        //* TODO: Uncomment this once you've actually made queens.
         else if (strcmp(typewanted, "Queen") == 0) {
             to_upgrade_to = QUEEN;
             valid_type = true;

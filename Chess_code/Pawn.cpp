@@ -29,8 +29,8 @@ Pawn::Pawn(COLOR b_team, int b_row, int b_column, int b_count) {
 
 //
 bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {
-    //TODO Make it possible to go up 2 spaces if in your starting position
-    //TODO MAKE PASSANT POSSIBLE
+    //It is possible to go up 2 spaces if in your starting position.
+    //I MADE PASSANT POSSIBLE!
     if (!is_safe(this, main_board, b_row, b_column)) return false;
     int direction = 1;
     if (team == BLACK) {
