@@ -270,18 +270,50 @@ int chess()
         } else if (!piecefound && !did_try_castle) {
             printf("Invalid piece.\n");
         }
+        
+        
         //We found the piece. Now move it.
+        bool landonokplace = false;
+        bool enteredexactly1row = false;
         if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_try_tie && !did_try_castle) {
             printf("Where do you want to move %s?\n", nameofpiecetomove);
             printf("Enter your move.\n");
-
+            char cspace = '\0';
             printf("Row: ");
-            std::ignore = scanf("%d", &m_row);
-            clearinput();
-            printf("Column: ");
-            std::ignore = scanf("%d", &m_column);
-            clearinput();
-            
+            std::ignore = scanf("%c", &cspace);
+            if (getchar() != '\n') {
+                printf("Invalid row.\n");
+                clearinput();
+            }
+            else {
+                enteredexactly1row = true;
+            }
+            m_row = atoi(&cspace);
+            if ((m_row >= 1) && (m_row <= 8) && enteredexactly1row) {
+                bool enteredexactly1column = false;
+                printf("Column: ");
+                std::ignore = scanf("%c", &cspace);
+                if (getchar() != '\n') {
+                    printf("Invalid column.\n");
+                    clearinput();
+                }
+                else {
+                    enteredexactly1column = true;
+                }
+
+                m_column = atoi(&cspace);
+                if (((m_column >= 1) && (m_column <= 8) && enteredexactly1column)) {
+                    landonokplace = true;
+                }
+                else if (!landonokplace && enteredexactly1column) {
+                    printf("Invalid column.\n");
+                }
+            }
+            else if (!((m_row >= 1) && (m_row <= 8)) && enteredexactly1row) /*assume valid single int*/ {
+                printf("Invalid row.\n");
+            }
+        }
+        if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_try_tie && !did_try_castle && landonokplace) {
 
             bool should_upgrade_pawn = false;
             okmove = piecetomove->can_classmove(m_row, m_column, &mainboard);
