@@ -76,7 +76,7 @@ TYPE get_valid_upgrade_type() {
         }
         // */
         if (!valid_type) {
-            printf("%s is not a valid type to upgrade a pawn to. Try again.", typewanted);
+            printf("%s is not a valid type to upgrade a pawn to. Try again.\n", typewanted);
         }
     }
     return to_upgrade_to;

@@ -456,7 +456,7 @@ TEST_CASE("Queens moving diagonally", "[queen]") {
 }
 
 //TODO: WRITE A TEST TO GUARANTEE THAT THE UPGRADED PAWNS ARE DELETED AND THE PAWNS ARE REVIVED WHEN UNDOING A MOVE!
-TEST_CASE("Upgrade a pawn. Pretend you typed.", "[upgrade]") {
+TEST_CASE("Upgrade a pawn. Pretend you typed.", "[interactive][upgrade]") {
     printf("You are the white team and you just landed a pawn on the top right square. Name a piece type to upgrade your pawn to.\n");
     Board mainboard;
     Team whiteteam = Team(WHITE, &mainboard);
@@ -474,23 +474,24 @@ TEST_CASE("Upgrade a pawn. Pretend you typed.", "[upgrade]") {
     switch (pawn_upgrade_to)
     {
     case ROOK:
-        upgradedrook = dynamic_cast<Rook*>(whiteteam.upgraded_pieces[1]);
+        upgradedrook = dynamic_cast<Rook*>(whiteteam.upgraded_pieces[7]); //7 == 8-1
         REQUIRE(upgradedrook != NULL);
         break;
     case KNIGHT:
-        upgradedknight = dynamic_cast<Knight*>(whiteteam.pieces[15]);
+        upgradedknight = dynamic_cast<Knight*>(whiteteam.upgraded_pieces[7]);
         REQUIRE(upgradedknight != NULL);
         break;
     case BISHOP:
-        upgradedbishop = dynamic_cast<Bishop*>((whiteteam.pieces[15]));
+        upgradedbishop = dynamic_cast<Bishop*>((whiteteam.upgraded_pieces[7]));
         REQUIRE(upgradedbishop != NULL);
         break;
     case QUEEN:
-        upgradedqueen = dynamic_cast<Queen*>(whiteteam.pieces[15]);
+        upgradedqueen = dynamic_cast<Queen*>(whiteteam.upgraded_pieces[7]);
         REQUIRE(upgradedqueen != NULL);
     default:
         break;
     }
+    REQUIRE(whiteteam.pieces[15] == whiteteam.upgraded_pieces[7]); //15 == 7 + 8
     mainboard.print_board();
 }
 
