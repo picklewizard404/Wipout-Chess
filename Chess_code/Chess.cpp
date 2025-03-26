@@ -16,6 +16,10 @@
 
 using namespace std;
 
+void print_how_to_hug() {
+    printf("To hug the king you just landed on instead of defeating him,\njust type Yes.\n");
+}
+
 bool make_kings_hug(Team *current_team, Team*whiteteam, Team*blackteam) {
     printf("%s player hugs %s player. Both win!\n",
         current_team->color == whiteteam->color ? whiteteam->team_name() : blackteam->team_name(),
@@ -355,15 +359,18 @@ int chess()
     }
     if (whiteteam.the_king.row == blackteam.the_king.row
         && whiteteam.the_king.column == blackteam.the_king.column) {
-        printf("Do you intend to hug or defeat the king? Type Yes if you want a hug.\n");
-        scanf("%3s", nameofpiecetomove);
+        print_how_to_hug();
+        std::ignore = scanf("%3s", nameofpiecetomove);
+        nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
         clearinput();
         nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
         for (int i = 1; i < 3; i++) {
             nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
         }
-        make_kings_hug(current_team->enemy_team, public_white_team, public_black_team);
-        return 0;
+        if (strcmp("Yes", nameofpiecetomove) == 0) {
+            make_kings_hug(current_team->enemy_team, public_white_team, public_black_team);
+            return 0;
+        }
     }
     if (!whiteteam.the_king.alive) {
         printf("Black team wins.\n");
