@@ -277,8 +277,10 @@ int chess()
 
             printf("Row: ");
             std::ignore = scanf("%d", &m_row);
+            clearinput();
             printf("Column: ");
             std::ignore = scanf("%d", &m_column);
+            clearinput();
             
 
             bool should_upgrade_pawn = false;
