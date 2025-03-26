@@ -15,6 +15,7 @@ int main(int argc, char*argv[]) {
             if (strcmp(argv[i], "/?") == 0 || strcmp(argv[i], "--help") == 0) {
                 printf("--help or /?: View these help messages.\n");
                 printf("Space numbering:\nThe top right square is row 8 column 8 and the bottom left square is row 1 column 1.\n");
+                printf("> Note that when I ask for the row and column, I read the numbers from a top-down perspective with the white team on the bottom.\n");
                 printf("You can be killed. Or you can hug!\n");
                 printf("You can surrender by typing the word surrender.\n");
                 printf("Or if your opponent agrees, you can tie by typing the word tie.\n");
@@ -29,6 +30,7 @@ int main(int argc, char*argv[]) {
             printf("You can make kings hug by helping them land on the same space and meet, or by typing the word hug instead of selecting a piece.\n");
         }
     }
+    printf("Note that when I ask for the row and column, I read the numbers from a top-down perspective with the white team on the bottom.\n");
     printf("I'll tell you this exactly once:\nThe top right square is row 8 column 8 and the bottom left square is row 1 column 1.\n");
     printf("You can be killed.\n");
     

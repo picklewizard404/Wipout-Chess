@@ -160,6 +160,11 @@ int chess()
                         have_decided_direction = true;
                         okmove = true;
                     }
+                    catch (InvalidMove e) {
+                        printf("%s\n", e.what());
+                        okmove = false;
+                        break;
+                    }
                     catch (std::exception e) {
                         printf(e.what());
                         //You failed to castle.
@@ -180,6 +185,8 @@ int chess()
                     }
                     catch (InvalidMove e) {
                         printf("%s\n", e.what());
+                        okmove = false;
+                        break;
                     }
                     catch (std::exception e) {
                         printf(e.what());
@@ -207,7 +214,7 @@ int chess()
                 }
                 catch (InvalidMove e) {
                     printf("%s\n", e.what());
-                    //You failed to castle.
+                    //You failed to move.
                     okmove = false;
                 }
             }
@@ -233,7 +240,6 @@ int chess()
             current_team->current_status = mainboard.is_in_check(current_team, current_team->enemy_team, &mainboard);
             // END
             // */
-
         }
 
         //Find piece with that name
@@ -290,11 +296,11 @@ int chess()
                 }
                 catch (InvalidMove problem) {
                     printf(problem.what());
-                    continue;
+                    break;
                 }
                 catch (InvalidPiece problem) {
                     printf(problem.what());
-                    continue;
+                    break;
                 }
                 //Important: Upgrade the pawn if needed.
                 if (piecetomove->piecetype == PAWN) {
@@ -349,6 +355,13 @@ int chess()
     }
     if (whiteteam.the_king.row == blackteam.the_king.row
         && whiteteam.the_king.column == blackteam.the_king.column) {
+        printf("Do you intend to hug or defeat the king? Type Yes if you want a hug.\n");
+        scanf("%3s", nameofpiecetomove);
+        clearinput();
+        nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
+        for (int i = 1; i < 3; i++) {
+            nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
+        }
         make_kings_hug(current_team->enemy_team, public_white_team, public_black_team);
         return 0;
     }
