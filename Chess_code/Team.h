@@ -49,4 +49,4 @@ public:
     const char* team_name() const;
 };
 
-#endif TEAM_INCLUDED
+#endif //TEAM_INCLUDED
