@@ -296,7 +296,7 @@ TEST_CASE("Pieces know the first turn they moved", "[FirstTurnPiece]") {
     printf("They definitely are.\n");
 }
 
-TEST_CASE("Undoing a first move correctly sets it back to -1") {
+TEST_CASE("Undoing a first move correctly sets it back to -1", "[undo]") {
     Board mainboard;
     Rook brook = Rook(BLACK, 2, 2, 1);
     King wking = King(WHITE);
@@ -333,7 +333,7 @@ TEST_CASE("I remember previous turn's passant", "[undo][passant]") {
     REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
     printf("Looks like the passant is undone correctly.\n");
 }
-//TODO: I NEED TO KNOW THE TURN NUMBER ON THE BOARD IN ORDER TO MAKE THIS WORK
+//I NEED TO KNOW THE TURN NUMBER ON THE BOARD IN ORDER TO MAKE THIS WORK
 //ONE INT TO SAY THE TURN WHEN THE PASSANT WAS POSSIBLE, ANOTHER TO COUNT THE CURRENT TURN.
 //REMEMBER, PAWNS HELP THE BOARD KNOW WHEN AN EN PASSANT HAPPENS, SO THEY HAVE TO ASK THE
 //BOARD WHAT TURN IT IS.
@@ -345,7 +345,6 @@ TEST_CASE("Passants do have to happen immediately", "[passant][1turn]") {
     Move firstmove = mainboard.make_move(&whiteteam.pawns[5-1], 4, 5);
     mainboard.human_move_piece(&firstmove);
     mainboard.print_board();
-    //TODO WRONG HERE
     Move secondmove = mainboard.make_move(&blackteam.pawns[6 - 1], 6, 3);
     mainboard.human_move_piece(&secondmove);
     mainboard.print_board();
@@ -411,7 +410,7 @@ TEST_CASE("Pawns can catch pawns that jumped over", "[passant][capture]") {
     REQUIRE_FALSE(bpawn2.alive);
 }
 
-TEST_CASE("Simple Castling test", "[.interactive][castle]") {
+TEST_CASE("Simple Castling test", "[interactive][castle]") {
     //TODO ACTUALLY MAKE THEM CASTLE AND TELL WHETER OR NOT IT'S POSSIBLE. YOU WILL PROBABLY NEED TO TEST THIS IN 2 TESTS:
     //1. The king and rook are in the right place.
     //2. The king hasn't moved yet.
@@ -426,9 +425,24 @@ TEST_CASE("Simple Castling test", "[.interactive][castle]") {
     kill_piece(&mainboard, &whiteteam.bishop1);
     kill_piece(&mainboard, &whiteteam.knight1);
     mainboard.print_board();
-    
+    printf("Pretend you just tryed to castle left.\nAll I did was pause the game so you can see what it looks like beforehand.\nType whatever you want to keep the tests running.\n");
     REQUIRE(can_castle(&whiteteam, &mainboard, "Left"));
-    0;
+    bool didcastle = false;
+    Rook* whiterook1 = &(whiteteam.rook1);
+    try {
+        CastleMove castleleft = CastleMove(Move(1, 5, 1, 3, &whiteteam.the_king, NULL), whiterook1, LEFT, &mainboard, &whiteteam);
+        didcastle = true;
+        didcastle &= mainboard.human_move_piece(&castleleft);
+    }
+    catch(InvalidMove e) {
+        printf("%s\n", e.what());
+    }
+    catch (InvalidPiece e) {
+        printf("%s\n", e.what());
+    }
+    REQUIRE(didcastle);
+    mainboard.print_board();
+    printf("Look. You castled!\n");
 }
 
 TEST_CASE("Simple check that pieces know when they first moved", "[pieces][first]") {
@@ -455,7 +469,6 @@ TEST_CASE("Queens moving diagonally", "[queen]") {
     Queen testqueen = Queen(WHITE, 5, 8, 1);
 }
 
-//TODO: WRITE A TEST TO GUARANTEE THAT THE UPGRADED PAWNS ARE DELETED AND THE PAWNS ARE REVIVED WHEN UNDOING A MOVE!
 TEST_CASE("Upgrade a pawn. Pretend you typed.", "[interactive][upgrade]") {
     printf("You are the white team and you just landed a pawn on the top right square. Name a piece type to upgrade your pawn to.\n");
     Board mainboard;

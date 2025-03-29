@@ -101,6 +101,9 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
     pieces[0] = &rook1;
     pieces[1] = &knight1;
     pieces[2] = &bishop1;
+    /*Sorry.Earlier when I was making this program, I incorrectly thought that the king was in column 4 at the start of the game,
+    * and I wrote a lot of code tests making that impression, and then I figured out that the queen was on the king's LEFT side.
+    * So instead of re-writing those tests, I just don't have the queen or king's indexes match their starting column.*/
     the_king = King(team_color);
     pieces[3] = &the_king;
     //Queen goes here.
