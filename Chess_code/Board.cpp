@@ -381,26 +381,31 @@ static void print_piece(Piece *piece /*bool islast*/) {
     }
     else printf("          |");
 }
+
+/*TODO TODAY MAKE THE BOARD PRINT BETTER WITH ROWS AND COLUMNS
+* MAKE THE BOARD PRINT COLUMN NUMBERS ON THE TOP ROW BEFORE PRINTING ANY PIECES
+* AND PRINT COLUMN NUMBERS AT THE START OF THE ROW! */
 void Board::print_board() const {
     const int length_of_name = 12;
     const int number_of_spaces = 8;
     bool firstcolumn = true;
 
     //Top row.
-    for (int i = 0; i < 6 + length_of_name * (number_of_spaces - 1); i++) {
+    for (int i = 0; i < 11 + length_of_name * (number_of_spaces - 1); i++) {
         printf("-");
     }
     printf("\n");
     for (int row = 7; row >= 0; row--) {
         firstcolumn = true;
         if (row == 7 || row == 0) {
-            printf("[]");
+            printf(" []|");
         }
+
         else if (firstcolumn) {
-            printf("| ");
+            printf("   |");
         }
         else {
-            printf("  ");
+            printf("|    ");
         }
         for (int column = 0; column <= 7; column++) {
             if (firstcolumn && column != 0) {
@@ -408,23 +413,31 @@ void Board::print_board() const {
             }
             print_piece(spaces[row][column]);
         }
+        if (row == 0 || row == 7) {
+            printf("[]|");
+        }
+        else {
+            printf("  |");
+        }
         printf("\n");
         if (row > 0) {
-            printf("|");
-            for (int i = 0, minus = 0; i < 4 + length_of_name * (number_of_spaces-1); i++) {
-                if ((i % length_of_name) != length_of_name-1 - minus) {
+            printf("   |");
+            for (int i = 0; i < 4 + length_of_name * (number_of_spaces - 1); i++) {
+                if ((i % (length_of_name-1)) != length_of_name-2/* != length_of_name - 1 - minus*/) {
                     printf("_");
                 }
                 else {
                     printf("|");
-                    minus++;
                 }
             }
-            printf("|\n");
+            printf("  |\n");
+        }
+        if (row == 0) {
+            //
         }
     }
     //Bottom row
-    for (int i = 0; i < 6 + length_of_name * (number_of_spaces - 1); i++) {
+    for (int i = 0; i < 10 + length_of_name * (number_of_spaces - 1); i++) {
         printf("-");
     }
     printf("\n");
