@@ -382,6 +382,18 @@ static void print_piece(Piece *piece /*bool islast*/) {
     else printf("          |");
 }
 
+const static void print_columns() {
+    printf("    Columns:\n");
+    char columnname[11] = "          ";
+    columnname[10] = '\0';
+    printf("   |");
+    for (int i = 1; i <= 8; i++) {
+        columnname[0] = '0' + i;
+        printf("%s|", columnname);
+    }
+    printf("\n");
+}
+
 /*TODO TODAY MAKE THE BOARD PRINT BETTER WITH ROWS AND COLUMNS
 * MAKE THE BOARD PRINT COLUMN NUMBERS ON THE TOP ROW BEFORE PRINTING ANY PIECES
 * AND PRINT COLUMN NUMBERS AT THE START OF THE ROW! */
@@ -389,20 +401,23 @@ void Board::print_board() const {
     const int length_of_name = 12;
     const int number_of_spaces = 8;
     bool firstcolumn = true;
-
-    //Top row.
+    printf("Here's the board. Row numbers are printed on the left-hand side of each row.\n");
+    print_columns();
+    //printf("Rows:\n");
     for (int i = 0; i < 11 + length_of_name * (number_of_spaces - 1); i++) {
         printf("-");
     }
     printf("\n");
+    
+    //Top row.
     for (int row = 7; row >= 0; row--) {
         firstcolumn = true;
         if (row == 7 || row == 0) {
-            printf(" []|");
+            printf("[]%d|", row+1);
         }
 
         else if (firstcolumn) {
-            printf("   |");
+            printf("  %d|", row+1);
         }
         else {
             printf("|    ");
@@ -437,7 +452,7 @@ void Board::print_board() const {
         }
     }
     //Bottom row
-    for (int i = 0; i < 10 + length_of_name * (number_of_spaces - 1); i++) {
+    for (int i = 0; i < 11 + length_of_name * (number_of_spaces - 1); i++) {
         printf("-");
     }
     printf("\n");
