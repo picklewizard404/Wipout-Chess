@@ -1,0 +1,20 @@
+--help or /?: View these help messages.
+Space numbering:
+The top right square is row 8 column 8 and the bottom left square is row 1 column 1.
+> Note that when I ask for the row and column,
+> I read the numbers from a top-down perspective with the white team on the bottom.
+> When you have to enter a row or column, you must be very precise.
+> You can't type anything after the single number character.
+When castling is a legal move for you, you can castle by typing the word castle with no punctuation.
+> The game will ask you whether you want to castle left or right.
+> Castling left always involves the rook in column 1,
+> and castling right always involves the rook in column 8.
+You can be killed. Or you can hug!
+You can surrender by typing the word surrender.
+Or if your opponent agrees, you can tie by typing the word tie.
+Or you can make kings hug by helping them land on the same space and meet,
+> or by typing the word hug instead of selecting a piece.
+Command line arguments:
+--hug: Display that the kings can hug when starting the actual game!
+>  Hugging is a secret move. Think of it as a reward for being nice.
+God answered my prayers and helped me make this game. He deserves credit!
