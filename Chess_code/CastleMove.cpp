@@ -44,7 +44,7 @@ CastleMove::CastleMove(Move kingmove, Rook* mrook_that_moved, CastleDirection mw
             if (board_its_on->is_in_check(myteam, myteam->enemy_team, false)) {
                 board_its_on->place(&myteam->the_king, starting_row, 5);
                 throw InvalidMove(
-                    "Error: Space " + std::to_string(slide_left) + "is attacked, so you can't castle left.\n"
+                    "Error: Space in Row " + std::to_string(starting_row) + ", Column " + std::to_string(slide_left) + " is attacked, so you can't castle left."
                 );
             }
         }
@@ -65,7 +65,7 @@ CastleMove::CastleMove(Move kingmove, Rook* mrook_that_moved, CastleDirection mw
             if (board_its_on->is_in_check(myteam, myteam->enemy_team, false)) {
                 board_its_on->place(&myteam->the_king, starting_row, 5);
                 throw InvalidMove(
-                    "Error: Space " + std::to_string(slide_right) + "is attacked, so you can't castle right.\n"
+                    "Error: Space in Row " + std::to_string(starting_row) + ", Column " + std::to_string(slide_right) + " is attacked, so you can't castle right."
                 );
             }
         }
