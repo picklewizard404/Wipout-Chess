@@ -30,8 +30,11 @@ Board::Board() {
 //The piece has to know where it was when this move happens
 //Teleporting pieces is useful for testing.
 //Note that this does NOT count as making a move.
-void Board::place(Piece* piece, int row, int column) {
-    spaces[piece->row - 1][piece->column - 1] = NULL;
+void Board::place(Piece* piece, int row, int column, bool revivedinsameplace) {
+    if (!revivedinsameplace) {
+		spaces[piece->row - 1][piece->column - 1] = NULL;
+    } 
+    //spaces[piece->row - 1][piece->column - 1] = NULL;
     spaces[row - 1][column - 1] = piece;
     piece->row = row;
     piece->column = column;
@@ -202,11 +205,12 @@ bool Board::human_move_piece(Move* move_to_make) {
 
             //Opposing team:
             if (spaces[b_row - 1][b_column - 1] != NULL) {
-                spaces[b_row - 1][b_column - 1]->alive = false;
-                spaces[b_row - 1][b_column - 1] = piece;
                 /*NOTE: THE piece_landed_on variable CAN be null before this function was called.
                 * Remember the piece I landed on in case this move has to be undone. */
                 move_to_make->piece_landed_on = spaces[b_row - 1][b_column - 1];
+                spaces[b_row - 1][b_column - 1]->alive = false;
+                spaces[b_row - 1][b_column - 1] = piece;
+                
             }
 
             //Check if an en passant was made.
@@ -350,11 +354,18 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
         }
     }
 
-    
+    bool revivedinsameplace = false;
+    if (move_i_made->piece_landed_on != NULL) {
+        if ((move_i_made->end_row == move_i_made->piece_landed_on->row)
+            && (move_i_made->end_column == move_i_made->piece_landed_on->column)) {
+            revivedinsameplace = true;
+        }
+    };
     if (move_i_made->piece_landed_on != NULL) {
         move_i_made->piece_landed_on->alive = true;
+		spaces[move_i_made->end_row - 1][move_i_made->end_column - 1] = move_i_made->piece_landed_on;
     }
-    place(piecethatmoved, move_i_made->start_row, move_i_made->start_column);
+    place(piecethatmoved, move_i_made->start_row, move_i_made->start_column, revivedinsameplace);
     piecethatmoved->row = move_i_made->start_row;
     piecethatmoved->column = move_i_made->start_column;
     turn_number--;

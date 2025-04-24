@@ -326,10 +326,10 @@ int chess()
             tried_move.piece_that_moved = piecetomove;
             tried_move.start_row = piecetomove->row;
             tried_move.start_column = piecetomove->column;
-            
             if (okmove && mainboard.is_on_board(m_row, m_column)) {
                 try {
-                    //IMPORTANT TO NOTE: This function can throw errors!
+                    /*IMPORTANT TO NOTE: This function can throw errors!
+                      Also, it figures out on its own what piece was landed on. */
                     mainboard.human_move_piece(&tried_move);
                 }
                 catch (InvalidMove problem) {
