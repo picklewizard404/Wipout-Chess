@@ -31,6 +31,30 @@ void kill_piece(Board* mainboard, Piece* piece) {
     mainboard->spaces[piece->row - 1][piece->column - 1] = NULL;
 }
 
+TEST_CASE("Dad found this bug", "[pieces][pawns]") {
+    Board mainboard;
+    Team whiteteam = Team(WHITE, &mainboard);
+    Team blackteam = Team(BLACK, &mainboard);
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+    Move pawn2;
+    for (int i = 1; i <= 8; i++) {
+        if (i != 5) {
+            pawn2 = Move(2, 5, 4, i, &whiteteam.pawns[5 - 1], NULL);
+            REQUIRE_FALSE(mainboard.human_move_piece(&pawn2));
+			pawn2 = Move(7, 5, 5, i, &blackteam.pawns[8 - 5], NULL);
+			printf("%d\n", i);
+			REQUIRE_FALSE(mainboard.human_move_piece(&pawn2));
+        }
+    }
+    pawn2 = Move(2, 5, 4, 5, &whiteteam.pawns[5 - 1], NULL);
+    REQUIRE(mainboard.human_move_piece(&pawn2));
+	printf("White pawns do their first move correctly.\n");
+	pawn2 = Move(7, 5, 5, 5, &blackteam.pawns[8-5], NULL);
+	REQUIRE(mainboard.human_move_piece(&pawn2));
+    printf("Black pawns do their first move correctly.\n");
+}
+
 TEST_CASE("Castling BLACK", "[castle][black]") {
     Board mainboard;
     Team whiteteam = Team(WHITE, &mainboard);

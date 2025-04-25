@@ -41,7 +41,8 @@ bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {
         //Moving straight up 1.
         return cango1up && !main_board->does_have_any_piece(b_row, b_column);
     }
-    if ((team == WHITE && row == 2) || (team == BLACK && row == 7)
+    if (
+        ((team == WHITE && row == 2) || (team == BLACK && row == 7))
         && (b_column == column)
     ) {
         if (cango1up &&
