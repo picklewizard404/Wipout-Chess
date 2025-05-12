@@ -320,14 +320,24 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
             did_upgrade = move_i_made->end_row == 1;
             break;
         }
+
         if (team_that_moved != NULL && did_upgrade) {
-            if (team_that_moved->pieces[move_i_made->piece_that_moved->count + 7] != NULL) {
+            // Assume we're the white team.
+            int piecenum = movedpawn->get_start_column() + 7;
+            Piece* new_piece = team_that_moved->pieces[piecenum];
+            /*THE COLUMNS NEED TO BE RE-CALCULATED FOR THE BLACK TEAM!
+            * Their pieces are not in the same order as the white team.
+              team_owner[piecenum] needs to be adjusted for black pieces .*/
+            if (new_piece->team == BLACK) {
+                piecenum = (9 - movedpawn->get_start_column()) + 7;
+            }
+            if (team_that_moved->pieces[piecenum] != NULL) {
                 //TODO TEST DELETING UPGRADED PAWNS!
                 if (team_that_moved->upgraded_pieces[movedpawn->get_start_column() - 1] != NULL) {
                     delete team_that_moved->upgraded_pieces[movedpawn->get_start_column() - 1];
                     team_that_moved->upgraded_pieces[movedpawn->get_start_column() - 1] = NULL;
-                    team_that_moved->pieces[move_i_made->piece_that_moved->count + 7] = movedpawn;
-                    team_that_moved->pieces[move_i_made->piece_that_moved->count + 7]->alive = true;
+                    team_that_moved->pieces[piecenum] = movedpawn;
+                    team_that_moved->pieces[piecenum]->alive = true;
                 }
             }
         }

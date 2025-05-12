@@ -83,7 +83,9 @@ TEST_CASE("Upgraded Black Pawn names", "[pieces][pawns][black]") {
 		Move move1 = Move(2, blackpawn->column, 1, blackpawn->column, blackpawn, NULL);
 		mainboard.human_move_piece(&move1);
         REQUIRE(upgrade_pawn_if_needed(blackpawn, &blackteam, &mainboard, ROOK) == ROOK);
-        mainboard.print_board();
+        if (i == 7) {
+            mainboard.print_board();
+        }
 	}
     //*
     for (int i = 0; i < 8; i++) {
@@ -106,8 +108,7 @@ TEST_CASE("Upgraded Black Pawn names", "[pieces][pawns][black]") {
         }
     }
     // */
-    mainboard.print_board();
-    printf("ok...\n");
+    printf("Black pieces remember their names.\n");
 }
 
 TEST_CASE("Castling BLACK", "[castle][black]") {

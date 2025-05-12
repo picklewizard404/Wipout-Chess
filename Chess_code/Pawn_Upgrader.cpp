@@ -94,11 +94,16 @@ void place_upgraded_piece(Team* team_owner, Pawn* pawn_i_was, const char *newpie
     upgraded_piece->alive = true;
     sprintf(upgraded_piece->name, "%c%sp%c", pawn_i_was->team, newpiece_type, pawn_i_was->column_name());
     // VERY IMPORTANT NOTE: THIS IS WHERE THE UPGRADED PAWN IS ADDED TO THE TEAM!
+    // Assume we're the white team.
     int piecenum = pawn_i_was->get_start_column() + 7;
-	Piece* new_piece = team_owner->pieces[piecenum];
-    /*TODO: THE COLUMNS ARE CALCULATED INCORRECTLY FOR THE BLACK TEAM!
-    * When upgrading pieces, we are storing them in bad places!
-    // team_owner[piecenum] needs to be adjusted for black pieces. new_piece is only taken for debugging purposes*/
+    Piece* new_piece = team_owner->pieces[piecenum];
+    /*THE COLUMNS NEED TO BE RE-CALCULATED FOR THE BLACK TEAM!
+	* Their pieces are not in the same order as the white team.
+      team_owner[piecenum] needs to be adjusted for black pieces .*/
+    if (new_piece->team == BLACK) {
+        piecenum = (9 - pawn_i_was->get_start_column()) + 7;
+    }
+    
     team_owner->pieces[piecenum] = upgraded_piece;
     mainboard->place(upgraded_piece, upgraded_piece->row, upgraded_piece->column);
 }
@@ -107,7 +112,6 @@ void place_upgraded_piece(Team* team_owner, Pawn* pawn_i_was, const char *newpie
 //Calculate the index so tHAT PIECES ARE PLACED IN THE PROPER SPOT. 
 void really_perform_upgrade(Pawn* to_upgrade, TYPE new_class, Team* team_owner, Board* mainboard) {
     for (int i = 8; i < 16; i++) {
-        //NOTE WE DO NOT, NOT, NOT REMEMBER THE PROPER PIECES!!!
         if (team_owner->pieces[i] == to_upgrade) {
             int upgraded_index = to_upgrade->get_start_column() - 1;
             switch (new_class)
