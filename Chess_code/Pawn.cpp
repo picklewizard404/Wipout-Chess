@@ -21,10 +21,17 @@ Pawn::Pawn(COLOR b_team, int b_row, int b_column, int b_count) {
     starting_column = b_column;
     strcpy(chess_class, "Pawn");
     setup(chess_class, b_team, b_row, b_column, b_count, PAWN);
-    if (b_team == BLACK) {
-        //Changes the way the piece is named visually but NOT functionally!
-        name[5] = '0' + 9 - column;
-    }
+    name[5] = column_name();
+}
+
+//Changes the way the piece is named visually but NOT functionally!
+char Pawn::column_name() {
+	if (team == BLACK) {
+        return '0' + 9 - column;
+	}
+	else {
+        return '0' + column;
+	}
 }
 
 //

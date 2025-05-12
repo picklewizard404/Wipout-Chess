@@ -30,6 +30,8 @@ Board::Board() {
 //The piece has to know where it was when this move happens
 //Teleporting pieces is useful for testing.
 //Note that this does NOT count as making a move.
+//If there used to be another piece here, do NOT set its old space to NULL!
+//The function undo_move in Board.cpp will revive the piece that was landed on BEFORE calling this.
 void Board::place(Piece* piece, int row, int column, bool revivedinsameplace) {
     if (!revivedinsameplace) {
 		spaces[piece->row - 1][piece->column - 1] = NULL;
@@ -63,20 +65,16 @@ void Board::next_turn()
     turn_number++;
 }
 
-//Todo: Make sure the correct argument is passed each time!
-Game_Status Board::is_in_check(Team* my_team, Team* enemy_team, bool check_for_checkmate)  {
-    //Todo: Use info HERE to try every possible move of my_team
+//Make sure the correct argument is passed each time!
+Game_Status Board::is_in_check(Team* my_team, Team* enemy_team, bool check_for_checkmate) {
     int mkcolumn = my_team->the_king.column;
     int mkrow = my_team->the_king.row;
     bool is_hugging_allowed = false;
     for (int i = 0; i < 16; i++) {
         if (enemy_team->pieces[i] != 0) {
             if (enemy_team->pieces[i]->can_classmove(mkrow, mkcolumn, this)) {
-                //TODO: REMOVE false from this check.
-                if (false && check_for_checkmate) {
-                    return try_to_escape(my_team, enemy_team, this);
-                }
-                else return CHECK;
+                //Intentionally allow Kings to risk their lives
+                return CHECK;
             }
         }
     }
@@ -133,6 +131,8 @@ been in if it moved 1. I call that space SS in this example.
 If the opponent lands on SS THE EXACT TURN AFTER the pawn moved, the pawn dies.
 That means setting the pawn and SS both to NULL after making a move on the opponent's turn.
 Check if you did the passant before clearing it and hopefully everything will work.
+
+Note that this function  but DOESN'T UPGRADE Pawns.
 */
 bool Board::human_move_piece(Move* move_to_make) {
     if (move_to_make == NULL) {
@@ -293,7 +293,7 @@ int Board::current_turn() const
     return turn_number;
 }
 
-//TODO TEST IF UNDO You might have to downgrade a pawn.
+//IF UNDO You might have to downgrade a pawn.
 // Check if the piece that moved was a pawn and if it moved to the end of the board.
 // If i did then delete team_owner->upgraded_pieces[move_i_made->piece_that_moved->count-8]
 // THEN SET IT TO NULL RIGHT AFTER!
@@ -405,9 +405,7 @@ const static void print_columns() {
     printf("\n");
 }
 
-/*TODO TODAY MAKE THE BOARD PRINT BETTER WITH ROWS AND COLUMNS
-* MAKE THE BOARD PRINT COLUMN NUMBERS ON THE TOP ROW BEFORE PRINTING ANY PIECES
-* AND PRINT COLUMN NUMBERS AT THE START OF THE ROW! */
+/*Looks nice now.*/
 void Board::print_board() const {
     const int length_of_name = 12;
     const int number_of_spaces = 8;

@@ -11,6 +11,7 @@ bool is_pawn(Piece* shouldbepawn) {
     return shouldbepawn->piecetype == PAWN;
 }
 //NOTE: This function is called EVERY time a pawn is moved, and it does nothing is the pawn is not on it.
+// It returns EMPTY if the pawn can't be upgraded.
 //Possible errors: InvalidPiece
 TYPE upgrade_pawn_if_needed(Pawn* to_upgrade, Team* team_owner, Board* mainboard, TYPE upgradeTo) {
     if (upgradeTo == PAWN) {
@@ -27,12 +28,13 @@ TYPE upgrade_pawn_if_needed(Pawn* to_upgrade, Team* team_owner, Board* mainboard
         return EMPTY;
     }
     
-    /*NOTE: Pawns are in posisitions 2:1-2:8,
+    /*NOTE: Pawns are in posisitions 2:1-8,
             which means the team treats them as pieces 8-15*/
     int final_pawn_row = 8;
     if (to_upgrade->team == BLACK) {
         final_pawn_row = 1;
     }
+	//Make sure the pawn is on the last row.
     if (to_upgrade->row != final_pawn_row) {
         return EMPTY;
     }
@@ -83,20 +85,29 @@ TYPE get_valid_upgrade_type() {
 }
 
 void place_upgraded_piece(Team* team_owner, Pawn* pawn_i_was, const char *newpiece_type, Piece* upgraded_piece, Board* mainboard) {
+    //TODO: UPGRADED PIECES ARE PLACED IN THE WRONG SPOTS IN MEMORY.
+    // we get the 
     //CREDIT: Dad reminded me that I can tell what type of piece a Piece pointer points to based on it class,
     //so I don't need a different array for each possible piece type.
     pawn_i_was->alive = false;
     //This may not be needed, but it is safe.
     upgraded_piece->alive = true;
-    sprintf(upgraded_piece->name, "%c%sp%d", pawn_i_was->team, newpiece_type, pawn_i_was->count);
+    sprintf(upgraded_piece->name, "%c%sp%c", pawn_i_was->team, newpiece_type, pawn_i_was->column_name());
     // VERY IMPORTANT NOTE: THIS IS WHERE THE UPGRADED PAWN IS ADDED TO THE TEAM!
-    team_owner->pieces[pawn_i_was->get_start_column() + 7] = upgraded_piece;
+    int piecenum = pawn_i_was->get_start_column() + 7;
+	Piece* new_piece = team_owner->pieces[piecenum];
+    /*TODO: THE COLUMNS ARE CALCULATED INCORRECTLY FOR THE BLACK TEAM!
+    * When upgrading pieces, we are storing them in bad places!
+    // team_owner[piecenum] needs to be adjusted for black pieces. new_piece is only taken for debugging purposes*/
+    team_owner->pieces[piecenum] = upgraded_piece;
     mainboard->place(upgraded_piece, upgraded_piece->row, upgraded_piece->column);
 }
 
 //VERY IMPORTANT NOTE: I CREATE A NEW PIECE, SO IT MUST BE DELETED WHEN THE MOVE IS UNDONE!
+//Calculate the index so tHAT PIECES ARE PLACED IN THE PROPER SPOT. 
 void really_perform_upgrade(Pawn* to_upgrade, TYPE new_class, Team* team_owner, Board* mainboard) {
     for (int i = 8; i < 16; i++) {
+        //NOTE WE DO NOT, NOT, NOT REMEMBER THE PROPER PIECES!!!
         if (team_owner->pieces[i] == to_upgrade) {
             int upgraded_index = to_upgrade->get_start_column() - 1;
             switch (new_class)

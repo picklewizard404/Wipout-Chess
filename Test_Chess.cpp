@@ -55,6 +55,61 @@ TEST_CASE("Dad found this bug", "[pieces][pawns]") {
     printf("Black pawns do their first move correctly.\n");
 }
 
+TEST_CASE("Upgraded Black Pawn names", "[pieces][pawns][black]") {
+	Board mainboard;
+	Team whiteteam = Team(WHITE, &mainboard);
+	Team blackteam = Team(BLACK, &mainboard);
+	whiteteam.enemy_team = &blackteam;
+	blackteam.enemy_team = &whiteteam;
+	King* whiteking = &whiteteam.the_king;
+	King* blackking = &blackteam.the_king;
+    for (int i = 0; i < 16; i++) {
+        Piece* makekingalone = whiteteam.pieces[i];
+		if (whiteteam.pieces[i]->piecetype != KING) {
+			kill_piece(&mainboard, whiteteam.pieces[i]);
+		}
+    }
+	
+	mainboard.place(whiteking, 3, 5);
+    mainboard.place(blackking, 6, 5);
+	for (int i = 0; i < 8; i++) {
+		Pawn* blackpawn = &blackteam.pawns[i];
+		mainboard.place(blackpawn, 2, blackpawn->column);
+	}
+	mainboard.print_board();
+	for (int i = 0; i < 8; i++) {
+		Pawn* blackpawn = &blackteam.pawns[7-i];
+		
+		Move move1 = Move(2, blackpawn->column, 1, blackpawn->column, blackpawn, NULL);
+		mainboard.human_move_piece(&move1);
+        REQUIRE(upgrade_pawn_if_needed(blackpawn, &blackteam, &mainboard, ROOK) == ROOK);
+        mainboard.print_board();
+	}
+    //*
+    for (int i = 0; i < 8; i++) {
+        if (blackteam.upgraded_pieces[7 - i] == NULL) {
+			printf("Black team upgraded piece %d is incorrectly NULL.\n", 7 - i);
+            REQUIRE(false);
+        }
+        else if (blackteam.upgraded_pieces[7 - i]->piecetype != ROOK) {
+            REQUIRE(false);
+        }
+        else if (strlen(blackteam.upgraded_pieces[7 - i]->name) < 7) {
+            REQUIRE(false);
+        }
+        else {
+            char rooknumber = blackteam.upgraded_pieces[7 - i]->name[6];
+            Pawn* blackpawn = &blackteam.pawns[i];
+            char pawnnumber = blackpawn->name[5];
+            REQUIRE(blackteam.upgraded_pieces[7 - i]->alive == true);
+            REQUIRE(rooknumber == pawnnumber);
+        }
+    }
+    // */
+    mainboard.print_board();
+    printf("ok...\n");
+}
+
 TEST_CASE("Castling BLACK", "[castle][black]") {
     Board mainboard;
     Team whiteteam = Team(WHITE, &mainboard);
@@ -282,7 +337,6 @@ TEST_CASE("Undo castling", "[undo][castle]") {
     CastleMove castle = CastleMove(Move(1, 5, 1, 3, &whiteteam.the_king, NULL), &whiteteam.rook1, LEFT, &mainboard, &whiteteam);
     mainboard.human_move_piece(&castle);
     mainboard.print_board();
-    //TODO SIMPLE PROGRESS: MAKE HUMAN_MOVE_PIECE PLACE THE KING WHERE IT SHOULD GO
     REQUIRE(whiteteam.the_king.row == 1);
     REQUIRE(whiteteam.rook1.row == 1);
     REQUIRE(whiteteam.the_king.column == 3);
@@ -353,7 +407,6 @@ TEST_CASE("I remember previous turn's passant", "[undo][passant]") {
     REQUIRE(printed);
     REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[5 - 1]);
     mainboard.undo_move(&secondmove);
-    //TODO WRONG HERE
     REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
     printf("Looks like the passant is undone correctly.\n");
 }
@@ -435,7 +488,7 @@ TEST_CASE("Pawns can catch pawns that jumped over", "[passant][capture]") {
 }
 
 TEST_CASE("Simple Castling test", "[interactive][castle]") {
-    //TODO ACTUALLY MAKE THEM CASTLE AND TELL WHETER OR NOT IT'S POSSIBLE. YOU WILL PROBABLY NEED TO TEST THIS IN 2 TESTS:
+    //ACTUALLY MAKE THEM CASTLE AND TELL WHETER OR NOT IT'S POSSIBLE. YOU WILL PROBABLY NEED TO TEST THIS IN 2 TESTS:
     //1. The king and rook are in the right place.
     //2. The king hasn't moved yet.
     printf("Testing Castling.\n");
@@ -726,7 +779,6 @@ TEST_CASE("I remember En passant state after doing a move and undoing it.", "[un
     mainboard.print_board();
     mainboard.human_move_piece(&first_move);
     mainboard.print_board();
-    //TODO FINISH THIS TEST
     printf("I should remember the en passant state now.\n");
     REQUIRE(mainboard.spaces[3][0] == &wpawn);
     REQUIRE(mainboard.passantpawn.get_piece() == &wpawn);
