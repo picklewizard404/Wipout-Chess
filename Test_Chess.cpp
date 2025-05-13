@@ -72,6 +72,7 @@ TEST_CASE("Upgraded Black Pawn names", "[pieces][pawns][black]") {
 	
 	mainboard.place(whiteking, 3, 5);
     mainboard.place(blackking, 6, 5);
+	mainboard.print_board();
 	for (int i = 0; i < 8; i++) {
 		Pawn* blackpawn = &blackteam.pawns[i];
 		mainboard.place(blackpawn, 2, blackpawn->column);
