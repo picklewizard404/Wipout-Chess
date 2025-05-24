@@ -7,6 +7,7 @@
 int main(int argc, char*argv[]) {
     // There are command line args now.
     bool talkhug = false;
+	bool should_load = false;
     if (argc > 1) {
         for (int i = 1; i < argc; i++) {
             if (strcmp("--hug", argv[i]) == 0) {
@@ -14,6 +15,8 @@ int main(int argc, char*argv[]) {
             }
             if (strcmp(argv[i], "/?") == 0 || strcmp(argv[i], "--help") == 0) {
                 printf("--help or /?: View these help messages.\n");
+				printf("--load: Set the game in its prior state.\n");
+                printf("> To say you're done setting up, type cteam to start as the current team...\n...  or oteam to start as the enemy team.\n");
                 printf("Space numbering:\nThe top right square is row 8 column 8 and the bottom left square is row 1 column 1.\n");
                 printf("> Note that when I ask for the row and column,\n> I read the numbers from a top-down perspective with the white team on the bottom.\n");
                 printf("> When you have to enter a row or column, you must be very precise.\n> You can't type anything after the single number character.\n");
@@ -30,6 +33,9 @@ int main(int argc, char*argv[]) {
                 printf("God answered my prayers and helped me make this game. He deserves credit!\n");
                 return 0;
             }
+            if (strcmp("--load", argv[i]) == 0) {
+                should_load = true;
+            }
         }
         if (talkhug) {
             printf("You can make kings hug by helping them land on the same space and meet, or by typing the word hug instead of selecting a piece.\n");
@@ -40,7 +46,7 @@ int main(int argc, char*argv[]) {
     printf("When you have to enter a row or column, you must be very precise.\nYou can't type anything after the single number character.\n");
     printf("You can be killed.\n");
     
-    chess();
+    chess(should_load);
     sleep5();
     
     return 0;

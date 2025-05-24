@@ -31,7 +31,7 @@ void sleep5() {
     std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
-int chess()
+int chess(bool should_load)
 {
     /*NOTE THAT YOU CAN'T CASTLE WHILE IN CHECK.
     * THE BOARD SHOULD KNOW WHATE TEAMS ARE IN CHECK AND PREVENT CASTLING IF THE TEAM TRYING TO CASTLE IS IN CHECK.
@@ -61,6 +61,9 @@ int chess()
 
     TYPE type_of_piecetomove = PAWN;
     Game_Status current_status = NEUTRAL;
+
+	bool is_loaded = !should_load;
+	bool done_loading = false;
     
     //Setup
     Piece* wKnight2 = whiteteam.pieces[6];
@@ -69,8 +72,15 @@ int chess()
     Piece* bKing = blackteam.pieces[3];
     Piece* current_king = wKing;
     bool am_i_in_check = false;
-
-    printf("God answered my prayers and helped me make this game. He deserves credit!\n");
+    if (should_load) {
+		/*TODO FINISH LETTING YOU SET UP THE GAME. YOU NEED TO SET done_loading TO true
+		* when you are done loading the game.
+        Skip the player's movement of pieces when they load the game instead, 
+        just like you skip certain print statements when you castle. */
+		printf("Type cteam to say you're done loading the previous game and the current team starts,...\n");
+        printf("...or type oteam to say you're done loading the previous game and the other team starts.\n");
+    }
+    printf("God answered my prayers and helped me make this game. He deserves credit!\n\n");
     
     //*
     while (wKing->alive && bKing->alive)
