@@ -63,7 +63,7 @@ int chess(bool should_load)
     Game_Status current_status = NEUTRAL;
 
 	bool is_loaded = !should_load;
-	bool done_loading = false;
+	bool do_load = false;
     
     //Setup
     Piece* wKnight2 = whiteteam.pieces[6];
@@ -73,14 +73,14 @@ int chess(bool should_load)
     Piece* current_king = wKing;
     bool am_i_in_check = false;
     if (should_load) {
-		/*TODO FINISH LETTING YOU SET UP THE GAME. YOU NEED TO SET done_loading TO true
+		/*TODO FINISH LETTING YOU SET UP THE GAME. YOU NEED TO SET is_loaded TO true
 		* when you are done loading the game.
         Skip the player's movement of pieces when they load the game instead, 
         just like you skip certain print statements when you castle. */
 		printf("Type cteam to say you're done loading the previous game and the current team starts,...\n");
         printf("...or type oteam to say you're done loading the previous game and the other team starts.\n");
     }
-    printf("God answered my prayers and helped me make this game. He deserves credit!\n\n");
+    printf("\nGod answered my prayers and helped me make this game. He deserves credit!\n\n");
     
     //*
     while (wKing->alive && bKing->alive)
@@ -118,11 +118,31 @@ int chess(bool should_load)
         //Make the name all lowercase.
         nameofpiecetomove[0] = tolower(nameofpiecetomove[0]);
         nameofpiecetomove[1] = toupper(nameofpiecetomove[1]);
-         for (int i = 2; i < 10; i++) {
+        for (int i = 2; i < 10; i++) {
             nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
         }
         clearinput();
 
+		if (should_load) {
+			if (strcmp(nameofpiecetomove, "cTeam") == 0) {
+                if (is_loaded) {
+					printf("You are already done loading.\n");
+                }
+                //else {
+					do_load = true;
+                //}
+			}
+			else if (strcmp(nameofpiecetomove, "oTeam") == 0) {
+                if (is_loaded) {
+                    printf("You are already done loading.\n");
+                }
+                else {
+					current_team = current_team->enemy_team;
+                    
+                }
+                do_load = true;
+			}
+		}
         if (strcmp(nameofpiecetomove, "sUrrender") == 0) {
             printf("You give up. %s team wins!", current_team->enemy_team->full_name);
             sleep5();
@@ -258,7 +278,7 @@ int chess(bool should_load)
 
         //Find piece with that name
         piecefound = false;
-        for (int i = 0; i < 8 && !did_try_tie && !did_try_castle; i++) {
+        for (int i = 0; i < 8 && !did_try_tie && !did_try_castle && !do_load; i++) {
             if (piecefound) {
                 break;
             }
@@ -277,7 +297,7 @@ int chess(bool should_load)
         }
         if (piecefound && wrong_team(piecetomove, current_team->color)) {
             printf("Wrong team, dummy!\n");
-        } else if (!piecefound && !did_try_castle) {
+        } else if (!piecefound && !did_try_castle && !do_load) {
             printf("Invalid piece.\n");
         }
         
@@ -285,7 +305,7 @@ int chess(bool should_load)
         //We found the piece. Now move it.
         bool landonokplace = false;
         bool enteredexactly1row = false;
-        if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_try_tie && !did_try_castle) {
+        if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_try_tie && !did_try_castle && !do_load) {
             printf("Where do you want to move %s?\n", nameofpiecetomove);
             printf("Enter your move.\n");
             char cspace = '\0';
@@ -323,7 +343,7 @@ int chess(bool should_load)
                 printf("Invalid row.\n");
             }
         }
-        if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_try_tie && !did_try_castle && landonokplace) {
+        if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_try_tie && !did_try_castle && !do_load && landonokplace) {
 
             bool should_upgrade_pawn = false;
             okmove = piecetomove->can_classmove(m_row, m_column, &mainboard);
@@ -394,12 +414,16 @@ int chess(bool should_load)
                 if (did_try_tie) {
                     printf("Your opponent doen't want to quit yet.\n");
                 }
-                else {
+                else if(!do_load) {
                     printf("Wrong team, silly.\n");
                 }
             }
         }
         did_try_tie = false;
+        if (do_load && !is_loaded) {
+            is_loaded = true;
+        }
+        do_load = false;
     }
     if (whiteteam.the_king.row == blackteam.the_king.row
         && whiteteam.the_king.column == blackteam.the_king.column) {

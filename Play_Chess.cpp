@@ -17,6 +17,7 @@ int main(int argc, char*argv[]) {
                 printf("--help or /?: View these help messages.\n");
 				printf("--load: Set the game in its prior state.\n");
                 printf("> To say you're done setting up, type cteam to start as the current team...\n...  or oteam to start as the enemy team.\n");
+				printf("> I recommend noting which movement was the last one you made, and taking a screenshot.\n");
                 printf("Space numbering:\nThe top right square is row 8 column 8 and the bottom left square is row 1 column 1.\n");
                 printf("> Note that when I ask for the row and column,\n> I read the numbers from a top-down perspective with the white team on the bottom.\n");
                 printf("> When you have to enter a row or column, you must be very precise.\n> You can't type anything after the single number character.\n");
