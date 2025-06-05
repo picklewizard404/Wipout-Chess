@@ -47,5 +47,6 @@ public: // public functions
     bool is_on_board(int b_row, int b_column);
     bool same_team(COLOR piece_team) const;
     void place(int b_row, int b_column);
+    void AssignSavedData(Piece* pPc);
 };
 

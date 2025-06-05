@@ -3,7 +3,7 @@
 #include <string.h>
 #define _CRT_SECURE_NO_WARNINGS //prevents warnings for using non-Microsoft functions
 #pragma warning(disable:4996)
-
+#pragma warning(disable:26812)
 using namespace std;
 //*
 Piece::Piece() {
@@ -150,4 +150,12 @@ bool Piece::do_team_match(Piece* team_there) const {
     }
     
     return true;
+}
+
+void Piece::AssignSavedData(Piece* pPc)
+{
+    alive = pPc->alive;
+    count = pPc->count;
+    row = pPc->row;
+    column = pPc->column;
 }

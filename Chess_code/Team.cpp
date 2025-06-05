@@ -15,6 +15,7 @@ from their perspective is on the far RIGHT.
 #include <string.h>
 #define _CRT_SECURE_NO_WARNINGS //prevents warnings for using non-Microsoft functions
 #pragma warning(disable:4996)
+#pragma warning(disable:26812)
 //private
 void Team::set_upgraded_pointers_to0() {
     for (int i = 0; i < 8; i++) {
