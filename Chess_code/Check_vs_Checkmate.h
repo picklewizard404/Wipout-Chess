@@ -1,2 +1,2 @@
 #pragma once
-enum Game_Status { NEUTRAL = 0, CHECK, CHECKMATE };
+enum class Game_Status { NEUTRAL = 0, CHECK, CHECKMATE };

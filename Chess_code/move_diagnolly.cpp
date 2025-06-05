@@ -18,10 +18,10 @@ bool can_move_diagnolly(Piece* valid_piece, DIAGONAL direction, int count, Board
     int sp_vertic = valid_piece->row;
     //Column changes horizontally.
     int sp_horiz = valid_piece->column;
-    if (direction == DOWN_LEFT || direction == DOWN_RIGHT) {
+    if (direction == DIAGONAL::DOWN_LEFT || direction == DIAGONAL::DOWN_RIGHT) {
         vertical_direction = -1;
     }
-    if (direction == UP_LEFT || direction == DOWN_LEFT) {
+    if (direction == DIAGONAL::UP_LEFT || direction == DIAGONAL::DOWN_LEFT) {
         horizontal_direction = -1;
     }
 

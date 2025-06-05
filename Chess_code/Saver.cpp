@@ -2,7 +2,6 @@
 #include <cstdio>
 #include "Saver.h"
 #pragma warning(disable:4996)
-#pragma warning(disable:26812)
 //*
 int Saver::GetPieceCount(Piece* pPc)
 {

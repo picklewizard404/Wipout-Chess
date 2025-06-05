@@ -4,7 +4,7 @@
 #include "Move.h"
 #include "Rook.h"
 #include "Board.h"
-enum CastleDirection {
+enum class CastleDirection {
     LEFT,
     RIGHT
 };

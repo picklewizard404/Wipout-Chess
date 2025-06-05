@@ -3,11 +3,10 @@
 #include <string.h>
 #define _CRT_SECURE_NO_WARNINGS //prevents warnings for using non-Microsoft functions
 #pragma warning(disable:4996)
-#pragma warning(disable:26812)
 using namespace std;
 //*
 Piece::Piece() {
-    be_safe(NONE);
+    be_safe(COLOR::NONE);
 }
 // */
 
@@ -60,7 +59,7 @@ void Piece::be_safe(COLOR color) {
 
 void Piece::setup(char* typeofpiece, COLOR b_team, int b_row, int b_column, int b_count, TYPE b_piecetype) {
     be_safe(b_team);
-    name[0] = b_team;
+    name[0] = char(b_team);
     alive = true;
     piecetype = b_piecetype;
     setspace(b_team, b_row, b_column, b_count);
@@ -85,10 +84,10 @@ void Piece::place(int b_row, int b_column) {
 }
 
 char Piece::team_character() const {
-    if (team == WHITE) {
+    if (team == COLOR::WHITE) {
         return 'w';
     }
-    if (team == BLACK) {
+    if (team == COLOR::BLACK) {
         return 'b';
     }
     return '?';

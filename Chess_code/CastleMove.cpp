@@ -23,13 +23,13 @@ CastleMove::CastleMove(Move kingmove, Rook* mrook_that_moved, CastleDirection mw
     if (mrook_that_moved->first_turn_i_moved() != -1) {
         throw InvalidMove("That rook moved already. Can't castle with that one!");
     }
-    if (board_its_on->is_in_check(myteam, myteam->enemy_team, false)) {
+    if (board_its_on->is_in_check(myteam, myteam->enemy_team, false) != Game_Status::NEUTRAL) {
         throw InvalidMove("Can't castle while you're in check!");
     }
     //We know the Starting column is 5.
     int starting_row = myteam->the_king.row;
 
-    if (mwhich_side_you_castled == LEFT) {
+    if (mwhich_side_you_castled == CastleDirection::LEFT) {
         if (mrook_that_moved->column != 1) {
             throw InvalidMove("That rook isn't in the left column. Can't castle with that one!");
         }
@@ -79,5 +79,5 @@ CastleMove::CastleMove(Move kingmove, Rook* mrook_that_moved, CastleDirection mw
 
 CastleMove::CastleMove() {
     rook_that_moved = NULL;
-    which_side_you_castled = LEFT;
+    which_side_you_castled = CastleDirection::LEFT;
 }

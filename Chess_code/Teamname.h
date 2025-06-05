@@ -1,2 +1,4 @@
 #pragma once
-enum COLOR {WHITE='w', BLACK='b', NONE='\0' };
+enum class COLOR {
+	WHITE='w', BLACK='b', NONE='\0'
+};

@@ -9,7 +9,7 @@
 
 Pawn::Pawn() {
     starting_column = -1;
-    be_safe(WHITE);
+    be_safe(COLOR::WHITE);
 }
 
 int Pawn::get_start_column()
@@ -26,7 +26,7 @@ Pawn::Pawn(COLOR b_team, int b_row, int b_column, int b_count) {
 
 //Changes the way the piece is named visually but NOT functionally!
 char Pawn::column_name() {
-	if (team == BLACK) {
+	if (team == COLOR::BLACK) {
         return '0' + 9 - column;
 	}
 	else {
@@ -40,7 +40,7 @@ bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {
     //I MADE PASSANT POSSIBLE!
     if (!is_safe(this, main_board, b_row, b_column)) return false;
     int direction = 1;
-    if (team == BLACK) {
+    if (team == COLOR::BLACK) {
         direction = -1;
     }
     bool cango1up = !main_board->does_have_any_piece(row + direction, column);
@@ -49,7 +49,7 @@ bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {
         return cango1up && !main_board->does_have_any_piece(b_row, b_column);
     }
     if (
-        ((team == WHITE && row == 2) || (team == BLACK && row == 7))
+        ((team == COLOR::WHITE && row == 2) || (team == COLOR::BLACK && row == 7))
         && (b_column == column)
     ) {
         if (cango1up &&

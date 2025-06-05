@@ -1,7 +1,6 @@
 // Chess.cpp : This file contains the 'main' function. Program execution begins and ends there.
 // I grant credit for Dad. He helped a lot.
 #pragma warning(disable:4996)
-#pragma warning(disable:26812)
 #include "Chess_non_main.h"
 #include <ctype.h>
 #include <tuple>
@@ -32,15 +31,15 @@ void sleep5() {
     std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
-int chess(bool should_load)
+int chess(bool should_load_man)
 {
     /*NOTE THAT YOU CAN'T CASTLE WHILE IN CHECK.
     * THE BOARD SHOULD KNOW WHATE TEAMS ARE IN CHECK AND PREVENT CASTLING IF THE TEAM TRYING TO CASTLE IS IN CHECK.
     * IT IS POSSIBLE FOR BOTH TEAMS TO BE IN CHECK, SO THE BOARD NEEDS 2 BOOLEANS TO TELL WHETHER OR NOT the current team is in check.
     * */
     Board mainboard;
-    Team whiteteam = Team(WHITE, &mainboard);
-    Team blackteam = Team(BLACK, &mainboard);
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
     Team* public_white_team = &whiteteam;
@@ -63,7 +62,7 @@ int chess(bool should_load)
     TYPE type_of_piecetomove = PAWN;
     Game_Status current_status = NEUTRAL;
 
-	bool is_loaded = !should_load;
+	bool is_loaded = !should_load_man;
 	bool do_load = false;
     
     //Setup
@@ -73,7 +72,7 @@ int chess(bool should_load)
     Piece* bKing = blackteam.pieces[3];
     Piece* current_king = wKing;
     bool am_i_in_check = false;
-    if (should_load) {
+    if (should_load_man) {
 		/*TODO FINISH LETTING YOU SET UP THE GAME. YOU NEED TO SET is_loaded TO true
 		* when you are done loading the game.
         Skip the player's movement of pieces when they load the game instead, 
@@ -90,24 +89,24 @@ int chess(bool should_load)
         mainboard.print_board();
         did_try_castle = false;
         printf("%s turn.\n", team_name(current_team->color));
-        if (current_team->color == WHITE) {
+        if (current_team->color == COLOR::WHITE) {
             //We already checked if we are in check or checkmate at the end of our opponent's turn.
-            if (whiteteam.current_status == CHECK) {
+            if (whiteteam.current_status == Game_Status::CHECK) {
                 am_i_in_check = true;
                 printf("You are in check!\n");
             }
-            if (whiteteam.current_status == CHECKMATE) {
+            if (whiteteam.current_status == Game_Status::CHECKMATE) {
                 printf("Black team wins. Good game.\n");
                 wKing->alive = false;
                 break;
             }
         }
-        else if (current_team->color == BLACK) {
-            if (blackteam.current_status == CHECK) {
+        else if (current_team->color == COLOR::BLACK) {
+            if (blackteam.current_status == Game_Status::CHECK) {
                 am_i_in_check = true;
                 printf("You are in check!\n");
             }
-            if (blackteam.current_status == CHECKMATE) {
+            if (blackteam.current_status == Game_Status::CHECKMATE) {
                 printf("White team wins. Good game.\n");
                 bKing->alive = false;
                 break;
@@ -124,7 +123,7 @@ int chess(bool should_load)
         }
         clearinput();
 
-		if (should_load) {
+		if (should_load_man) {
 			if (strcmp(nameofpiecetomove, "cTeam") == 0) {
                 if (is_loaded) {
 					printf("You are already done loading.\n");
@@ -191,7 +190,7 @@ int chess(bool should_load)
                                 &(current_team->the_king),
                                 NULL),
                             &(current_team->rook1),
-                            LEFT, &mainboard, current_team);
+                            CastleDirection::LEFT, &mainboard, current_team);
                         have_decided_direction = true;
                         okmove = true;
                     }

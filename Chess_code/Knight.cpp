@@ -5,9 +5,8 @@
 #include "Move_safety.h"
 #define _CRT_SECURE_NO_WARNINGS //prevents warnings for using non-Microsoft functions
 #pragma warning(disable:4996)
-#pragma warning(disable:26812)
 Knight::Knight() {
-    be_safe(WHITE);
+    be_safe(COLOR::WHITE);
 }
 
 Knight::Knight(COLOR b_team, int b_row, int b_column, int b_count) {

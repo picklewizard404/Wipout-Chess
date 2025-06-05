@@ -33,8 +33,8 @@ void kill_piece(Board* mainboard, Piece* piece) {
 
 TEST_CASE("Dad found this bug", "[pieces][pawns]") {
     Board mainboard;
-    Team whiteteam = Team(WHITE, &mainboard);
-    Team blackteam = Team(BLACK, &mainboard);
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
     Move pawn2;
@@ -57,8 +57,8 @@ TEST_CASE("Dad found this bug", "[pieces][pawns]") {
 
 TEST_CASE("Upgraded Black Pawn names", "[pieces][pawns][black]") {
 	Board mainboard;
-	Team whiteteam = Team(WHITE, &mainboard);
-	Team blackteam = Team(BLACK, &mainboard);
+	Team whiteteam = Team(COLOR::WHITE, &mainboard);
+	Team blackteam = Team(COLOR::BLACK, &mainboard);
 	whiteteam.enemy_team = &blackteam;
 	blackteam.enemy_team = &whiteteam;
 	King* whiteking = &whiteteam.the_king;
@@ -130,8 +130,8 @@ TEST_CASE("Castling BLACK", "[castle][black]") {
 
 TEST_CASE("Castling respects movement rules", "[errors][castle][cstlemovement]") {
     Board mainboard;
-    Team whiteteam = Team(WHITE, &mainboard);
-    Team blackteam = Team(BLACK, &mainboard);
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
     King blackking = King(BLACK);
@@ -183,15 +183,15 @@ TEST_CASE("Castling respects movement rules", "[errors][castle][cstlemovement]")
 
 TEST_CASE("Castling error checking", "[errors][castle]") {
     Board mainboard;
-    Queen wqueen = Queen(WHITE, 1, 5, 0);
-    Rook wrook = Rook(WHITE, 1, 1, 1);
+    Queen wqueen = Queen(COLOR::WHITE, 1, 5, 0);
+    Rook wrook = Rook(COLOR::WHITE, 1, 1, 1);
     mainboard.place(&wqueen, 1, 5);
     mainboard.place(&wrook, 1, 1);
     mainboard.print_board();
     CastleMove* badcastle = NULL;
     bool error_thrown = false;
     try {
-        badcastle = new CastleMove(Move(1, 5, 1, 3, &wqueen, NULL), &wrook, LEFT, &mainboard, NULL);
+        badcastle = new CastleMove(Move(1, 5, 1, 3, &wqueen, NULL), &wrook, CastleDirection::LEFT, &mainboard, NULL);
     }
     catch (InvalidMove e) {
         REQUIRE(strcmp(e.what(), "wQueen is NOT a king!") == 0);
@@ -208,8 +208,8 @@ TEST_CASE("Castling error checking", "[errors][castle]") {
 
 TEST_CASE("Upgraded pawns downgrade and delete their upgrades after the move that upgraded them is undone..", "[upgrade][undo]") {
     Board mainboard;
-    Team whiteteam = Team(WHITE, &mainboard);
-    Team blackteam = Team(BLACK, &mainboard);
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
     kill_piece(&mainboard, mainboard.spaces[1][6]);
@@ -267,7 +267,7 @@ TEST_CASE("Castling in or through check should fail", "[castle][check]") {
         try {
             CastleMove castlewhiteleft = CastleMove(
                 Move(1, 5, 1, 3, &whiteteam.the_king, NULL),
-                &whiteteam.rook1, LEFT, &mainboard, &whiteteam
+                &whiteteam.rook1, CastleDirection::LEFT, &mainboard, &whiteteam
             );
         }
         catch (InvalidMove e) {
@@ -282,7 +282,7 @@ TEST_CASE("Castling in or through check should fail", "[castle][check]") {
     try {
         CastleMove castlewhiteleft = CastleMove(
             Move(1, 5, 1, 3, &whiteteam.the_king, NULL),
-            &whiteteam.rook1, LEFT, &mainboard, &whiteteam
+            &whiteteam.rook1, CastleDirection::LEFT, &mainboard, &whiteteam
         );
     }
     catch (InvalidMove e) {
@@ -326,8 +326,8 @@ TEST_CASE("Castling in or through check should fail", "[castle][check]") {
 
 TEST_CASE("Undo castling", "[undo][castle]") {
     Board mainboard;
-    Team whiteteam = Team(WHITE, &mainboard);
-    Team blackteam = Team(BLACK, &mainboard);
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
     whiteteam.queen.alive = false;
@@ -336,7 +336,8 @@ TEST_CASE("Undo castling", "[undo][castle]") {
     kill_piece(&mainboard, &whiteteam.bishop1);
     kill_piece(&mainboard, &whiteteam.knight1);
     mainboard.print_board();
-    CastleMove castle = CastleMove(Move(1, 5, 1, 3, &whiteteam.the_king, NULL), &whiteteam.rook1, LEFT, &mainboard, &whiteteam);
+    CastleMove castle = CastleMove(Move(1, 5, 1, 3, &whiteteam.the_king, NULL), &whiteteam.rook1,
+        CastleDirection::LEFT, &mainboard, &whiteteam);
     mainboard.human_move_piece(&castle);
     mainboard.print_board();
     REQUIRE(whiteteam.the_king.row == 1);
@@ -378,8 +379,8 @@ TEST_CASE("Pieces know the first turn they moved", "[FirstTurnPiece]") {
 
 TEST_CASE("Undoing a first move correctly sets it back to -1", "[undo]") {
     Board mainboard;
-    Rook brook = Rook(BLACK, 2, 2, 1);
-    King wking = King(WHITE);
+    Rook brook = Rook(COLOR::BLACK, 2, 2, 1);
+    King wking = King(COLOR::WHITE);
     mainboard.place(&brook, 3, 2);
     mainboard.place(&wking, 1, 5);
     Pawn wpawn = Pawn(WHITE, 2, 1, 1);
@@ -419,8 +420,8 @@ TEST_CASE("I remember previous turn's passant", "[undo][passant]") {
 TEST_CASE("Passants do have to happen immediately", "[passant][1turn]") {
     printf("Passants do have to happen immediately\n");
     Board mainboard;
-    Team whiteteam = Team(WHITE, &mainboard);
-    Team blackteam = Team(BLACK, &mainboard);
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
     Move firstmove = mainboard.make_move(&whiteteam.pawns[5-1], 4, 5);
     mainboard.human_move_piece(&firstmove);
     mainboard.print_board();
@@ -495,8 +496,8 @@ TEST_CASE("Simple Castling test", "[interactive][castle]") {
     //2. The king hasn't moved yet.
     printf("Testing Castling.\n");
     Board mainboard;
-    Team whiteteam = Team(WHITE, &mainboard);
-    Team blackteam = Team(BLACK, &mainboard);
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
     whiteteam.queen.alive = false;
@@ -509,7 +510,8 @@ TEST_CASE("Simple Castling test", "[interactive][castle]") {
     bool didcastle = false;
     Rook* whiterook1 = &(whiteteam.rook1);
     try {
-        CastleMove castleleft = CastleMove(Move(1, 5, 1, 3, &whiteteam.the_king, NULL), whiterook1, LEFT, &mainboard, &whiteteam);
+        CastleMove castleleft = CastleMove(Move(1, 5, 1, 3, &whiteteam.the_king, NULL), whiterook1,
+            CastleDirection::LEFT, &mainboard, &whiteteam);
         didcastle = true;
         didcastle &= mainboard.human_move_piece(&castleleft);
     }
@@ -588,12 +590,12 @@ TEST_CASE("Upgrade a pawn. Pretend you typed.", "[interactive][upgrade]") {
 }
 
 TEST_CASE("Teams are correct", "[teams]") {
-    REQUIRE(team_name(BLACK) == "Black");
-    REQUIRE(team_name(WHITE) == "White");
+    REQUIRE(team_name(COLOR::BLACK) == "Black");
+    REQUIRE(team_name(COLOR::WHITE) == "White");
 }
 
 TEST_CASE("Pieces can be cloned", "[pieces]") {
-    Knight k1 = Knight(WHITE, 1, 2, 1);
+    Knight k1 = Knight(COLOR::WHITE, 1, 2, 1);
     Knight k2 = Knight(k1);
     printf("Pieces can be cloned.\n");
     REQUIRE(&k1 != &k2);
@@ -604,15 +606,15 @@ TEST_CASE("Pieces can be cloned", "[pieces]") {
 TEST_CASE("Kings can hug", "[pieces][kings]") {
     printf("Kings are tested.\n");
     Board mainboard = Board();
-    Team blackteam = Team(BLACK, &mainboard);
-    Team whiteteam = Team(WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
     REQUIRE(make_kings_hug(&whiteteam, &whiteteam, &blackteam) == true);
 }
 TEST_CASE("Rooks can't move diagonally", "[pieces][rooks]") {
     printf("Rooks are tested.\n");
-    Rook testwhite = Rook(WHITE, 1, 1, 1);
+    Rook testwhite = Rook(COLOR::WHITE, 1, 1, 1);
     Board mainboard;
     mainboard.place(&testwhite, 1, 1);
     mainboard.spaces[1][1] = NULL;
@@ -620,23 +622,23 @@ TEST_CASE("Rooks can't move diagonally", "[pieces][rooks]") {
 }
 TEST_CASE("Move Down Bishop", "[bishop][pieces]") {
     Board mainboard;
-    Bishop bbish = Bishop(BLACK, 8, 6, 2);
+    Bishop bbish = Bishop(COLOR::BLACK, 8, 6, 2);
     printf("Pretend a bishop starting at row 8 column 6 is moving down and to the right.\n");
     int row = bbish.row;
     int column = bbish.column;
-    move_position_info_diag(&row, &column, DOWN_RIGHT, 1);
+    move_position_info_diag(&row, &column, DIAGONAL::DOWN_RIGHT, 1);
     printf("Row: %d, Column: %d.\n", row, column);
     REQUIRE(row == 7);
     REQUIRE(column == 7);
     printf("Now pretend it's moving 3 to the left.\n");
-    move_position_info_diag(&row, &column, DOWN_LEFT, 3);
+    move_position_info_diag(&row, &column, DIAGONAL::DOWN_LEFT, 3);
     REQUIRE(row == 4);
     REQUIRE(column == 4);
     printf("Row: %d, Column: %d.\n", row, column);
 }
 TEST_CASE("Pieces moving diagonally", "[diag][bishop]") {
     Board mainboard;
-    Bishop wbish = Bishop(WHITE, 5, 5, 2);
+    Bishop wbish = Bishop(COLOR::WHITE, 5, 5, 2);
     mainboard.place(&wbish, 5, 5);
     //Assume there is nothing else.
     REQUIRE(can_move_diagnolly(&wbish, DOWN_LEFT, 3, &mainboard));
@@ -644,8 +646,8 @@ TEST_CASE("Pieces moving diagonally", "[diag][bishop]") {
 
 TEST_CASE("Pawns killing enemies", "[diag][pawn]") {
     Board mainboard;
-    Bishop wbish = Bishop(WHITE, 5, 5, 1);
-    Pawn bpawn = Pawn(BLACK, 6, 6, 1);
+    Bishop wbish = Bishop(COLOR::WHITE, 5, 5, 1);
+    Pawn bpawn = Pawn(COLOR::BLACK, 6, 6, 1);
     Rook brook = Rook(BLACK, 6, 5, 1);
     mainboard.place(&brook, 5, 6);
     mainboard.place(&wbish, 5, 5);
@@ -739,10 +741,10 @@ TEST_CASE("Pawns can kill only diagonally 1 space", "[diag][pawn]") {
 }
 TEST_CASE("Pawns can normally move 2 on the start of their trurn, but not if they're blocked", "[pawn][pawn2]") {
     Board mainboard;
-    Pawn wpawn4 = Pawn(WHITE, 2, 4, 4);
+    Pawn wpawn4 = Pawn(COLOR::WHITE, 2, 4, 4);
     mainboard.place(&wpawn4, 2, 4);
     Move testmove2up = mainboard.make_move(&wpawn4, 4, 4);
-    Pawn bpawn4 = Pawn(BLACK, 7, 4, 4);
+    Pawn bpawn4 = Pawn(COLOR::BLACK, 7, 4, 4);
     mainboard.place(&bpawn4, 7, 4);
     Move testmove2down = mainboard.make_move(&bpawn4, 5, 4);
     mainboard.print_board();
@@ -760,7 +762,7 @@ TEST_CASE("Pawns can normally move 2 on the start of their trurn, but not if the
     mainboard.print_board();
     printf("You can be blocked if an opponent stands directly in front of you.\n");
     mainboard.spaces[2][3] = NULL;
-    Bishop bbishop = Bishop(BLACK, 4, 4, 1);
+    Bishop bbishop = Bishop(COLOR::BLACK, 4, 4, 1);
     mainboard.place(&bbishop, 4, 4);
     printf("But what if there was an enemy 2 spaces ahead of you instead?\n");
     mainboard.print_board();
@@ -771,11 +773,11 @@ TEST_CASE("Pawns can normally move 2 on the start of their trurn, but not if the
 TEST_CASE("I remember En passant state after doing a move and undoing it.", "[undo][passant]") {
     printf("I remember En passant state after doing a move and undoing it.\n");
     Board mainboard;
-    Pawn wpawn = Pawn(WHITE, 2, 1, 1);
+    Pawn wpawn = Pawn(COLOR::WHITE, 2, 1, 1);
     mainboard.place(&wpawn, 2, 1);
-    Pawn bpawn1 = Pawn(BLACK, 7, 1, 1);
+    Pawn bpawn1 = Pawn(COLOR::BLACK, 7, 1, 1);
     mainboard.place(&bpawn1, 7, 1);
-    Pawn bpawn2 = Pawn(BLACK, 4, 2, 2);
+    Pawn bpawn2 = Pawn(COLOR::BLACK, 4, 2, 2);
     mainboard.place(&bpawn2, 4, 2);
     Move first_move = mainboard.make_move(&wpawn, 4, 1);
     mainboard.print_board();

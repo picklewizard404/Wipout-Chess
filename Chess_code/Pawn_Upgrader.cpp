@@ -31,7 +31,7 @@ TYPE upgrade_pawn_if_needed(Pawn* to_upgrade, Team* team_owner, Board* mainboard
     /*NOTE: Pawns are in posisitions 2:1-8,
             which means the team treats them as pieces 8-15*/
     int final_pawn_row = 8;
-    if (to_upgrade->team == BLACK) {
+    if (to_upgrade->team == COLOR::BLACK) {
         final_pawn_row = 1;
     }
 	//Make sure the pawn is on the last row.
@@ -92,7 +92,7 @@ void place_upgraded_piece(Team* team_owner, Pawn* pawn_i_was, const char *newpie
     //This may not be needed, but it is safe.
     upgraded_piece->alive = true;
     char column_name = '0';
-    if (pawn_i_was->team == BLACK) {
+    if (pawn_i_was->team == COLOR::BLACK) {
         column_name += 9 - pawn_i_was->get_start_column();
     }
     else {
@@ -106,7 +106,7 @@ void place_upgraded_piece(Team* team_owner, Pawn* pawn_i_was, const char *newpie
     /*THE COLUMNS NEED TO BE RE-CALCULATED FOR THE BLACK TEAM!
     * Their pieces are not in the same order as the white team.
       team_owner[piecenum] needs to be adjusted for black pieces .*/
-    if (new_piece->team == BLACK) {
+    if (new_piece->team == COLOR::BLACK) {
         piecenum = (9 - pawn_i_was->get_start_column()) + 7;
 		my_column_name += 9 - pawn_i_was->get_start_column();
     }

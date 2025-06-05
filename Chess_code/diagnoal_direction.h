@@ -1,6 +1,6 @@
 #pragma once
 #include "Piece.h"
-enum DIAGONAL { UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT, WRONG };
+enum class DIAGONAL { UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT, WRONG };
 struct DiagMove {
     DIAGONAL direction;
     int distance;
