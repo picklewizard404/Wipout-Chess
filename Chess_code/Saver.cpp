@@ -2,6 +2,7 @@
 #include <cstdio>
 #include "Saver.h"
 #pragma warning(disable:4996)
+const char* savefile = "Saved_Game.chess";
 //*
 int Saver::GetPieceCount(Piece* pPc)
 {
@@ -27,9 +28,10 @@ const unsigned char g_cBlacksTurn = (unsigned char)0x04;
 const unsigned char g_cWhiteInCheck = (unsigned char)0x02;
 const unsigned char g_cBlackInCheck = (unsigned char)0x01;
 
-bool Saver::Dads_SaveGame(FILE* fp, Team* current_team, Team* whiteteam, Team *blackteam)
+bool Saver::Dads_SaveGame(Team* current_team, Team* whiteteam, Team *blackteam)
 {
     int i;
+    FILE* fp = fopen(savefile, "w");
 
     if (fp == NULL)
         return false;
@@ -71,7 +73,7 @@ bool Saver::Dads_LoadStandardPieces(FILE* fp, Team* pTeam, Board *mainboard)
 {
     size_t nRC;
     unsigned char data[sizeof(Piece) + 1]; // +1 for safety margin 
-    Piece* pPc;
+    Piece* pPc = NULL;
 
     for (int i = 0; i < 16; i++)
     {
@@ -114,8 +116,10 @@ const char* Saver::GetPieceName(Piece* pExistingPiece)
     }
 }
 
-bool Saver::Dads_LoadGame(FILE* fp, Team *whiteteam, Team* blackteam, Board *mainboard, Team **current_team_p)
+bool Saver::Dads_LoadGame(Team *whiteteam, Team* blackteam, Board *mainboard, Team **current_team_p)
 {
+    FILE* fp = NULL;
+    fp = fopen(savefile, "r");
     bool bReturn = true;
     int i;
     size_t nRC;

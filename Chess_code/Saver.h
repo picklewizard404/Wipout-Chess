@@ -6,8 +6,8 @@
 class Saver {
 	Saver();
 	int GetPieceCount(Piece* pPc);
-	bool Dads_SaveGame(FILE* fp, Team* current_team, Team* whiteteam, Team* blackteam);
-	bool Dads_LoadStandardPieces(FILE* fp, Team* pTeam, Board* mainboard);
-	bool Dads_LoadGame(FILE* fp, Team* whiteteam, Team* blackteam, Board* mainboard, Team** current_team_p);
+	bool Dads_SaveGame(Team* current_team, Team* whiteteam, Team* blackteam);
+	bool Dads_LoadStandardPieces(FILE *fp, Team* pTeam, Board* mainboard);
+	bool Dads_LoadGame(Team* whiteteam, Team* blackteam, Board* mainboard, Team** current_team_p);
 	const char* GetPieceName(Piece* pExistingPiece);
 };
