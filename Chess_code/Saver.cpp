@@ -2,7 +2,11 @@
 #include <cstdio>
 #include "Saver.h"
 #pragma warning(disable:4996)
-const char* savefile = "Saved_Game.chess";
+
+Saver::Saver() {
+    //pass, this class only has constant variables
+    Saver_savefile = "Saved_Game.chess";
+}
 //*
 int Saver::GetPieceCount(Piece* pPc)
 {
@@ -31,7 +35,7 @@ const unsigned char g_cBlackInCheck = (unsigned char)0x01;
 bool Saver::Dads_SaveGame(Team* current_team, Team* whiteteam, Team *blackteam)
 {
     int i;
-    FILE* fp = fopen(savefile, "w");
+    FILE* fp = fopen(Saver_savefile, "w");
 
     if (fp == NULL)
         return false;
@@ -119,7 +123,7 @@ const char* Saver::GetPieceName(Piece* pExistingPiece)
 bool Saver::Dads_LoadGame(Team *whiteteam, Team* blackteam, Board *mainboard, Team **current_team_p)
 {
     FILE* fp = NULL;
-    fp = fopen(savefile, "r");
+    fp = fopen(Saver_savefile, "r");
     bool bReturn = true;
     int i;
     size_t nRC;

@@ -87,6 +87,9 @@
     <ClCompile Include="..\..\Chess_code\CastleMove.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Chess_code\Saver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Chess_code\Bishop.h">
@@ -168,6 +171,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Chess_code\CastleMove.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Chess_code\Saver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

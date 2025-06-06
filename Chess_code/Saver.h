@@ -4,6 +4,9 @@
 #include "Board.h"
 #define _CRT_SECURE_NO_WARNINGS //prevents warnings for using non-Microsoft functions
 class Saver {
+private:
+	const char* Saver_savefile;
+public:
 	Saver();
 	int GetPieceCount(Piece* pPc);
 	bool Dads_SaveGame(Team* current_team, Team* whiteteam, Team* blackteam);
