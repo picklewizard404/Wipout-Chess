@@ -68,6 +68,8 @@ int chess(bool should_load_man)
     bool did_try_castle = false;
 	bool done_loaded_man = !should_load_man;
 	bool did_load = false;
+    //You cannot load the game twice. TODO: FOLLOW THAT RULE.
+    bool has_loaded_file = false;
     
     //Setup
     Piece* wKnight2 = whiteteam.pieces[6];
@@ -89,7 +91,8 @@ int chess(bool should_load_man)
     //*
     while (wKing->alive && bKing->alive)
     {
-        //say_pieces_of_team(&mainboard, current_team);
+		//You start the turn with no piece selected.
+        piecetomove = NULL;
         mainboard.print_board();
         printf("%s turn.\n", team_name(current_team->color));
         if (current_team->color == COLOR::WHITE) {
@@ -158,6 +161,22 @@ int chess(bool should_load_man)
             }
             did_try_save = true;
         }
+        if (strcmp(nameofpiecetomove, "lOad") == 0) {
+            if (has_loaded_file) {
+				printf("You have to quit before you can load again.\n");
+            }
+            else {
+                if (game_saver.Dads_LoadGame(&whiteteam, &blackteam, &mainboard, &current_team)) {
+                    printf("Game loaded.\n");
+                    has_loaded_file = true;
+                }
+                else {
+                    printf("ERROR loading game!\n");
+                }
+                did_load = true;
+            }
+             
+        }
 
         if (strcmp(nameofpiecetomove, "sUrrender") == 0) {
             printf("You give up. %s team wins!", current_team->enemy_team->full_name);
@@ -185,7 +204,6 @@ int chess(bool should_load_man)
             make_kings_hug(current_team, &whiteteam, &blackteam);
             return 0;
         }
-        //if (strcmp())
 
         //Maybe you are trying to castle.
         CastleMove castle_move;
@@ -428,7 +446,7 @@ int chess(bool should_load_man)
                     printf("That piece is dead! Can't move it anymore;\n");
                 }
             }
-            else if(!did_try_castle && !did_load) {
+            else if(!did_try_castle && !did_load && !did_try_save) {
                 if (did_try_tie) {
                     printf("Your opponent doen't want to quit yet.\n");
                 }

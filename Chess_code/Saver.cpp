@@ -200,8 +200,10 @@ bool Saver::Dads_LoadGame(Team *whiteteam, Team* blackteam, Board *mainboard, Te
             case TYPE::BISHOP: pNewPiece = new Bishop(pPc->team, pPc->row, pPc->column, n); break;
             }
         }
-        catch (const char* pszEx) { printf("EXCEPTION: while allocating %s\n%s\n", GetPieceName(pPc), pszEx); }
-        catch (...) { printf("EXCEPTION: failed to allocate %s\n", GetPieceName(pPc)); }
+        catch (const char* pszEx) { 
+            printf("EXCEPTION: while allocating %s\n%s\n", GetPieceName(pPc), pszEx); }
+        catch (...) { 
+            printf("EXCEPTION: failed to allocate %s\n", GetPieceName(pPc)); }
 
         if (pNewPiece != NULL)
         {
