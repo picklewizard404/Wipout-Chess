@@ -7,12 +7,12 @@
 #pragma warning(disable:4996)
 
 Rook::Rook() {
-    be_safe(WHITE);
+    be_safe(COLOR::WHITE);
 }
 
 Rook::Rook(COLOR b_team, int b_row, int b_column, int b_count) {
     strcpy(chess_class, "Rook");
-    setup(chess_class, b_team, b_row, b_column, b_count, ROOK);
+    setup(chess_class, b_team, b_row, b_column, b_count, TYPE::ROOK);
 }
 
 //The letter b means I'm gonna BE here.

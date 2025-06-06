@@ -181,10 +181,10 @@ bool Board::human_move_piece(Move* move_to_make) {
         int p_column = piece->column;
         int p_row = piece->row;
         if (castlemove != NULL) {
-            if (castlemove->piece_that_moved->piecetype == NULL) {
-                throw InvalidPiece(castlemove->piece_that_moved);
+            if (castlemove->piece_that_moved == NULL) {
+                throw InvalidMove(string("Somehow the piece moving in your castle move was null. That shouldn't happen!"));
             }
-            if (castlemove->piece_that_moved->piecetype != KING) {
+            if (castlemove->piece_that_moved->piecetype != TYPE::KING) {
                 throw InvalidMove(string(castlemove->piece_that_moved->name) + string(" is NOT your king!"));
             }
             if (castlemove->piece_that_moved->first_turn_i_moved() != -1) {
@@ -244,7 +244,7 @@ bool Board::human_move_piece(Move* move_to_make) {
             piece->know_i_change_position(b_row, b_column, turn_number);
             if (passantpawn.get_piece() != NULL) {
                 //Apply passant if needed.
-                if (piece->piecetype == PAWN && b_row == passantpawn.get_row() && b_column == passantpawn.get_column() && piece->team != passantpawn.get_piece()->team) {
+                if (piece->piecetype == TYPE::PAWN && b_row == passantpawn.get_row() && b_column == passantpawn.get_column() && piece->team != passantpawn.get_piece()->team) {
                     kill_passant();
                 }
                 else if (passantpawn.get_piece()->team != piece->team) {
@@ -263,7 +263,7 @@ bool Board::human_move_piece(Move* move_to_make) {
             }
             
             //Maybe we set one up for our opponent though.
-            if (piece->piecetype == PAWN) {
+            if (piece->piecetype == TYPE::PAWN) {
                 if (piece->team == COLOR::WHITE && move_to_make->start_row == 2 && move_to_make->end_row == 4) {
                     passantpawn = PassantPawn((Pawn*)piece, 3, piece->column, turn_number);
                 }
@@ -308,7 +308,7 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
         throw InvalidPiece(NULL);
     }
 
-    if (move_i_made->piece_that_moved->piecetype == PAWN) {
+    if (move_i_made->piece_that_moved->piecetype == TYPE::PAWN) {
         Pawn* movedpawn = (Pawn*)move_i_made->piece_that_moved;
         bool did_upgrade = false;
         switch (move_i_made->piece_that_moved->team) {

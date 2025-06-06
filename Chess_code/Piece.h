@@ -1,7 +1,7 @@
 #pragma once
 #include "Teamname.h"
 class Board;
-enum TYPE { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING, EMPTY };
+enum class TYPE { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING, EMPTY };
 class Piece
 {
 protected:

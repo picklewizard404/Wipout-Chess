@@ -46,8 +46,8 @@ bool Saver::Dads_SaveGame(FILE* fp, Team* current_team, Team* whiteteam, Team *b
 
     if (current_team == whiteteam)        cStatus |= (unsigned char)g_cWhitesTurn;
     else if (current_team == blackteam)   cStatus |= (unsigned char)g_cBlacksTurn;
-    if (whiteteam->current_status == CHECK) cStatus |= g_cWhiteInCheck;
-    if (blackteam->current_status == CHECK) cStatus |= g_cBlackInCheck;
+    if (whiteteam->current_status == Game_Status::CHECK) cStatus |= g_cWhiteInCheck;
+    if (blackteam->current_status == Game_Status::CHECK) cStatus |= g_cBlackInCheck;
 
     //    printf("Final Status = %d\n", cStatus);
     fwrite(&cStatus, sizeof(cStatus), 1, fp);
@@ -85,7 +85,7 @@ bool Saver::Dads_LoadStandardPieces(FILE* fp, Team* pTeam, Board *mainboard)
         // Since upgraded pawns are assigned to the pieces array we may be reading in a promoted pawn;
         if (pPc->piecetype != pTeam->pieces[i]->piecetype)
         {
-            if (pTeam->pieces[i]->piecetype != PAWN)
+            if (pTeam->pieces[i]->piecetype != TYPE::PAWN)
                 return false;
 
             pTeam->pieces[i]->alive = false; // If it's a promoted pawn we kill the original pawn
@@ -104,12 +104,12 @@ const char* Saver::GetPieceName(Piece* pExistingPiece)
 {
     switch (pExistingPiece->piecetype)
     {
-    case PAWN:   return "Pawn";
-    case ROOK:   return "Rook";
-    case KNIGHT: return "Knight";
-    case BISHOP: return "Bishop";
-    case QUEEN:  return "Queen";
-    case KING:   return "King";
+    case TYPE::PAWN:   return "Pawn";
+    case TYPE::ROOK:   return "Rook";
+    case TYPE::KNIGHT: return "Knight";
+    case TYPE::BISHOP: return "Bishop";
+    case TYPE::QUEEN:  return "Queen";
+    case TYPE::KING:   return "King";
     default:     return "";
     }
 }
@@ -147,8 +147,8 @@ bool Saver::Dads_LoadGame(FILE* fp, Team *whiteteam, Team* blackteam, Board *mai
         // printf("Status = %d\n", cStatus);
         if (cStatus & g_cWhitesTurn)   *current_team_p = whiteteam;
         if (cStatus & g_cBlacksTurn)   *current_team_p = blackteam;
-        if (cStatus & g_cWhiteInCheck) whiteteam->current_status = CHECK;
-        if (cStatus & g_cBlackInCheck) blackteam->current_status = CHECK;
+        if (cStatus & g_cWhiteInCheck) whiteteam->current_status = Game_Status::CHECK;
+        if (cStatus & g_cBlackInCheck) blackteam->current_status = Game_Status::CHECK;
     }
     else bReturn = false;
 
@@ -179,17 +179,17 @@ bool Saver::Dads_LoadGame(FILE* fp, Team *whiteteam, Team* blackteam, Board *mai
 
         pPc = (Piece*)&data;
 
-        Team* TheTeam = (pPc->team == WHITE) ? whiteteam : blackteam;
+        Team* TheTeam = (pPc->team == COLOR::WHITE) ? whiteteam : blackteam;
         int n = GetPieceCount(pPc);
 
         try {
             pNewPiece = NULL;
             switch (pPc->piecetype)
             {
-            case QUEEN:  pNewPiece = new Queen(pPc->team, pPc->row, pPc->column, n);  break;
-            case ROOK:   pNewPiece = new Rook(pPc->team, pPc->row, pPc->column, n);   break;
-            case KNIGHT: pNewPiece = new Knight(pPc->team, pPc->row, pPc->column, n); break;
-            case BISHOP: pNewPiece = new Bishop(pPc->team, pPc->row, pPc->column, n); break;
+            case TYPE::QUEEN:  pNewPiece = new Queen(pPc->team, pPc->row, pPc->column, n);  break;
+            case TYPE::ROOK:   pNewPiece = new Rook(pPc->team, pPc->row, pPc->column, n);   break;
+            case TYPE::KNIGHT: pNewPiece = new Knight(pPc->team, pPc->row, pPc->column, n); break;
+            case TYPE::BISHOP: pNewPiece = new Bishop(pPc->team, pPc->row, pPc->column, n); break;
             }
         }
         catch (const char* pszEx) { printf("EXCEPTION: while allocating %s\n%s\n", GetPieceName(pPc), pszEx); }

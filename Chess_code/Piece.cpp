@@ -42,7 +42,7 @@ void Piece::be_safe(COLOR color) {
     row = -1;
     column = -1;
     team = color;
-    piecetype = EMPTY;
+    piecetype = TYPE::EMPTY;
     alive = true;
     first_turn = -1;
     /*

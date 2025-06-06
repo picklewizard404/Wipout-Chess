@@ -14,11 +14,11 @@ bool Queen::can_classmove(int b_row, int b_column, Board* board_to_move_on) {
 }
 
 Queen::Queen() {
-    be_safe(WHITE);
+    be_safe(COLOR::WHITE);
 }
 
 Queen::Queen(COLOR b_team, int b_row, int b_column, int b_count) {
     strcpy(chess_class, "Queen");
-    setup(chess_class, b_team, b_row, b_column, 0, QUEEN);
+    setup(chess_class, b_team, b_row, b_column, 0, TYPE::QUEEN);
 
 }

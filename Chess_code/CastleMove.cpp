@@ -14,7 +14,7 @@ CastleMove::CastleMove(Move kingmove, Rook* mrook_that_moved, CastleDirection mw
     if (kingmove.piece_that_moved == NULL) {
         throw InvalidPiece(kingmove.piece_that_moved);
     }
-    if (kingmove.piece_that_moved->piecetype != KING) {
+    if (kingmove.piece_that_moved->piecetype != TYPE::KING) {
         throw InvalidMove(std::string(kingmove.piece_that_moved->name) + std::string(" is NOT a king!"));;
     }
     if (kingmove.piece_that_moved->first_turn_i_moved() != -1) {
@@ -41,7 +41,7 @@ CastleMove::CastleMove(Move kingmove, Rook* mrook_that_moved, CastleDirection mw
                 );
             }
             board_its_on->place(&myteam->the_king, starting_row, slide_left);
-            if (board_its_on->is_in_check(myteam, myteam->enemy_team, false)) {
+            if (board_its_on->is_in_check(myteam, myteam->enemy_team, false) != Game_Status::NEUTRAL) {
                 board_its_on->place(&myteam->the_king, starting_row, 5);
                 throw InvalidMove(
                     "Error: Space in Row " + std::to_string(starting_row) + ", Column " + std::to_string(slide_left) + " is attacked, so you can't castle left."
@@ -50,7 +50,7 @@ CastleMove::CastleMove(Move kingmove, Rook* mrook_that_moved, CastleDirection mw
         }
     }
     
-    else if (mwhich_side_you_castled == RIGHT) {
+    else if (mwhich_side_you_castled == CastleDirection::RIGHT) {
         if (mrook_that_moved->column != 8) {
             throw InvalidMove("That rook isn't in the right column. Can't castle with that one!");
         }
@@ -62,7 +62,7 @@ CastleMove::CastleMove(Move kingmove, Rook* mrook_that_moved, CastleDirection mw
                 );
             }
             board_its_on->place(&myteam->the_king, starting_row, slide_right);
-            if (board_its_on->is_in_check(myteam, myteam->enemy_team, false)) {
+            if (board_its_on->is_in_check(myteam, myteam->enemy_team, false) != Game_Status::NEUTRAL) {
                 board_its_on->place(&myteam->the_king, starting_row, 5);
                 throw InvalidMove(
                     "Error: Space in Row " + std::to_string(starting_row) + ", Column " + std::to_string(slide_right) + " is attacked, so you can't castle right."

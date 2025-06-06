@@ -59,8 +59,8 @@ int chess(bool should_load_man)
     //char current_team = 'w';
     Team* current_team = &whiteteam;
 
-    TYPE type_of_piecetomove = PAWN;
-    Game_Status current_status = NEUTRAL;
+    TYPE type_of_piecetomove = TYPE::PAWN;
+    Game_Status current_status = Game_Status::NEUTRAL;
 
 	bool is_loaded = !should_load_man;
 	bool do_load = false;
@@ -213,7 +213,7 @@ int chess(bool should_load_man)
                                 &(current_team->the_king),
                                 NULL),
                             &(current_team->rook2),
-                            RIGHT, &mainboard, current_team);
+                            CastleDirection::RIGHT, &mainboard, current_team);
                         have_decided_direction = true;
                         okmove = true;
                     }
@@ -255,7 +255,7 @@ int chess(bool should_load_man)
             //Was that move safe? IF not, I am still in check.
             //*
             Game_Status am_I_still_in_check = mainboard.is_in_check(current_team->enemy_team, current_team, false);
-            if (am_I_still_in_check != NEUTRAL) {
+            if (am_I_still_in_check != Game_Status::NEUTRAL) {
                 printf("That's check, silly!\n");
                 printf("Do you want to undo that move? Type Yes if so.\n");
                 std::ignore = scanf("%3s", nameofpiecetomove);
@@ -371,7 +371,7 @@ int chess(bool should_load_man)
                     break;
                 }
                 //Important: Upgrade the pawn if needed.
-                if (piecetomove->piecetype == PAWN) {
+                if (piecetomove->piecetype == TYPE::PAWN) {
                     upgrade_pawn_if_needed((Pawn*)piecetomove, current_team, &mainboard);
                 }
                 //NOTE: THE TEAMS SWAP ON THIS LINE
@@ -380,7 +380,7 @@ int chess(bool should_load_man)
                 //Was that move safe? IF not, I am still in check.
                 //*
                 Game_Status am_I_still_in_check = mainboard.is_in_check(current_team->enemy_team, current_team, false);
-                if (am_I_still_in_check != NEUTRAL) {
+                if (am_I_still_in_check != Game_Status::NEUTRAL) {
                     printf("That's check, silly!\n");
                     printf("Do you want to undo that move? Type Yes if so.\n");
                     std::ignore = scanf("%3s", nameofpiecetomove);

@@ -115,7 +115,7 @@ bool check_piece(Board* mainboard, Piece** piecetomove, int row, int column, cha
 }
 
 const char* team_name(COLOR team) {
-    if (team == WHITE) {
+    if (team == COLOR::WHITE) {
         return "White";
     }
     else return "Black";
