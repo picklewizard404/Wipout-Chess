@@ -12,7 +12,7 @@
 using namespace std;
 
 Board::Board() {
-    team_in_check = NONE;
+    team_in_check = COLOR::NONE;
     turn_number = 1;
     whiteturn = true;
     threatens_white = NULL;
@@ -74,11 +74,11 @@ Game_Status Board::is_in_check(Team* my_team, Team* enemy_team, bool check_for_c
         if (enemy_team->pieces[i] != 0) {
             if (enemy_team->pieces[i]->can_classmove(mkrow, mkcolumn, this)) {
                 //Intentionally allow Kings to risk their lives
-                return CHECK;
+                return Game_Status::CHECK;
             }
         }
     }
-    return NEUTRAL;
+    return Game_Status::NEUTRAL;
 }
 
 bool Board::is_on_board(int b_row, int b_column) {
@@ -144,13 +144,13 @@ bool Board::human_move_piece(Move* move_to_make) {
     bool changepast = false;
     CastleMove* castlemove = dynamic_cast<CastleMove*>(move_to_make);
     int row = 1;
-    if (piece->team == BLACK) {
+    if (piece->team == COLOR::BLACK) {
         row = 8;
     }
     if (castlemove != NULL) {
         switch (castlemove->which_side_you_castled)
         {
-        case LEFT:
+        case CastleDirection::LEFT:
             for (int column = 4; column >= 2; column--) {
                 if (spaces[row - 1][column - 1] != NULL) {
                     throw InvalidMove("Can't castle. There's a piece in the way.");
@@ -159,7 +159,7 @@ bool Board::human_move_piece(Move* move_to_make) {
             place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 4);
             place(castlemove->piece_that_moved, castlemove->piece_that_moved->row, 3);
             break;
-        case RIGHT:
+        case CastleDirection::RIGHT:
             for (int column = 6; column <= 7; column++) {
                 if (spaces[row - 1][column - 1] != NULL) {
                     throw InvalidMove("Can't castle. There's a piece in the way.");
@@ -181,10 +181,10 @@ bool Board::human_move_piece(Move* move_to_make) {
         int p_column = piece->column;
         int p_row = piece->row;
         if (castlemove != NULL) {
-            if (castlemove->piece_that_moved->piecetype == NULL) {
-                throw InvalidPiece(castlemove->piece_that_moved);
+            if (castlemove->piece_that_moved == NULL) {
+                throw InvalidMove(string("Somehow the piece moving in your castle move was null. That shouldn't happen!"));
             }
-            if (castlemove->piece_that_moved->piecetype != KING) {
+            if (castlemove->piece_that_moved->piecetype != TYPE::KING) {
                 throw InvalidMove(string(castlemove->piece_that_moved->name) + string(" is NOT your king!"));
             }
             if (castlemove->piece_that_moved->first_turn_i_moved() != -1) {
@@ -244,7 +244,7 @@ bool Board::human_move_piece(Move* move_to_make) {
             piece->know_i_change_position(b_row, b_column, turn_number);
             if (passantpawn.get_piece() != NULL) {
                 //Apply passant if needed.
-                if (piece->piecetype == PAWN && b_row == passantpawn.get_row() && b_column == passantpawn.get_column() && piece->team != passantpawn.get_piece()->team) {
+                if (piece->piecetype == TYPE::PAWN && b_row == passantpawn.get_row() && b_column == passantpawn.get_column() && piece->team != passantpawn.get_piece()->team) {
                     kill_passant();
                 }
                 else if (passantpawn.get_piece()->team != piece->team) {
@@ -263,11 +263,11 @@ bool Board::human_move_piece(Move* move_to_make) {
             }
             
             //Maybe we set one up for our opponent though.
-            if (piece->piecetype == PAWN) {
-                if (piece->team == WHITE && move_to_make->start_row == 2 && move_to_make->end_row == 4) {
+            if (piece->piecetype == TYPE::PAWN) {
+                if (piece->team == COLOR::WHITE && move_to_make->start_row == 2 && move_to_make->end_row == 4) {
                     passantpawn = PassantPawn((Pawn*)piece, 3, piece->column, turn_number);
                 }
-                else if (piece->team == BLACK && move_to_make->start_row == 7 && move_to_make->end_row == 5) {
+                else if (piece->team == COLOR::BLACK && move_to_make->start_row == 7 && move_to_make->end_row == 5) {
                     passantpawn = PassantPawn((Pawn*)piece, 6, piece->column, turn_number);
                 }
             }
@@ -308,15 +308,15 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
         throw InvalidPiece(NULL);
     }
 
-    if (move_i_made->piece_that_moved->piecetype == PAWN) {
+    if (move_i_made->piece_that_moved->piecetype == TYPE::PAWN) {
         Pawn* movedpawn = (Pawn*)move_i_made->piece_that_moved;
         bool did_upgrade = false;
         switch (move_i_made->piece_that_moved->team) {
-        case WHITE:
+        case COLOR::WHITE:
             did_upgrade = move_i_made->end_row == 8;
             break;
         
-        case BLACK:
+        case COLOR::BLACK:
             did_upgrade = move_i_made->end_row == 1;
             break;
         }
@@ -328,7 +328,7 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
             /*THE COLUMNS NEED TO BE RE-CALCULATED FOR THE BLACK TEAM!
             * Their pieces are not in the same order as the white team.
               team_owner[piecenum] needs to be adjusted for black pieces .*/
-            if (new_piece->team == BLACK) {
+            if (new_piece->team == COLOR::BLACK) {
                 piecenum = (9 - movedpawn->get_start_column()) + 7;
             }
             if (team_that_moved->pieces[piecenum] != NULL) {
@@ -353,10 +353,10 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
         castlemove->piece_that_moved->know_i_moved(-1);
         switch (castlemove->which_side_you_castled)
         {
-        case LEFT:
+        case CastleDirection::LEFT:
             place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 1);
             break;
-        case RIGHT:
+        case CastleDirection::RIGHT:
             place(castlemove->rook_that_moved, castlemove->rook_that_moved->row, 8);
             break;
         default:
@@ -502,9 +502,9 @@ Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboa
                 tried_move.end_column = trycolumn;
                 // We know we can go here, so we might as well try.
                 human_move_piece(&tried_move);
-                if (is_in_check(my_team, enemy_team, false) == NEUTRAL) {
+                if (is_in_check(my_team, enemy_team, false) == Game_Status::NEUTRAL) {
                     undo_move(&tried_move, my_team);
-                    return CHECK;
+                    return Game_Status::CHECK;
                 }
             }
         }
@@ -512,5 +512,5 @@ Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboa
     //TEMP Here I know the move that saved me and I haven't actually made it on purpose yet,
     // so I need to undo the move before exiting the loop/
     // END OF IMAGINARY LOOP
-    return CHECK;
+    return Game_Status::CHECK;
 };

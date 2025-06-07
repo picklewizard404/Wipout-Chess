@@ -8,38 +8,38 @@
 #include "InvalidPiece.h"
 #pragma warning(disable:4996)
 bool is_pawn(Piece* shouldbepawn) {
-    return shouldbepawn->piecetype == PAWN;
+    return shouldbepawn->piecetype == TYPE::PAWN;
 }
 //NOTE: This function is called EVERY time a pawn is moved, and it does nothing is the pawn is not on it.
 // It returns EMPTY if the pawn can't be upgraded.
 //Possible errors: InvalidPiece
 TYPE upgrade_pawn_if_needed(Pawn* to_upgrade, Team* team_owner, Board* mainboard, TYPE upgradeTo) {
-    if (upgradeTo == PAWN) {
+    if (upgradeTo == TYPE::PAWN) {
         std::string error = std::string("Pawn");
         throw InvalidPiece(error);
     }
-    else if (upgradeTo == KING) {
+    else if (upgradeTo == TYPE::KING) {
         std::string error = std::string("King");
         throw InvalidPiece(error);
     }
     //Other classes are playable. Like Queen.
     //const char* classes[] = { "Rook",  "Bishop", "Knight", "Queen" };
     if (!is_pawn(to_upgrade)) {
-        return EMPTY;
+        return TYPE::EMPTY;
     }
     
     /*NOTE: Pawns are in posisitions 2:1-8,
             which means the team treats them as pieces 8-15*/
     int final_pawn_row = 8;
-    if (to_upgrade->team == BLACK) {
+    if (to_upgrade->team == COLOR::BLACK) {
         final_pawn_row = 1;
     }
 	//Make sure the pawn is on the last row.
     if (to_upgrade->row != final_pawn_row) {
-        return EMPTY;
+        return TYPE::EMPTY;
     }
     //SELECT THE PIECE BASED ON USER INPUT
-    if (upgradeTo == EMPTY) {
+    if (upgradeTo == TYPE::EMPTY) {
         upgradeTo = get_valid_upgrade_type();
     }
     really_perform_upgrade(to_upgrade, upgradeTo, team_owner, mainboard);
@@ -47,7 +47,7 @@ TYPE upgrade_pawn_if_needed(Pawn* to_upgrade, Team* team_owner, Board* mainboard
 }
 
 TYPE get_valid_upgrade_type() {
-    TYPE to_upgrade_to = EMPTY;
+    TYPE to_upgrade_to = TYPE::EMPTY;
     bool valid_type = false;
     char typewanted[10] = "";
     for (int i = 0; i < 10; i++) {
@@ -61,19 +61,19 @@ TYPE get_valid_upgrade_type() {
             typewanted[i] = tolower(typewanted[i]);
         }
         if (strcmp(typewanted, "Rook") == 0) {
-            to_upgrade_to = ROOK;
+            to_upgrade_to = TYPE::ROOK;
             valid_type = true;
         }
         else if (strcmp(typewanted, "Knight") == 0) {
-            to_upgrade_to = KNIGHT;
+            to_upgrade_to = TYPE::KNIGHT;
             valid_type = true;
         }
         else if (strcmp(typewanted, "Bishop") == 0) {
-            to_upgrade_to = BISHOP;
+            to_upgrade_to = TYPE::BISHOP;
             valid_type = true;
         }
         else if (strcmp(typewanted, "Queen") == 0) {
-            to_upgrade_to = QUEEN;
+            to_upgrade_to = TYPE::QUEEN;
             valid_type = true;
         }
         // */
@@ -92,7 +92,7 @@ void place_upgraded_piece(Team* team_owner, Pawn* pawn_i_was, const char *newpie
     //This may not be needed, but it is safe.
     upgraded_piece->alive = true;
     char column_name = '0';
-    if (pawn_i_was->team == BLACK) {
+    if (pawn_i_was->team == COLOR::BLACK) {
         column_name += 9 - pawn_i_was->get_start_column();
     }
     else {
@@ -106,7 +106,7 @@ void place_upgraded_piece(Team* team_owner, Pawn* pawn_i_was, const char *newpie
     /*THE COLUMNS NEED TO BE RE-CALCULATED FOR THE BLACK TEAM!
     * Their pieces are not in the same order as the white team.
       team_owner[piecenum] needs to be adjusted for black pieces .*/
-    if (new_piece->team == BLACK) {
+    if (new_piece->team == COLOR::BLACK) {
         piecenum = (9 - pawn_i_was->get_start_column()) + 7;
 		my_column_name += 9 - pawn_i_was->get_start_column();
     }
@@ -130,24 +130,24 @@ void really_perform_upgrade(Pawn* to_upgrade, TYPE new_class, Team* team_owner, 
             switch (new_class)
             {
                 //NOTE: WE PLACE THE UPGRADED PAWNS BASED ON THEIR STARTING COLUMN!
-            case BISHOP: 
+            case TYPE::BISHOP:
                 team_owner->upgraded_pieces[upgraded_index] = new Bishop(to_upgrade->team, to_upgrade->row, to_upgrade->column, to_upgrade->count);
                 place_upgraded_piece(team_owner, to_upgrade, "Bishop", team_owner->upgraded_pieces[upgraded_index], mainboard);
                 return;
                 break;
 
-            case KNIGHT:
+            case TYPE::KNIGHT:
                 team_owner->upgraded_pieces[upgraded_index] = new Knight(to_upgrade->team, to_upgrade->row, to_upgrade->column, to_upgrade->count);
                 place_upgraded_piece(team_owner, to_upgrade, "Knight", team_owner->upgraded_pieces[upgraded_index], mainboard);
                 return;
                 break;
 
-            case ROOK: 
+            case TYPE::ROOK:
                 team_owner->upgraded_pieces[upgraded_index] = new Rook(to_upgrade->team, to_upgrade->row, to_upgrade->column, to_upgrade->count);
                 place_upgraded_piece(team_owner, to_upgrade, "Rook", team_owner->upgraded_pieces[upgraded_index], mainboard);
                 return;
                 break;
-            case QUEEN:
+            case TYPE::QUEEN:
                 team_owner->upgraded_pieces[upgraded_index] = new Queen(to_upgrade->team, to_upgrade->row, to_upgrade->column, to_upgrade->count);
                 place_upgraded_piece(team_owner, to_upgrade, "Queen", team_owner->upgraded_pieces[upgraded_index], mainboard);
                 return;

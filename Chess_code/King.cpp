@@ -8,7 +8,7 @@
 
 
 King::King() {
-    king_setup(WHITE);
+    king_setup(COLOR::WHITE);
 }
 King::King(COLOR b_team)
 {
@@ -54,14 +54,14 @@ void King::king_setup(COLOR b_team) {
     count = 0;
     int b_row = 1;
     strcpy_s(chess_class, "King");
-    piecetype = KING;
+    piecetype = TYPE::KING;
     sprintf_s(name, "%c%s", b_team, chess_class);
-    if (b_team == BLACK) {
+    if (b_team == COLOR::BLACK) {
         b_row = 8;
     }
-    else if (b_team == WHITE) {
+    else if (b_team == COLOR::WHITE) {
         b_row = 1;
     }
-    setup(chess_class, b_team, b_row, 5, 0, KING);
+    setup(chess_class, b_team, b_row, 5, 0, TYPE::KING);
     set_up_full_name(chess_class);
 }

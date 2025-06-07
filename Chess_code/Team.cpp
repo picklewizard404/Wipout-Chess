@@ -23,10 +23,10 @@ void Team::set_upgraded_pointers_to0() {
 }
 
 const char* Team::team_name() const {
-    if (color == WHITE) {
+    if (color == COLOR::WHITE) {
         return "White";
     }
-    else if (color == BLACK) {
+    else if (color == COLOR::BLACK) {
         return "Black";
     }
     else {
@@ -49,14 +49,14 @@ Team::~Team() {
     }
 }
 
-Team::Team(COLOR team_color, Board *the_board_shared) :the_king(WHITE)
+Team::Team(COLOR team_color, Board *the_board_shared) :the_king(COLOR::WHITE)
 {
     //NOTE THE QUEEN AND KING SHOULD SWAP
     enemy_team = nullptr;
     empty_spaces();
     color = team_color;
-    current_status = NEUTRAL;
-    if (team_color == WHITE) {
+    current_status = Game_Status::NEUTRAL;
+    if (team_color == COLOR::WHITE) {
         namefirstletter = 'w';
         strcpy(full_name, "White");
         empty_spaces();

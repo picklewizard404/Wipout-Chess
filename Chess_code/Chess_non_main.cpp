@@ -32,8 +32,8 @@ void say(int column, int row, Board mainboard) {
 }
 
 COLOR char_opposing_team(COLOR team) {
-    if (team == WHITE) return BLACK;
-    else return WHITE;
+    if (team == COLOR::WHITE) return COLOR::BLACK;
+    else return COLOR::WHITE;
 }
 
 void say_pieces_of_team(Board* mainboard, COLOR current_team) {
@@ -60,12 +60,12 @@ bool wrong_team(space piecetomove, COLOR current_team) {
 }
 
 COLOR enemy_team(COLOR my_team) {
-    if (my_team == WHITE) {
-        return BLACK;
+    if (my_team == COLOR::WHITE) {
+        return COLOR::BLACK;
     }
     else
     {
-        return WHITE;
+        return COLOR::WHITE;
     }
 }
 
@@ -115,7 +115,7 @@ bool check_piece(Board* mainboard, Piece** piecetomove, int row, int column, cha
 }
 
 const char* team_name(COLOR team) {
-    if (team == WHITE) {
+    if (team == COLOR::WHITE) {
         return "White";
     }
     else return "Black";
