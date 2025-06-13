@@ -1,3 +1,3 @@
 @echo off
-PlayChess.exe --load
+PlayChess.exe --loadman
 
