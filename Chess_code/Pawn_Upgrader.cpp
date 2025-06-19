@@ -34,7 +34,7 @@ TYPE upgrade_pawn_if_needed(Pawn* to_upgrade, Team* team_owner, Board* mainboard
     if (to_upgrade->team == COLOR::BLACK) {
         final_pawn_row = 1;
     }
-	//Make sure the pawn is on the last row.
+    //Make sure the pawn is on the last row.
     if (to_upgrade->row != final_pawn_row) {
         return TYPE::EMPTY;
     }
@@ -101,17 +101,17 @@ void place_upgraded_piece(Team* team_owner, Pawn* pawn_i_was, const char *newpie
     
     // Assume we're the white team.
     int piecenum = pawn_i_was->get_start_column() + 7;
-	char my_column_name = '0';
+    char my_column_name = '0';
     Piece* new_piece = team_owner->pieces[piecenum];
     /*THE COLUMNS NEED TO BE RE-CALCULATED FOR THE BLACK TEAM!
     * Their pieces are not in the same order as the white team.
       team_owner[piecenum] needs to be adjusted for black pieces .*/
     if (new_piece->team == COLOR::BLACK) {
         piecenum = (9 - pawn_i_was->get_start_column()) + 7;
-		my_column_name += 9 - pawn_i_was->get_start_column();
+        my_column_name += 9 - pawn_i_was->get_start_column();
     }
     else {
-		my_column_name += + pawn_i_was->get_start_column();
+        my_column_name += + pawn_i_was->get_start_column();
     }
     sprintf(upgraded_piece->name, "%c%sp%c", pawn_i_was->team, newpiece_type, my_column_name);
     // VERY IMPORTANT NOTE: THIS IS WHERE THE UPGRADED PAWN IS ADDED TO THE TEAM!

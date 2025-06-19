@@ -26,12 +26,12 @@ Pawn::Pawn(COLOR b_team, int b_row, int b_column, int b_count) {
 
 //Changes the way the piece is named visually but NOT functionally!
 char Pawn::column_name() {
-	if (team == COLOR::BLACK) {
+    if (team == COLOR::BLACK) {
         return '0' + 9 - column;
-	}
-	else {
+    }
+    else {
         return '0' + column;
-	}
+    }
 }
 
 //
