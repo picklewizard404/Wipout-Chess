@@ -96,7 +96,6 @@ int chess(bool should_load_man, bool show_debugging)
         mainboard.print_board();
         if (show_debugging) {
             printf("DEBUG: Turn %d\n", mainboard.current_turn());
-            printf("DEBUG: Current team is %s.\n", current_team->team_name());
         }
 
         printf("%s turn.\n", team_name(current_team->color));
