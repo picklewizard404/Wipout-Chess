@@ -9,6 +9,7 @@ int main(int argc, char*argv[]) {
     bool talkhug = false;
     bool should_load_man = false;
     bool should_load_save = false;
+    bool show_debugging = false;
     if (argc > 1) {
         for (int i = 1; i < argc; i++) {
             if (strcmp("--hug", argv[i]) == 0) {
@@ -41,6 +42,9 @@ int main(int argc, char*argv[]) {
             if (strcmp("--loadman", argv[i]) == 0) {
                 should_load_man = true;
             }
+            if (strcmp("--printdebug", argv[i]) == 0) {
+                show_debugging = true;
+            }
             if (strcmp("--loadsave", argv[i]) == 0) {
                 should_load_save = true;
                 if (i < argc - 1) {
@@ -62,7 +66,7 @@ int main(int argc, char*argv[]) {
     printf("When you have to enter a row or column, you must be very precise.\nYou can't type anything after the single number character.\n");
     printf("You can be killed.\n");
     
-    chess(should_load_man);
+    chess(should_load_man, show_debugging);
     sleep5();
     
     return 0;

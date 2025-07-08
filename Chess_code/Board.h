@@ -47,6 +47,7 @@ public:
     bool no_ally_there(COLOR my_team, int row, int column) const;
     int get_turn();
     void next_turn();
+    void set_turn(int turn);
 };
 
 //bool do_team_dismatch(Piece* team_moving, Piece* team_there)

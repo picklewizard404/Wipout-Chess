@@ -157,4 +157,6 @@ void Piece::AssignSavedData(Piece* pPc)
     count = pPc->count;
     row = pPc->row;
     column = pPc->column;
+    //UPDATE FROM Aaron: Save the piece's knowledge of when it first moved.
+    first_turn = pPc->first_turn;
 }

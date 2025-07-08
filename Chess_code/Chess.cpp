@@ -32,7 +32,7 @@ void sleep5() {
     std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
-int chess(bool should_load_man)
+int chess(bool should_load_man, bool show_debugging)
 {
     /*NOTE THAT YOU CAN'T CASTLE WHILE IN CHECK.
     * THE BOARD SHOULD KNOW WHATE TEAMS ARE IN CHECK AND PREVENT CASTLING IF THE TEAM TRYING TO CASTLE IS IN CHECK.
@@ -55,7 +55,6 @@ int chess(bool should_load_man)
     bool isgameover = false;
     char nameofpiecetomove[10];
     int piece = 1;
-    int turn = 1;
     //char current_team = 'w';
     Team* current_team = &whiteteam;
 
@@ -95,6 +94,11 @@ int chess(bool should_load_man)
         //You start the turn with no piece selected.
         piecetomove = NULL;
         mainboard.print_board();
+        if (show_debugging) {
+            printf("DEBUG: Turn %d\n", mainboard.current_turn());
+            printf("DEBUG: Current team is %s.\n", current_team->team_name());
+        }
+
         printf("%s turn.\n", team_name(current_team->color));
         if (current_team->color == COLOR::WHITE) {
             //We already checked if we are in check or checkmate at the end of our opponent's turn.
@@ -153,7 +157,7 @@ int chess(bool should_load_man)
         }
 
         if (strcmp(nameofpiecetomove, "sAve") == 0) {
-            if (game_saver.Dads_SaveGame(current_team, &whiteteam, &blackteam)) {
+            if (game_saver.Dads_SaveGame(current_team, &whiteteam, &blackteam, mainboard.current_turn())) {
                 done_loaded_man = false;
                 printf("Game saved.\n");
             }
@@ -168,7 +172,7 @@ int chess(bool should_load_man)
                 did_fail_loading = true;
             }
             else {
-                if (game_saver.Dads_LoadGame(&whiteteam, &blackteam, &mainboard, &current_team)) {
+                if (game_saver.Dads_LoadGame(&whiteteam, &blackteam, &mainboard, &current_team, &mainboard)) {
                     printf("Game loaded.\n");
                     has_loaded_file = true;
                 }
@@ -321,7 +325,7 @@ int chess(bool should_load_man)
         if (piecefound && wrong_team(piecetomove, current_team->color)) {
             printf("Wrong team, dummy!\n");
         } else if (!piecefound && !did_try_castle && !did_load && !did_try_save && !did_try_tie && !did_fail_loading) {
-            printf("That piece is either dead, or non-existent\n");
+            printf("That piece is either dead, or non-existent.\n");
         }
         
         
@@ -332,6 +336,10 @@ int chess(bool should_load_man)
             printf("Where do you want to move %s?\n", nameofpiecetomove);
             printf("Enter your move.\n");
             char cspace = '\0';
+            if (show_debugging) {
+                printf("First move with %s: %d\n", piecetomove->name, piecetomove->first_turn_i_moved());
+            }
+            
             printf("Row: ");
             std::ignore = scanf("%c", &cspace);
             if (getchar() != '\n') {

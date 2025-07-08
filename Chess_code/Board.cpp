@@ -65,6 +65,10 @@ void Board::next_turn()
     turn_number++;
 }
 
+void Board::set_turn(int turn) {
+    turn_number = turn;
+}
+
 //Make sure the correct argument is passed each time!
 Game_Status Board::is_in_check(Team* my_team, Team* enemy_team) {
     int mkcolumn = my_team->the_king.column;

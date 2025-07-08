@@ -32,13 +32,16 @@ const unsigned char g_cBlacksTurn = (unsigned char)0x04;
 const unsigned char g_cWhiteInCheck = (unsigned char)0x02;
 const unsigned char g_cBlackInCheck = (unsigned char)0x01;
 
-bool Saver::Dads_SaveGame(Team* current_team, Team* whiteteam, Team *blackteam)
+bool Saver::Dads_SaveGame(Team* current_team, Team* whiteteam, Team *blackteam, int current_turn_count)
 {
     int i;
     FILE* fp = fopen(Saver_savefile, "w");
 
     if (fp == NULL)
         return false;
+
+    //Save the current turn number first, and remember to load it before anything else.
+    fwrite(&current_turn_count, sizeof(int), 1, fp);
 
     // Save standard pieces (which also includes promoted pawns)
     for (i = 0; i < 16; i++)
@@ -67,60 +70,11 @@ bool Saver::Dads_SaveGame(Team* current_team, Team* whiteteam, Team *blackteam)
         if (blackteam->upgraded_pieces[i] != NULL)
             fwrite(blackteam->upgraded_pieces[i], sizeof(Piece), 1, fp);
     }
-
     fclose(fp);
     return true;
 }
 
-
-bool Saver::Dads_LoadStandardPieces(FILE* fp, Team* pTeam, Board *mainboard)
-{
-    size_t nRC;
-    unsigned char data[sizeof(Piece) + 1]; // +1 for safety margin 
-    Piece* pPc = NULL;
-
-    for (int i = 0; i < 16; i++)
-    {
-        memset(data, 0, sizeof(data));
-        nRC = fread(data, sizeof(Piece), 1, fp); //THIS LINE RETURNS nRC=0 WHEN CALLED FOR THE BLACK TEAM!
-        if (nRC != 1)
-            return false;
-
-        pPc = (Piece*)&data;
-
-        // Since upgraded pawns are assigned to the pieces array we may be reading in a promoted pawn;
-        if (pPc->piecetype != pTeam->pieces[i]->piecetype)
-        {
-            if (pTeam->pieces[i]->piecetype != TYPE::PAWN)
-                return false;
-
-            pTeam->pieces[i]->alive = false; // If it's a promoted pawn we kill the original pawn
-            continue;
-        }
-
-        pTeam->pieces[i]->AssignSavedData(pPc);
-        if (pPc->alive)
-            mainboard->spaces[pPc->row - 1][pPc->column - 1] = pTeam->pieces[i]; // No Zombies !!!
-    }
-
-    return true;
-}
-
-const char* Saver::GetPieceName(Piece* pExistingPiece)
-{
-    switch (pExistingPiece->piecetype)
-    {
-    case TYPE::PAWN:   return "Pawn";
-    case TYPE::ROOK:   return "Rook";
-    case TYPE::KNIGHT: return "Knight";
-    case TYPE::BISHOP: return "Bishop";
-    case TYPE::QUEEN:  return "Queen";
-    case TYPE::KING:   return "King";
-    default:     return "";
-    }
-}
-
-bool Saver::Dads_LoadGame(Team *whiteteam, Team* blackteam, Board *mainboard, Team **current_team_p)
+bool Saver::Dads_LoadGame(Team* whiteteam, Team* blackteam, Board* mainboard, Team** current_team_p, Board* current_turn_counter)
 {
     FILE* fp = NULL;
     fp = fopen(Saver_savefile, "r");
@@ -129,6 +83,7 @@ bool Saver::Dads_LoadGame(Team *whiteteam, Team* blackteam, Board *mainboard, Te
     size_t nRC;
     unsigned char data[sizeof(Piece) + 1]; // +1 for safety margin 
     Piece* pPc;
+    int current_turn_count = 0;
 
     if (fp == NULL)
         return false;
@@ -144,6 +99,14 @@ bool Saver::Dads_LoadGame(Team *whiteteam, Team* blackteam, Board *mainboard, Te
 
         whiteteam->upgraded_pieces[nRow] = blackteam->upgraded_pieces[nRow] = NULL;
     }
+    //TODO: Load the current turn count HERE.
+    nRC = fread(&current_turn_count, sizeof(int), 1, fp);
+    if (nRC != 1)
+    {
+        fclose(fp);
+        return false;
+    }
+    mainboard->set_turn(current_turn_count);
 
     if (false == Dads_LoadStandardPieces(fp, whiteteam, mainboard)) return false;
     if (false == Dads_LoadStandardPieces(fp, blackteam, mainboard)) return false;
@@ -200,10 +163,12 @@ bool Saver::Dads_LoadGame(Team *whiteteam, Team* blackteam, Board *mainboard, Te
             case TYPE::BISHOP: pNewPiece = new Bishop(pPc->team, pPc->row, pPc->column, n); break;
             }
         }
-        catch (const char* pszEx) { 
-            printf("EXCEPTION: while allocating %s\n%s\n", GetPieceName(pPc), pszEx); }
-        catch (...) { 
-            printf("EXCEPTION: failed to allocate %s\n", GetPieceName(pPc)); }
+        catch (const char* pszEx) {
+            printf("EXCEPTION: while allocating %s\n%s\n", GetPieceName(pPc), pszEx);
+        }
+        catch (...) {
+            printf("EXCEPTION: failed to allocate %s\n", GetPieceName(pPc));
+        }
 
         if (pNewPiece != NULL)
         {
@@ -217,8 +182,55 @@ bool Saver::Dads_LoadGame(Team *whiteteam, Team* blackteam, Board *mainboard, Te
                 mainboard->spaces[pPc->row - 1][pPc->column - 1] = pNewPiece;
         }
     }
+    
     fclose(fp);
 
     return bReturn;
 }
 
+bool Saver::Dads_LoadStandardPieces(FILE* fp, Team* pTeam, Board *mainboard)
+{
+    size_t nRC;
+    unsigned char data[sizeof(Piece) + 1]; // +1 for safety margin 
+    Piece* pPc = NULL;
+
+    for (int i = 0; i < 16; i++)
+    {
+        memset(data, 0, sizeof(data));
+        nRC = fread(data, sizeof(Piece), 1, fp); //THIS LINE RETURNS nRC=0 WHEN CALLED FOR THE BLACK TEAM!
+        if (nRC != 1)
+            return false;
+
+        pPc = (Piece*)&data;
+
+        // Since upgraded pawns are assigned to the pieces array we may be reading in a promoted pawn;
+        if (pPc->piecetype != pTeam->pieces[i]->piecetype)
+        {
+            if (pTeam->pieces[i]->piecetype != TYPE::PAWN)
+                return false;
+
+            pTeam->pieces[i]->alive = false; // If it's a promoted pawn we kill the original pawn
+            continue;
+        }
+
+        pTeam->pieces[i]->AssignSavedData(pPc);
+        if (pPc->alive)
+            mainboard->spaces[pPc->row - 1][pPc->column - 1] = pTeam->pieces[i]; // No Zombies !!!
+    }
+
+    return true;
+}
+
+const char* Saver::GetPieceName(Piece* pExistingPiece)
+{
+    switch (pExistingPiece->piecetype)
+    {
+    case TYPE::PAWN:   return "Pawn";
+    case TYPE::ROOK:   return "Rook";
+    case TYPE::KNIGHT: return "Knight";
+    case TYPE::BISHOP: return "Bishop";
+    case TYPE::QUEEN:  return "Queen";
+    case TYPE::KING:   return "King";
+    default:     return "";
+    }
+}
