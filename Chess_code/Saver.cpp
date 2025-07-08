@@ -99,7 +99,7 @@ bool Saver::Dads_LoadGame(Team* whiteteam, Team* blackteam, Board* mainboard, Te
 
         whiteteam->upgraded_pieces[nRow] = blackteam->upgraded_pieces[nRow] = NULL;
     }
-    //TODO: Load the current turn count HERE.
+    //Load the current turn count HERE.
     nRC = fread(&current_turn_count, sizeof(int), 1, fp);
     if (nRC != 1)
     {
