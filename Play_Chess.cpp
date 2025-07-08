@@ -16,10 +16,6 @@ int main(int argc, char*argv[]) {
                 talkhug = true;
             }
             if (strcmp(argv[i], "/?") == 0 || strcmp(argv[i], "--help") == 0) {
-                printf("--help or /?: View these help messages.\n");
-                printf("--loadman: MANUALLY Set the game in its prior state.\n");
-                printf("--printdebug: Print debugging messages, mainly the current turn count,\n");
-                printf("> and when each piece was first moved.\n");
                 printf("In-game command load: Load the file from an automatically saved game.\n");
                 printf("> To save a game, type save\n");
                 printf("> Your game will be saved in the same directory as this exe with the name Saved_Game.chess\n");
@@ -38,6 +34,10 @@ int main(int argc, char*argv[]) {
                 printf("Or you can make kings hug by helping them land on the same space and meet,\n> or by typing the word hug instead of selecting a piece.\n");
                 printf("Command line arguments:\n--hug: Display that the kings can hug when starting the actual game!\n");
                 printf(">  Hugging is a secret move. Think of it as a reward for being nice.\n");
+                printf("--help or /?: View these help messages.\n");
+                printf("--loadman: MANUALLY Set the game in its prior state.\n");
+                printf("--printdebug: Print debugging messages, mainly the current turn count,\n");
+                printf("> and when each piece was first moved.\n");
                 printf("God answered my prayers and helped me make this game. He deserves credit!\n");
                 return 0;
             }
