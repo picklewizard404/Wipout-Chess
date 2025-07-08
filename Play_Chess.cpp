@@ -18,9 +18,11 @@ int main(int argc, char*argv[]) {
             if (strcmp(argv[i], "/?") == 0 || strcmp(argv[i], "--help") == 0) {
                 printf("--help or /?: View these help messages.\n");
                 printf("--loadman: MANUALLY Set the game in its prior state.\n");
+                printf("--printdebug: Print debugging messages, mainly the current turn count,\n");
+                printf("> and when each piece was first moved.\n");
                 printf("In-game command load: Load the file from an automatically saved game.\n");
-                printf("->To save a game, type save\n");
-                printf("->Your game will be saved in the same directory as this exe with the name Saved_Game.chess\n");
+                printf("> To save a game, type save\n");
+                printf("> Your game will be saved in the same directory as this exe with the name Saved_Game.chess\n");
                 printf("> To say you're done setting up, type cteam to start as the current team...\n...  or oteam to start as the enemy team.\n");
                 printf("> I recommend noting which movement was the last one you made, and taking a screenshot.\n");
                 printf("Space numbering:\nThe top right square is row 8 column 8 and the bottom left square is row 1 column 1.\n");
