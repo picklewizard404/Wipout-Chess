@@ -23,7 +23,7 @@ CastleMove::CastleMove(Move kingmove, Rook* mrook_that_moved, CastleDirection mw
     if (mrook_that_moved->first_turn_i_moved() != -1) {
         throw InvalidMove("That rook moved already. Can't castle with that one!");
     }
-    if (board_its_on->is_in_check(myteam, myteam->enemy_team, false) != Game_Status::NEUTRAL) {
+    if (board_its_on->is_in_check(myteam, myteam->enemy_team) != Game_Status::NEUTRAL) {
         throw InvalidMove("Can't castle while you're in check!");
     }
     //We know the Starting column is 5.
@@ -41,7 +41,7 @@ CastleMove::CastleMove(Move kingmove, Rook* mrook_that_moved, CastleDirection mw
                 );
             }
             board_its_on->place(&myteam->the_king, starting_row, slide_left);
-            if (board_its_on->is_in_check(myteam, myteam->enemy_team, false) != Game_Status::NEUTRAL) {
+            if (board_its_on->is_in_check(myteam, myteam->enemy_team) != Game_Status::NEUTRAL) {
                 board_its_on->place(&myteam->the_king, starting_row, 5);
                 throw InvalidMove(
                     "Error: Space in Row " + std::to_string(starting_row) + ", Column " + std::to_string(slide_left) + " is attacked, so you can't castle left."
@@ -62,7 +62,7 @@ CastleMove::CastleMove(Move kingmove, Rook* mrook_that_moved, CastleDirection mw
                 );
             }
             board_its_on->place(&myteam->the_king, starting_row, slide_right);
-            if (board_its_on->is_in_check(myteam, myteam->enemy_team, false) != Game_Status::NEUTRAL) {
+            if (board_its_on->is_in_check(myteam, myteam->enemy_team) != Game_Status::NEUTRAL) {
                 board_its_on->place(&myteam->the_king, starting_row, 5);
                 throw InvalidMove(
                     "Error: Space in Row " + std::to_string(starting_row) + ", Column " + std::to_string(slide_right) + " is attacked, so you can't castle right."

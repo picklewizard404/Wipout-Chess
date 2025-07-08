@@ -89,7 +89,7 @@ bool can_castle(Team* current_team, Board* mainboard, const char *direction_cast
     if(strcmp("Left", direction_castle) == 0)
 
     //You can do this move.
-    current_team->enemy_team->current_status = mainboard->is_in_check(current_team->enemy_team, current_team, mainboard);
+    current_team->enemy_team->current_status = mainboard->is_in_check(current_team->enemy_team, current_team);
     return true;
 }
 // */

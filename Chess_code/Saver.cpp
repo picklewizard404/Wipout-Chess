@@ -82,7 +82,7 @@ bool Saver::Dads_LoadStandardPieces(FILE* fp, Team* pTeam, Board *mainboard)
     for (int i = 0; i < 16; i++)
     {
         memset(data, 0, sizeof(data));
-        nRC = fread(data, sizeof(Piece), 1, fp);
+        nRC = fread(data, sizeof(Piece), 1, fp); //THIS LINE RETURNS nRC=0 WHEN CALLED FOR THE BLACK TEAM!
         if (nRC != 1)
             return false;
 

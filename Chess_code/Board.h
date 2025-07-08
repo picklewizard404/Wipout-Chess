@@ -39,7 +39,9 @@ public:
     void print_passant(bool* testprinted = NULL);
     bool is_on_board(int b_row, int b_column);
     Board();
-    Game_Status is_in_check(Team* my_team, Team* enemy_team, bool check_for_checkmate = true);
+    //NOTE: IN THIS VERSION OF CHESS, YOU HAVE TO MOVE EVEN WHILE IN CHECKMATE!
+    //THAT'S BECAUSE IN THIS VERSION OF CHESS, THE OPPPONENT HAS TO ACTUALLY KILL YOUR KING TO END THE GAME!
+    Game_Status is_in_check(Team* my_team, Team* enemy_team);
     Game_Status try_to_escape(Team* my_team, Team* enemy_team, Board* mainboard);
     bool does_have_any_piece(int row, int column) const;
     bool no_ally_there(COLOR my_team, int row, int column) const;

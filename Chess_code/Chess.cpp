@@ -288,27 +288,11 @@ int chess(bool should_load_man)
                     okmove = false;
                 }
             }
-            //Was that move safe? IF not, I am still in check.
-            //*
-            Game_Status am_I_still_in_check = mainboard.is_in_check(current_team->enemy_team, current_team, false);
-            if (am_I_still_in_check != Game_Status::NEUTRAL) {
-                printf("That's check, silly!\n");
-                printf("Do you want to undo that move? Type Yes if so.\n");
-                std::ignore = scanf("%3s", nameofpiecetomove);
-                clearinput();
-                nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
-                for (int i = 1; i < 3; i++) {
-                    nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
-                }
-                if (strcmp(nameofpiecetomove, "Yes") == 0) {
-                    mainboard.undo_move(&castle_move, current_team);
-                    //Swap teams
-                    current_team = current_team->enemy_team;
-                }
-            }
+            //You can't castle when you're in check so in this block we know you didn't get in check.
+ 
             /* UPDATE THE BOARD'S KNOWLEDGE OF BOTH TEAM'S CHECK HERE. */
-            current_team->enemy_team->current_status = mainboard.is_in_check(current_team->enemy_team, current_team, false);
-            current_team->current_status = mainboard.is_in_check(current_team, current_team->enemy_team, true);
+            current_team->enemy_team->current_status = mainboard.is_in_check(current_team->enemy_team, current_team);
+            current_team->current_status = mainboard.is_in_check(current_team, current_team->enemy_team);
             // END
             // */
         }
@@ -323,7 +307,7 @@ int chess(bool should_load_man)
                 if (mainboard.spaces[i][j] != NULL) {
                     //We need to check the type here because we don't yet know what type of piece we have selected.
                     if (strcmp(nameofpiecetomove, mainboard.spaces[i][j]->name) == 0) {
-                        //Pretty sure we know the piece is alive because it's on the board.
+                        //We know the piece is alive because it's on the board.
                         piecetomove = mainboard.spaces[i][j];
                         piecefound = true;
                         type_of_piecetomove = piecetomove->piecetype;
@@ -332,10 +316,12 @@ int chess(bool should_load_man)
                 }
             }
         }
+
+        //The game looks at the board when searching for pieces, so if your piece is dead it WON'T be found and it will be called invalid.
         if (piecefound && wrong_team(piecetomove, current_team->color)) {
             printf("Wrong team, dummy!\n");
-        } else if (!piecefound && !did_try_castle && !did_load && !did_try_save && !did_try_tie && !did_fail_loading) { //TODO HERE
-            printf("Invalid piece.\n");
+        } else if (!piecefound && !did_try_castle && !did_load && !did_try_save && !did_try_tie && !did_fail_loading) {
+            printf("That piece is either dead, or non-existent\n");
         }
         
         
@@ -411,13 +397,12 @@ int chess(bool should_load_man)
                 if (piecetomove->piecetype == TYPE::PAWN) {
                     upgrade_pawn_if_needed((Pawn*)piecetomove, current_team, &mainboard);
                 }
-                //NOTE: THE TEAMS SWAP ON THIS LINE
-                current_team = current_team->enemy_team;
+                
                 did_try_castle = false;
                 //Was that move safe? IF not, I am still in check.
                 //*
-                Game_Status am_I_still_in_check = mainboard.is_in_check(current_team->enemy_team, current_team, false);
-                if (am_I_still_in_check != Game_Status::NEUTRAL) {
+                Game_Status player_who_just_moved_still_in_check = mainboard.is_in_check(current_team, current_team->enemy_team);
+                if (player_who_just_moved_still_in_check != Game_Status::NEUTRAL) {
                     printf("That's check, silly!\n");
                     printf("Do you want to undo that move? Type Yes if so.\n");
                     std::ignore = scanf("%3s", nameofpiecetomove);
@@ -428,12 +413,17 @@ int chess(bool should_load_man)
                     }
                     if (strcmp(nameofpiecetomove, "Yes") == 0) {
                         mainboard.undo_move(&tried_move, current_team);
-                        //NOTE: THE TEAMS SWAP AGAIN ON THIS LINE TO RETURN TO THE ORIGINAL TEAM
+                        //After this if block, the chess status will be calculated anyways, so I don't have to calculate it here.
+                        //NOTE: THE TEAMS SWAP AGAIN ON THIS LINE SO THAT WHEN THEY SWAP THEY RETURN TO THE ORIGINAL TEAM
                         current_team = current_team->enemy_team;
                     }
                 }
-                current_team->enemy_team->current_status = mainboard.is_in_check(current_team->enemy_team, current_team, false);
-                current_team->current_status = mainboard.is_in_check(current_team, current_team->enemy_team, &mainboard);
+
+
+                current_team->current_status = mainboard.is_in_check(current_team, current_team->enemy_team);
+                current_team->enemy_team->current_status = mainboard.is_in_check(current_team->enemy_team, current_team);
+                //NOTE: THE TEAMS SWAP ON THIS LINE
+                current_team = current_team->enemy_team;
                 // END
                 // */
             } else {
@@ -451,9 +441,6 @@ int chess(bool should_load_man)
             else if(!did_try_castle && !did_load && !did_try_save && !did_fail_loading) {
                 if (did_try_tie) {
                     printf("Your opponent doen't want to quit yet.\n");
-                }
-                else { //TODO HERE
-                    printf("Wrong team, silly.\n");
                 }
             }
         }
