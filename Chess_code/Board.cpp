@@ -65,8 +65,12 @@ void Board::next_turn()
     turn_number++;
 }
 
+void Board::set_turn(int turn) {
+    turn_number = turn;
+}
+
 //Make sure the correct argument is passed each time!
-Game_Status Board::is_in_check(Team* my_team, Team* enemy_team, bool check_for_checkmate) {
+Game_Status Board::is_in_check(Team* my_team, Team* enemy_team) {
     int mkcolumn = my_team->the_king.column;
     int mkrow = my_team->the_king.row;
     bool is_hugging_allowed = false;
@@ -502,7 +506,7 @@ Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboa
                 tried_move.end_column = trycolumn;
                 // We know we can go here, so we might as well try.
                 human_move_piece(&tried_move);
-                if (is_in_check(my_team, enemy_team, false) == Game_Status::NEUTRAL) {
+                if (is_in_check(my_team, enemy_team) == Game_Status::NEUTRAL) {
                     undo_move(&tried_move, my_team);
                     return Game_Status::CHECK;
                 }
