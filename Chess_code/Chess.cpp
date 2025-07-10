@@ -18,7 +18,7 @@
 using namespace std;
 
 void print_how_to_hug() {
-    printf("To hug the king you just landed on instead of defeating him,\njust type Yes.\n");
+    printf("To hug the king you just landed on instead of defeating him, just type Yes.\n");
 }
 
 bool make_kings_hug(Team *current_team, Team*whiteteam, Team*blackteam) {
@@ -32,7 +32,7 @@ void sleep5() {
     std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
-int chess(bool should_load_man, bool show_debugging)
+int chess(bool should_load_man, bool show_debugging, bool show_hugging)
 {
     /*NOTE THAT YOU CAN'T CASTLE WHILE IN CHECK.
     * THE BOARD SHOULD KNOW WHATE TEAMS ARE IN CHECK AND PREVENT CASTLING IF THE TEAM TRYING TO CASTLE IS IN CHECK.
@@ -65,11 +65,12 @@ int chess(bool should_load_man, bool show_debugging)
     bool did_try_save = false;
     bool did_try_tie = false;
     bool did_try_castle = false;
-    bool done_loaded_man = !should_load_man;
+    bool done_loading_man = !should_load_man;
     bool did_load = false;
     //You cannot load the game twice. TODO: FOLLOW THAT RULE.
     bool has_loaded_file = false;
     bool did_fail_loading = false;
+    bool swapped_or_done = false;
     
     //Setup
     Piece* wKnight2 = whiteteam.pieces[6];
@@ -84,7 +85,7 @@ int chess(bool should_load_man, bool show_debugging)
         Skip the player's movement of pieces when they load the game instead, 
         just like you skip certain print statements when you castle. */
         printf("Type cteam to say you're done loading the previous game and the current team starts,...\n");
-        printf("...or type oteam to say you're done loading the previous game and the other team starts.\n");
+        printf("...or type oteam to let the opponent move.\n");
     }
     printf("\nGod answered my prayers and helped me make this game. He deserves credit!\n\n");
     
@@ -136,13 +137,21 @@ int chess(bool should_load_man, bool show_debugging)
         //Alternative commands other than moving 1 piece
         if (should_load_man) {
             if (strcmp(nameofpiecetomove, "cTeam") == 0) {
-                if (done_loaded_man) {
+                if (done_loading_man) {
                     printf("You are already done loading.\n");
                 }
-                did_load = true;
+                else {
+                    printf("You are done loading the game. Now fight the king!\n");
+                    if (show_hugging) {
+                        printf("Or you can hug him.\n");
+                        print_how_to_hug();
+                    }
+                    done_loading_man = true;
+                }
+                swapped_or_done = true;
             }
             else if (strcmp(nameofpiecetomove, "oTeam") == 0) {
-                if (done_loaded_man) {
+                if (done_loading_man) {
                     printf("You are already done loading.\n");
                 }
                 else {
@@ -151,13 +160,13 @@ int chess(bool should_load_man, bool show_debugging)
                     current_team = current_team->enemy_team;
                     
                 }
-                did_load = true;
+                swapped_or_done = true;
             }
+            
         }
 
         if (strcmp(nameofpiecetomove, "sAve") == 0) {
             if (game_saver.Dads_SaveGame(current_team, &whiteteam, &blackteam, mainboard.current_turn())) {
-                done_loaded_man = false;
                 printf("Game saved.\n");
             }
             else {
@@ -323,7 +332,7 @@ int chess(bool should_load_man, bool show_debugging)
         //The game looks at the board when searching for pieces, so if your piece is dead it WON'T be found and it will be called invalid.
         if (piecefound && wrong_team(piecetomove, current_team->color)) {
             printf("Wrong team, dummy!\n");
-        } else if (!piecefound && !did_try_castle && !did_load && !did_try_save && !did_try_tie && !did_fail_loading) {
+        } else if (!piecefound && !did_try_castle && !did_load && !did_try_save && !did_try_tie && !did_fail_loading && !swapped_or_done) {
             printf("That piece is either dead, or non-existent.\n");
         }
         
@@ -373,7 +382,8 @@ int chess(bool should_load_man, bool show_debugging)
                 printf("Invalid row.\n");
             }
         }
-        if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_try_tie && !did_try_castle && !did_load && landonokplace) {
+        if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_try_tie && !did_try_castle && !did_load && landonokplace
+            && !(should_load_man && (swapped_or_done))) {
 
             bool should_upgrade_pawn = false;
             okmove = piecetomove->can_classmove(m_row, m_column, &mainboard);
@@ -457,10 +467,13 @@ int chess(bool should_load_man, bool show_debugging)
         did_try_save = false;
         did_try_castle = false;
         did_fail_loading = false;
-        if (did_load && !done_loaded_man) {
-            done_loaded_man = true;
-        }
+        swapped_or_done = false;
         did_load = false;
+        /* Maybe don't need this? 
+        if (did_load && !done_loading_man) {
+            done_loading_man = true;
+        }
+        // */
     }
     if (whiteteam.the_king.row == blackteam.the_king.row
         && whiteteam.the_king.column == blackteam.the_king.column) {
