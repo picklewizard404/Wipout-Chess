@@ -65,7 +65,7 @@ int chess(bool should_load_man, bool show_debugging)
     bool did_try_save = false;
     bool did_try_tie = false;
     bool did_try_castle = false;
-    bool done_loaded_man = !should_load_man;
+    bool done_loading_man = !should_load_man;
     bool did_load = false;
     //You cannot load the game twice. TODO: FOLLOW THAT RULE.
     bool has_loaded_file = false;
@@ -135,14 +135,18 @@ int chess(bool should_load_man, bool show_debugging)
 
         //Alternative commands other than moving 1 piece
         if (should_load_man) {
+            if (strcmp("doneload", nameofpiecetomove) == 0) {
+                printf("Alright. Done setting up the game!\n");
+                done_loading_man = true;
+            }
             if (strcmp(nameofpiecetomove, "cTeam") == 0) {
-                if (done_loaded_man) {
+                if (done_loading_man) {
                     printf("You are already done loading.\n");
                 }
                 did_load = true;
             }
             else if (strcmp(nameofpiecetomove, "oTeam") == 0) {
-                if (done_loaded_man) {
+                if (done_loading_man) {
                     printf("You are already done loading.\n");
                 }
                 else {
@@ -157,7 +161,6 @@ int chess(bool should_load_man, bool show_debugging)
 
         if (strcmp(nameofpiecetomove, "sAve") == 0) {
             if (game_saver.Dads_SaveGame(current_team, &whiteteam, &blackteam, mainboard.current_turn())) {
-                done_loaded_man = false;
                 printf("Game saved.\n");
             }
             else {
@@ -457,9 +460,11 @@ int chess(bool should_load_man, bool show_debugging)
         did_try_save = false;
         did_try_castle = false;
         did_fail_loading = false;
-        if (did_load && !done_loaded_man) {
-            done_loaded_man = true;
+        /* Maybe don't need this? 
+        if (did_load && !done_loading_man) {
+            done_loading_man = true;
         }
+        // */
         did_load = false;
     }
     if (whiteteam.the_king.row == blackteam.the_king.row

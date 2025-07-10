@@ -18,27 +18,31 @@ int main(int argc, char*argv[]) {
             if (strcmp(argv[i], "/?") == 0 || strcmp(argv[i], "--help") == 0) {
                 printf("In-game command load: Load the file from an automatically saved game.\n");
                 printf("> To save a game, type save\n");
-                printf("> Your game will be saved in the same directory as this exe with the name Saved_Game.chess\n");
-                printf("> To say you're done setting up, type cteam to start as the current team...\n...  or oteam to start as the enemy team.\n");
-                printf("> I recommend noting which movement was the last one you made, and taking a screenshot.\n");
-                printf("Space numbering:\nThe top right square is row 8 column 8 and the bottom left square is row 1 column 1.\n");
-                printf("> Note that when I ask for the row and column,\n> I read the numbers from a top-down perspective with the white team on the bottom.\n");
+                printf("> Your game will be saved in the same directory as this exe\n> with the name Saved_Game.chess\n");
+               
+                printf("\nSpace numbering:\nThe top right square is row 8 column 8...\n... and the bottom left square is row 1 column 1.\n");
+                printf("> Note that when I ask for the row and column,\n> I read the numbers top-down with the white team on the bottom.\n");
                 printf("> When you have to enter a row or column, you must be very precise.\n> You can't type anything after the single number character.\n");
-                printf("Pro type for black team:\n> To figure out the column of your pawn, (assuming it's in its starting column),\n> subtract the number in its name from 9.\n");
-                printf("When castling is a legal move for you, you can castle by typing the word castle with no punctuation.\n");
+                printf("Pro type for black team:\n> To figure out the column of your pawn,\n> (assuming it's in its starting column),\n> subtract the number in its name from 9.\n");
+                
+                printf("\nWhen castling is a legal move for you,\n> you can castle by typing the word castle with no punctuation.\n");
                 printf("> The game will ask you whether you want to castle left or right.\n");
                 printf("> Castling left always involves the rook in column 1,\n> and castling right always involves the rook in column 8.\n");
-                printf("You can be killed. Or you can hug!\n");
-                printf("You can surrender by typing the word surrender.\n");
+                
+                printf("\nYou can surrender by typing the word surrender.\n");
                 printf("Or if your opponent agrees, you can tie by typing the word tie.\n");
-                printf("Or you can make kings hug by helping them land on the same space and meet,\n> or by typing the word hug instead of selecting a piece.\n");
-                printf("Command line arguments:\n--hug: Display that the kings can hug when starting the actual game!\n");
-                printf(">  Hugging is a secret move. Think of it as a reward for being nice.\n");
-                printf("--help or /?: View these help messages.\n");
+                printf("You can be killed. Or you can hug!\n");
+                printf("You can make kings hug by helping them land on the same space and meet,\n> or by typing the word hug instead of selecting a piece.\n");
+                printf("> Hugging is a secret move. Think of it as a reward for being nice.\n");
+                
+                printf("\nCommand line arguments:\n--help or /?: View these help messages.\n");
+                printf("--hug: Display that the kings can hug when starting the actual game!\n");
                 printf("--loadman: MANUALLY Set the game in its prior state.\n");
+                printf("> Type oteam to switch to the enemy team and move them more.\n> To say you're done setting up, type cteam.\n");
+                printf("> If loading manually, I recommend noting which movement was\n> the last one you made, and taking a screenshot.\n");
                 printf("--printdebug: Print debugging messages, mainly the current turn count,\n");
                 printf("> and when each piece was first moved.\n");
-                printf("God answered my prayers and helped me make this game. He deserves credit!\n");
+                printf("\nGod answered my prayers and helped me make this game. He deserves credit!\n");
                 return 0;
             }
             if (strcmp("--loadman", argv[i]) == 0) {
