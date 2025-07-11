@@ -176,8 +176,24 @@
     <ClInclude Include="..\..\Chess_code\Saver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Chess_code\Main.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TestChess.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\PawnUpdater.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\PawnUpdater.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
